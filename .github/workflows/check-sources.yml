@@ -1,0 +1,50 @@
+name: Quellen-Check (M0)
+
+# Manuell starten: Actions → „Quellen-Check (M0)" → „Run workflow".
+# Prüft alle Datenquellen aus dem GitHub-Runner und committet den Bericht.
+
+on:
+  workflow_dispatch:
+    inputs:
+      bgeometrics_testcalls:
+        description: "BGeometrics mit Token testen (max. 3 Abrufe). Erst nach Klärung der Nutzungsbedingungen einschalten."
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: data
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Repo auschecken
+        uses: actions/checkout@v5
+
+      - name: Node einrichten
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+
+      - name: Quellen prüfen
+        env:
+          BGEOMETRICS_TOKEN: ${{ secrets.BGEOMETRICS_TOKEN }}
+          BGEO_TESTCALLS: ${{ inputs.bgeometrics_testcalls }}
+        run: node scripts/check-sources.mjs
+
+      - name: Bericht committen
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add reports/sources-check.md config/sources.json
+          if git diff --cached --quiet; then
+            echo "Keine Änderungen."
+          else
+            git commit -m "check: Quellen-Check $(date -u +%F)"
+            git push
+          fi
