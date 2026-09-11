@@ -23,7 +23,7 @@ Diese Spezifikation beschreibt vollständig, was gebaut werden soll: Datenquelle
 | Takt | bei jedem Öffnen | Wochenschluss (So 24:00 UTC) |
 | Leitbild | Tacho (Stimmung) | Ampel (Entscheidung) |
 | Daten | Browser holt live (Binance, Deribit …) | GitHub Action holt, Seite liest JSON |
-| On-Chain | manuell eingetragen | automatisch (BGeometrics + Fallbacks) |
+| On-Chain | manuell eingetragen | automatisch (Coin Metrics Community, eigene Berechnung; BGeometrics nach Lizenzklärung) |
 
 ---
 
@@ -33,7 +33,7 @@ Diese Spezifikation beschreibt vollständig, was gebaut werden soll: Datenquelle
 
 Eine GitHub Action holt die Daten, rechnet die Signale und legt JSON-Dateien ins Repo. Die Seite liest nur noch diese Dateien. Das bringt vier Vorteile:
 
-- On-Chain-Kennzahlen (Realized Price, MVRV, STH-Realized-Price) kommen automatisch, das manuelle Nachtragen aus dem Cockpit entfällt.
+- On-Chain-Kennzahlen wie Realized Price, MVRV und Puell kommen automatisch, das manuelle Nachtragen aus dem Cockpit entfällt weitgehend (Ausnahme je nach Lizenzlage: STH-Realized-Price, siehe 3.4).
 - API-Schlüssel bleiben als GitHub-Secret geheim, Rate-Limits und CORS spielen im Browser keine Rolle mehr.
 - Git wird zur Zeitreihen-Datenbank: jede Woche ein Commit, jede Entscheidung nachvollziehbar.
 - Benachrichtigungen funktionieren, ohne dass jemand die Seite offen hat.
@@ -96,9 +96,10 @@ Panta-Rey-BTC-Ampel/
 │   ├── latest.json
 │   ├── weekly.json
 │   └── events.json
-├── reports/backtest.md        automatisch erzeugt
+├── reports/                   backtest.md, sources-check.md (automatisch)
 ├── test/                      node:test, Fixtures
 ├── .github/workflows/
+│   ├── check-sources.yml      Quellen-Check (M0), manuell
 │   ├── weekly.yml
 │   ├── daily.yml
 │   └── backtest.yml
@@ -106,7 +107,7 @@ Panta-Rey-BTC-Ampel/
 └── SPEC.md                    dieses Dokument
 ```
 
-Laufzeit: Node 20 oder neuer (natives `fetch`, `node:test`). Ziel ist **null Abhängigkeiten** in Pipeline und Engine. Die Engine ist deterministisch: gleiche Eingaben ergeben gleiche Ausgaben. Das ist Voraussetzung für Backtest und Tests.
+Laufzeit: Node 22 oder neuer (Node 20 ist seit April 2026 ohne Sicherheitsupdates) (natives `fetch`, `node:test`). Ziel ist **null Abhängigkeiten** in Pipeline und Engine. Die Engine ist deterministisch: gleiche Eingaben ergeben gleiche Ausgaben. Das ist Voraussetzung für Backtest und Tests.
 
 ### 2.2 Workflows
 
@@ -148,17 +149,17 @@ Jede Signalbedingung wird ausschliesslich auf Wochenschlüssen geprüft. **Jeder
 |---|---|---|---|---|
 | BTC-Tagesschluss | Bitstamp OHLC (`/api/v2/ohlc/btcusd/`, `step=86400`, `limit=1000`, keyless) | Coinbase Exchange Candles (max. 300 pro Abruf) | 2011 (Bitstamp) | 2 Tage |
 | Preis-Seed vor 2011 | einmalig aus BGeometrics-Preisreihe oder Coin Metrics Community `PriceUSD` → `data/seed/` | – | 2010 | – |
-| MVRV-Z-Score | BGeometrics | selbst berechnet aus Coin Metrics Community (`CapMrktCurUSD`, `CapRealUSD`) | 2010 | 10 Tage |
-| Realized Price | BGeometrics | Coin Metrics Community `CapRealUSD` ÷ Angebot | 2010 | 10 Tage |
+| MVRV-Z-Score | selbst berechnet aus Coin Metrics Community (`CapMrktCurUSD`, `CapMVRVCur`) | BGeometrics (nach Lizenzklärung) | 2010 | 10 Tage |
+| Realized Price | abgeleitet: Coin Metrics `PriceUSD` ÷ `CapMVRVCur` | BGeometrics (nach Lizenzklärung) | 2010 | 10 Tage |
 | STH-Realized-Price | BGeometrics | `data/manual.json` | 2011 | 10 Tage (manuell: 30) |
 | Angebot im Gewinn/Verlust | BGeometrics (Supply in Profit) | – | 2011 | 10 Tage |
 | Reserve Risk | BGeometrics | – | 2011 | 10 Tage |
 | RHODL-Ratio | BGeometrics | – | 2011 | 10 Tage |
 | LTH-Positionsänderung 30T | BGeometrics | – | 2012 | 10 Tage |
-| Puell Multiple | BGeometrics | selbst: Blockchain.com Charts `miners-revenue` ÷ 365-Tage-Schnitt | 2010 | 10 Tage |
-| Hashrate / Hash Ribbons | BGeometrics (Hashribbons) | selbst aus mempool.space `/api/v1/mining/hashrate/all` | 2010 | 10 Tage |
+| Puell Multiple | selbst: Coin Metrics `IssTotUSD` ÷ 365-Tage-Schnitt | Blockchain.com `miners-revenue` (Näherung inkl. Gebühren) | 2010 | 10 Tage |
+| Hashrate / Hash Ribbons | selbst aus Coin Metrics `HashRate` | mempool.space `/api/v1/mining/hashrate/all` | 2010 | 10 Tage |
 | Fear & Greed | alternative.me (`/fng/?limit=0&format=json`) | – | Feb. 2018 | 3 Tage |
-| Funding 30T | BGeometrics (Funding Rate) | Deribit `public/get_funding_rate_history` (BTC-PERPETUAL) | 2019 | 3 Tage |
+| Funding 30T | Deribit `public/get_funding_rate_history` (BTC-PERPETUAL) | OKX (nur ~3 Monate Historie) | 2019 | 3 Tage |
 | Wikipedia-Aufrufe „Bitcoin" | Wikimedia REST API (`/metrics/pageviews/per-article/…/daily/…`, en + de, Header `User-Agent` Pflicht) | – | Juli 2015 | 7 Tage |
 | Blockhöhe (nächstes Halving) | mempool.space `/api/blocks/tip/height` | Blockchain.com | – | 7 Tage |
 | Makro (nur Kontext) | bestehender Cloudflare Worker `/macro` | – | – | 7 Tage |
@@ -183,7 +184,7 @@ Jede Signalbedingung wird ausschliesslich auf Wochenschlüssen geprüft. **Jeder
 }
 ```
 
-### 3.3 Abrufbudget BGeometrics (frei: 8 pro Stunde, 15 pro Tag)
+### 3.3 Abrufbudget BGeometrics (frei: 8 pro Stunde, 15 pro Tag; nur relevant nach Lizenzklärung, siehe 3.4)
 
 | Lauf | Kennzahlen | Anfragen |
 |---|---|---|
@@ -193,6 +194,20 @@ Jede Signalbedingung wird ausschliesslich auf Wochenschlüssen geprüft. **Jeder
 | Reserve für Wiederholungen | – | 2–3 |
 
 Der erste Lauf holt die komplette Historie. Danach genügen Abrufe ab dem letzten gespeicherten Datum, falls der Endpunkt einen Datumsfilter kennt. Sonst wird wöchentlich die ganze Reihe geholt, was bei Tagesdaten seit 2010 nur wenige hundert Kilobyte pro Kennzahl ausmacht.
+
+### 3.4 Nutzungsbedingungen der Quellen
+
+Beim Quellen-Check (M0) zeigte sich: Die Gratis-Stufe von BGeometrics ist für persönliche Projekte gedacht. Laut Nutzungsbedingungen gelten zwei Dinge als kommerzielle Weiterverbreitung, die den Professional-Tarif erfordert: der Einsatz des Tokens von Systemen, die nicht dem Schlüsselinhaber gehören (GitHub-Runner), und jede Anwendung, die die Daten an Endnutzer ausliefert (eine öffentliche Seite). Die Pipeline in dieser Form wäre damit nicht gedeckt.
+
+| Quelle | Bedingungen | Folge für die Ampel |
+|---|---|---|
+| Coin Metrics Community | Creative Commons BY-NC 4.0: nicht-kommerziell, mit Quellenangabe | Primärquelle für MVRV, Realized Price, Puell, Hashrate. Seit Oktober 2025 wurden einzelne Community-Kennzahlen gestrichen, M0 prüft, was noch da ist. |
+| BGeometrics (frei) | persönliche Nutzung; Runner und öffentliche Anzeige nur mit Professional-Tarif | erst nach schriftlicher Zusage einsetzen; bis dahin nur Doku lesen |
+| alternative.me | frei, Quellenangabe neben den Daten | Fusszeile und Kachel nennen die Quelle |
+| Wikimedia Pageviews | offene Daten | ohne Einschränkung |
+| Bitstamp, Deribit, mempool.space, Blockchain.com | öffentliche Schnittstellen mit Rate-Limits | ein Abruf pro Tag oder Woche ist unkritisch |
+
+Ohne BGeometrics fehlen STH-Realized-Price, Angebot im Verlust, Reserve Risk, RHODL-Ratio und LTH-Abgabe. Dann gilt: STH-Realized-Price kommt monatlich aus `manual.json` (wie im Cockpit), die übrigen werden nach 5.2 herausgerechnet. Betroffen sind vor allem Gate B (Angebot im Verlust) und die Familie „Halterverhalten" des Verkaufs-Motors. Die Anpassung erfolgt nach dem Quellen-Check in Meilenstein M2, falls BGeometrics nicht zusagt.
 
 ---
 
@@ -789,6 +804,7 @@ Mit `node:test`, ohne Abhängigkeiten.
 | Frühverkauf in einer Doppelspitze (wie 2021) | Kernposition, bewusst akzeptiert |
 | Steuern | wenige Transaktionen. In der Schweiz zählen unter anderem Haltedauer (mindestens 6 Monate) und Handelsvolumen zu den Kriterien für gewerbsmässigen Handel. Einzelfall mit einer Steuerfachperson klären. |
 | Datenschutz | keine Positionsdaten im öffentlichen Repo |
+| Nutzungsbedingungen der Datenquellen | nur Quellen, deren Bedingungen eine öffentliche, nicht-kommerzielle Anzeige erlauben; Quellenangaben in der Fusszeile; BGeometrics erst nach schriftlicher Zusage (3.4) |
 
 ---
 
