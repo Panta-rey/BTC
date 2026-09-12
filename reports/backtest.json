@@ -1,0 +1,193 @@
+{
+  "schema": 1,
+  "config_version": "0.9-entwurf",
+  "generated_at": "2026-09-12T06:28:29.184Z",
+  "trades": [
+    {
+      "w": "2018-03-18",
+      "t": "S1",
+      "side": "verkauf",
+      "price": 8188.24,
+      "usd": 1662.0489552000001,
+      "btc": 0.20400000000000001
+    },
+    {
+      "w": "2018-03-18",
+      "t": "S2",
+      "side": "verkauf",
+      "price": 8188.24,
+      "usd": 1613.1651624,
+      "btc": 0.198
+    },
+    {
+      "w": "2018-03-18",
+      "t": "S3",
+      "side": "verkauf",
+      "price": 8188.24,
+      "usd": 1613.1651624,
+      "btc": 0.198
+    },
+    {
+      "w": "2018-12-02",
+      "t": "B1",
+      "side": "kauf",
+      "price": 4102.05,
+      "usd": 1662.0489552000004,
+      "btc": 0.40314933031630534
+    },
+    {
+      "w": "2018-12-30",
+      "t": "B2",
+      "side": "kauf",
+      "price": 3835.79,
+      "usd": 1613.1651624000003,
+      "btc": 0.41845339202302534
+    },
+    {
+      "w": "2019-04-14",
+      "t": "B3",
+      "side": "kauf",
+      "price": 5162.72,
+      "usd": 1613.1651624000003,
+      "btc": 0.31090187664409463
+    },
+    {
+      "w": "2021-12-12",
+      "t": "S1",
+      "side": "verkauf",
+      "price": 50124.38,
+      "usd": 15592.07978599472,
+      "btc": 0.3126309381926188
+    },
+    {
+      "w": "2021-12-12",
+      "t": "S2",
+      "side": "verkauf",
+      "price": 50124.38,
+      "usd": 15133.489204053698,
+      "btc": 0.3034359105987182
+    },
+    {
+      "w": "2021-12-12",
+      "t": "S3",
+      "side": "verkauf",
+      "price": 50124.38,
+      "usd": 15133.489204053698,
+      "btc": 0.3034359105987182
+    },
+    {
+      "w": "2022-06-26",
+      "t": "B1",
+      "side": "kauf",
+      "price": 21028.69,
+      "usd": 15592.07978599472,
+      "btc": 0.7377596696258657
+    },
+    {
+      "w": "2022-07-24",
+      "t": "B2",
+      "side": "kauf",
+      "price": 22595.81,
+      "usd": 15133.4892040537,
+      "btc": 0.6663988481950163
+    },
+    {
+      "w": "2023-01-22",
+      "t": "B3",
+      "side": "kauf",
+      "price": 22717,
+      "usd": 15133.489204053696,
+      "btc": 0.6628437627342267
+    }
+  ],
+  "checks": [
+    {
+      "kind": "Tief",
+      "date": "2015-01-14",
+      "price": 172,
+      "phase_week": "2015-01-11",
+      "offset_weeks": 0,
+      "avg": null,
+      "ratio": null,
+      "target": "≤ 1,6 ×",
+      "ok": false,
+      "trades": 0
+    },
+    {
+      "kind": "Tief",
+      "date": "2018-12-15",
+      "price": 3200,
+      "phase_week": "2018-12-02",
+      "offset_weeks": -2,
+      "avg": 4364.2053000000005,
+      "ratio": 1.3638141562500001,
+      "target": "≤ 1,6 ×",
+      "ok": true,
+      "trades": 3
+    },
+    {
+      "kind": "Tief",
+      "date": "2022-11-21",
+      "price": 15500,
+      "phase_week": "2022-06-26",
+      "offset_weeks": -21,
+      "avg": 22102.9819,
+      "ratio": 1.4259988322580643,
+      "target": "≤ 1,6 ×",
+      "ok": true,
+      "trades": 3
+    },
+    {
+      "kind": "Hoch",
+      "date": "2013-12-04",
+      "price": 1150,
+      "phase_week": null,
+      "offset_weeks": null,
+      "avg": null,
+      "ratio": null,
+      "target": "≥ 0,6 ×",
+      "ok": false,
+      "trades": 0
+    },
+    {
+      "kind": "Hoch",
+      "date": "2017-12-17",
+      "price": 19800,
+      "phase_week": null,
+      "offset_weeks": 13,
+      "avg": 8188.24,
+      "ratio": 0.4135474747474747,
+      "target": "≥ 0,6 ×",
+      "ok": false,
+      "trades": 3
+    },
+    {
+      "kind": "Hoch",
+      "date": "2021-11-10",
+      "price": 69000,
+      "phase_week": null,
+      "offset_weeks": 5,
+      "avg": 50124.38,
+      "ratio": 0.7264402898550725,
+      "target": "≥ 0,6 ×",
+      "ok": true,
+      "trades": 3
+    },
+    {
+      "kind": "Hoch",
+      "date": "2025-10-06",
+      "price": 126000,
+      "phase_week": null,
+      "offset_weeks": null,
+      "avg": null,
+      "ratio": null,
+      "target": "≥ 0,6 ×",
+      "ok": false,
+      "trades": 0
+    }
+  ],
+  "final": {
+    "btc": 2.680004120148479,
+    "cash": 0
+  }
+}
