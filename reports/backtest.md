@@ -1,6 +1,6 @@
 # Backtest
 
-Konfiguration `1.0-rc` · 662 Wochen ab 2014-01-05 bis 2026-09-06 · Gebühr 0.5 % pro Transaktion · Kernposition 40 %
+Konfiguration `1.0` · 662 Wochen ab 2014-01-05 bis 2026-09-06 · Gebühr 0.5 % pro Transaktion · Kernposition 40 %
 
 > Startkapital: 1 BTC, kein Cash. Kauftranchen vor dem ersten Verkauf sind deshalb nicht finanzierbar – das betrifft das Tief 2015. Für Tiefs zählt daher vor allem der Zeitpunkt des Phaseneintritts.
 
@@ -171,21 +171,6 @@ Konvergenz in der nächstgelegenen Woche: 1 Indikatoren in Zone aus 1 Familien (
 | 2024 | 80.0 % | 80.0 % | 0 |
 | 2025 | 80.0 % | 80.0 % | 0 |
 | 2026 | 80.0 % | 80.0 % | 0 |
-
-## Empfindlichkeit (±15 %)
-
-| Schwelle | Faktor | BTC am Ende | Transaktionen | Kriterien erfüllt |
-|---|---|---|---|---|
-| `engines.buy.zone_min_score` | 0.85 | 1.3277 | 15 | 4 von 7 |
-| `engines.buy.zone_min_score` | 1.15 | 1.3277 | 15 | 4 von 7 |
-| `engines.sell.zone_min_score` | 0.85 | 1.3277 | 15 | 4 von 7 |
-| `engines.sell.zone_min_score` | 1.15 | 1.3277 | 15 | 4 von 7 |
-| `gates.buy_B.drawdown_max` | 0.85 | 1.3277 | 15 | 4 von 7 |
-| `gates.buy_B.drawdown_max` | 1.15 | 1.3277 | 15 | 4 von 7 |
-| `gates.sell_E2.halving_days_min` | 0.85 | 1.3277 | 15 | 4 von 7 |
-| `gates.sell_E2.halving_days_min` | 1.15 | 3.3192 | 12 | 3 von 7 |
-| `gates.sell_E2.score_min` | 0.85 | 1.3277 | 15 | 4 von 7 |
-| `gates.sell_E2.score_min` | 1.15 | 3.3192 | 12 | 3 von 7 |
 
 ## Laufender Abschnitt
 
