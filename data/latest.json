@@ -2,8 +2,8 @@
   "schema": 1,
   "stage": "M2",
   "config_version": "1.0-rc",
-  "mode": "daily",
-  "generated_at": "2026-09-12T19:32:25.872Z",
+  "mode": "weekly",
+  "generated_at": "2026-09-12T19:32:48.475Z",
   "week_id": "2026-09-06",
   "price": {
     "close": 80338.98,
@@ -698,49 +698,49 @@
       "ok": true,
       "last": "2026-09-11",
       "error": null,
-      "at": "2026-09-12T19:32:18.214Z"
+      "at": "2026-09-12T19:32:46.419Z"
     },
     "price_coinbase": {
       "ok": true,
       "last": "2026-09-11",
       "error": null,
-      "at": "2026-09-12T19:32:18.375Z"
+      "at": "2026-09-12T19:32:46.547Z"
     },
     "coinmetrics": {
       "ok": true,
       "last": "2026-09-11",
       "error": null,
-      "at": "2026-09-12T19:32:23.224Z"
+      "at": "2026-09-12T19:32:46.865Z"
     },
     "fng": {
       "ok": true,
       "last": "2026-09-11",
       "error": null,
-      "at": "2026-09-12T19:32:23.476Z"
+      "at": "2026-09-12T19:32:47.202Z"
     },
     "wiki_en": {
       "ok": true,
       "last": "2026-09-11",
       "error": null,
-      "at": "2026-09-12T19:32:24.003Z"
+      "at": "2026-09-12T19:32:47.338Z"
     },
     "wiki_de": {
       "ok": true,
       "last": "2026-09-11",
       "error": null,
-      "at": "2026-09-12T19:32:24.474Z"
+      "at": "2026-09-12T19:32:47.369Z"
     },
     "funding_deribit": {
       "ok": true,
       "last": "2026-09-11",
       "error": null,
-      "at": "2026-09-12T19:32:25.000Z"
+      "at": "2026-09-12T19:32:47.926Z"
     },
     "network": {
       "ok": true,
       "last": "2026-09-12",
       "error": null,
-      "at": "2026-09-12T19:32:25.818Z"
+      "at": "2026-09-12T19:32:48.431Z"
     }
   },
   "attribution": [
