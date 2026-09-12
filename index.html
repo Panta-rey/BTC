@@ -45,6 +45,10 @@ header{display:flex;align-items:center;gap:10px;padding:18px 0 14px}
 .iconbtn{width:34px;height:34px;border-radius:10px;border:1px solid var(--line);
   display:grid;place-items:center;color:var(--mut);background:var(--card)}
 .iconbtn:hover{color:var(--ink)}
+.iconbtn.busy{color:var(--buy);pointer-events:none}
+.iconbtn.busy span{display:inline-block;animation:spin .9s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.iconbtn.busy span{animation:none}}
 .stamp{color:var(--mut);font-size:12.5px;margin:-8px 0 16px}
 
 /* ---------- Karten ---------- */
@@ -158,7 +162,11 @@ header{display:flex;align-items:center;gap:10px;padding:18px 0 14px}
 .mini{height:6px;border-radius:3px;background:#0A111A;margin-top:9px;position:relative;overflow:hidden}
 .mini i{position:absolute;top:0;bottom:0;left:0;border-radius:3px;opacity:.75}
 .mini u{position:absolute;top:-2px;bottom:-2px;width:1px;background:#3A4A5E}
+.tcalc{margin-top:6px;font-size:11px;color:var(--mut);font-family:var(--num)}
 .tfoot{margin-top:7px;font-size:11px;color:var(--mut);display:flex;gap:7px;flex-wrap:wrap}
+.calc{background:#0A111A;border:1px solid var(--line);border-radius:9px;padding:10px 11px;margin-top:6px}
+.calc .f{font-size:12.5px;color:var(--mut);margin-bottom:7px}
+.calc .kv{font-size:12.5px;padding:4px 0}
 .tag{border:1px solid var(--line);border-radius:5px;padding:0 5px;font-size:10.5px}
 .tag.old{color:var(--ready);border-color:rgba(240,180,41,.35)}
 
@@ -196,6 +204,21 @@ svg.chart{width:100%;height:190px;display:block}
   width:100%;max-width:var(--maxw);max-height:86vh;overflow:auto}
 @media(min-width:720px){.sheet{align-items:center}.sheetIn{border-radius:18px;border-bottom:1px solid var(--line);max-height:80vh;max-width:520px}}
 .sheetIn h3{font-size:17px;margin-bottom:4px}
+.sheetIn .field label{font-size:13px}
+.sheetIn pre{margin:0;overflow-x:auto}
+.mrow{border:1px solid var(--line);border-radius:10px;padding:10px 11px;margin-bottom:9px;background:#0E1520}
+.mtop{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.mtop b{font-size:13.5px;font-weight:600}
+.mtop .badge{font-size:10.5px;border:1px solid var(--line);border-radius:5px;padding:1px 6px;color:var(--mut)}
+.mtop .badge.now{color:var(--buy);border-color:rgba(45,212,167,.35)}
+.mtop .sp{flex:1}
+.chartbtn{display:inline-flex;align-items:center;gap:5px;border:1px solid var(--line);border-radius:8px;
+  padding:5px 10px;font-size:12px;color:var(--info);text-decoration:none;white-space:nowrap}
+.chartbtn:hover{border-color:var(--info)}
+.mrow input{width:100%;margin-top:8px;background:#0A111A;border:1px solid var(--line);color:var(--ink);
+  border-radius:8px;padding:8px 10px;font-family:var(--num);font-size:14px;text-align:right}
+.mrow .read{margin-top:7px;font-size:11.5px;color:var(--mut)}
+.mrow .last{margin-top:5px;font-size:11px;color:var(--buy)}
 .sheetIn .sub{color:var(--mut);font-size:12.5px;margin-bottom:14px}
 .sheetIn section{margin-bottom:14px}
 .sheetIn section h4{margin:0 0 5px;font-size:12px;color:var(--mut);font-weight:600;letter-spacing:.03em}
@@ -217,6 +240,7 @@ footer p{margin:0 0 6px}
   <header>
     <div class="mark"><span class="hex">⬡</span>PANTA REY <small>Ampel</small></div>
     <div class="spacer"></div>
+    <button class="iconbtn" id="btnReload" aria-label="Werte aktualisieren" title="Werte aktualisieren"><span>⟳</span></button>
     <button class="iconbtn" id="btnSettings" aria-label="Einstellungen">⚙</button>
     <a class="iconbtn" href="https://panta-rey.github.io/Panta-Rey-BTC-Dashboard/" aria-label="Zum Cockpit" style="text-decoration:none">↗</a>
   </header>
@@ -322,11 +346,27 @@ const fixture = params.get("fixture");
 const SRC = fixture ? `data/fixtures/${fixture}.json` : "data/latest.json";
 let D=null, PH=null;
 
+async function loadData(bust=false){
+  const url = SRC + (bust ? (SRC.includes("?")?"&":"?") + "t=" + Date.now() : "");
+  const res = await fetch(url,{cache:"no-store"});
+  if(!res.ok) throw new Error("HTTP "+res.status);
+  return res.json();
+}
+
+$("#btnReload").onclick = async ()=>{
+  const b = $("#btnReload"); b.classList.add("busy");
+  try{
+    D = await loadData(true);
+    PH = null; render(); await loadHistory();
+    b.title = "Aktualisiert um " + new Date().toLocaleTimeString("de-CH",{hour:"2-digit",minute:"2-digit"});
+  }catch(e){
+    $("#banners").prepend(el("div","banner warn","Aktualisieren fehlgeschlagen: "+esc(e.message)));
+  }finally{ b.classList.remove("busy"); }
+};
+
 (async function init(){
   try{
-    const res = await fetch(SRC,{cache:"no-store"});
-    if(!res.ok) throw new Error("HTTP "+res.status);
-    D = await res.json();
+    D = await loadData();
   }catch(e){
     $("#stamp").textContent = "";
     $("#app").className=""; $("#app").style.display="block";
@@ -666,6 +706,13 @@ function tile(id,side){
   const mini = el("div","mini",`<i style="width:${clamp(score??0)}%;background:${col}"></i>`);
   mini.appendChild(el("u")).style.left="70%";
   b.appendChild(mini);
+  // Kompakte Herkunftszeile: die eingesetzten Zahlen, damit der Wert nachrechenbar ist.
+  const calc = ind.source_calc;
+  if(calc?.parts?.length){
+    const nums = calc.parts.filter(x=>x.value!=null).map(x=>nf(x.value, Math.abs(x.value)>=1000?0:4));
+    if(nums.length>=2) b.appendChild(el("div","tcalc",esc(nums.join(id==="drawdown"?" ÷ ":" ÷ "))));
+    else if(nums.length===1) b.appendChild(el("div","tcalc",esc(nums[0])));
+  }
   const foot = el("div","tfoot");
   foot.appendChild(el("span",null,score==null?"zählt nicht":`Score ${score}`));
   if(ind.stale) foot.appendChild(el("span","tag old",`alt · ${esc(dateDE(ind.as_of))}`));
@@ -693,8 +740,22 @@ function sheet(id,side){
     else t += " Der Wert zählt derzeit nicht in den Score.";
     sec("Aktueller Stand", t);
   }
+  if(ind.source_calc){
+    const c = ind.source_calc;
+    const box = el("section");
+    box.appendChild(el("h4",null,"So wird gerechnet"));
+    const d = el("div","calc",`<div class="f">${esc(c.formula)}</div>`);
+    for(const p of c.parts||[]){
+      if(p.value==null && !p.unit) continue;
+      const v = p.value==null ? esc(p.unit) : `${nf(p.value, Math.abs(p.value)>=1000?0:4)} ${esc(p.unit||"")}`;
+      d.appendChild(el("div","kv",`<span>${esc(p.label)}</span><span>${v}</span>`));
+    }
+    box.appendChild(d);
+    inner.appendChild(box);
+  }
   sec("Herkunft", `${esc(ind.source||"–")}${ind.as_of?`, Stand ${esc(dateDE(ind.as_of))}`:""}${ind.stale?" · als alt gekennzeichnet":""}`);
   sec("Grenzen", esc(meta.g||"–"));
+  sec("Wichtig", `Alle Indikatoren rechnen mit dem <b>Wochenschluss</b> vom ${esc(dateDE(D.week_id))} (${usd(D.price?.close)} USD), nicht mit dem aktuellen Tageskurs. Das ist Absicht: nur so flackern die Signale nicht. Wer mit dem Tageskurs nachrechnet, erhält leicht andere Zahlen.`);
   const close = el("button","btn ghost","Schliessen"); close.onclick=closeSheet;
   inner.appendChild(close);
   const sh=$("#sheet"); sh.classList.add("open"); close.focus();
@@ -775,10 +836,109 @@ function importBackup(){
   }catch(e){ alert("Backup konnte nicht gelesen werden: "+e.message); } };
   i.click();
 }
+// Kennzahlen, die BGeometrics braucht und die von Hand aus Checkonchain kommen können.
+// Die absoluten wirken sofort, die perzentilbasierten erst mit rund einem Jahr Historie.
+const MANUAL = [
+  { k:"sth_realized_price", n:"STH-Realized-Price", u:"USD", sofort:true,
+    chart:"Key Cost Basis Models",
+    url:"https://charts.checkonchain.com/btconchain/pricing/pricing_costbasisoriginals/pricing_costbasisoriginals_light.html",
+    read:"Auf der Startseite unter Pricing Models als „Key Cost Basis!\" verlinkt. Im Chart die Linie Short-Term Holder Realised Price ablesen, aktuellster Punkt rechts." },
+  { k:"supply_in_profit", n:"Angebot im Gewinn", u:"%", sofort:true,
+    chart:"Percent Supply in Profit",
+    url:"https://charts.checkonchain.com/btconchain/unrealised/pctsupplyinprofit_all/pctsupplyinprofit_all_light.html",
+    read:"Prozentwert der Hauptlinie ablesen, zum Beispiel 52.3. Die Ampel rechnet daraus 100 minus Wert, also das Angebot im Verlust." },
+  { k:"reserve_risk", n:"Reserve Risk", u:"", sofort:false,
+    chart:"Bitcoin Reserve Risk",
+    url:"https://charts.checkonchain.com/btconchain/lifespan/reserverisk/reserverisk_light.html",
+    read:"Wert der Reserve-Risk-Linie ablesen, typisch zwischen 0.001 und 0.02. Wirkt erst mit Historie, weil relativ bewertet." },
+  { k:"rhodl", n:"RHODL-Ratio", u:"", sofort:false,
+    chart:"RHODL Ratio",
+    url:"https://charts.checkonchain.com/btconchain/supply/rhodl/rhodl_light.html",
+    read:"Wert der RHODL-Linie ablesen. Wirkt erst mit Historie." },
+  { k:"lth_net_position_change", n:"LTH-Positionsänderung 30 T", u:"BTC", sofort:false,
+    chart:"LTH Supply Net Position Change (30-day)",
+    url:"https://charts.checkonchain.com/btconchain/supply/lthnetposchange_0/lthnetposchange_0_light.html",
+    read:"Wert mit Vorzeichen eintragen. Negativ bedeutet Abgabe der Langzeithalter. Immer dieselbe Einheit verwenden, damit die Reihe vergleichbar bleibt." },
+];
+
+function manualPanel(){
+  const box = el("div");
+  box.appendChild(el("p",null,
+    `Solange BGeometrics nicht antwortet, kannst du fünf Kennzahlen von Hand nachtragen.
+     Lies sie bei Checkonchain ab, trag sie hier ein und übernimm den erzeugten Block in
+     <code>data/manual.json</code>. Der nächste Wochenlauf rechnet damit.`));
+  const draft = store.get("manual_draft",{});
+  const series = D.manual?.series || {};
+  const rows = el("div");
+  for(const m of MANUAL){
+    const r = el("div","mrow");
+    const top = el("div","mtop",
+      `<b>${esc(m.n)}</b>` +
+      (m.u ? `<span class="badge">${esc(m.u)}</span>` : "") +
+      `<span class="badge${m.sofort?" now":""}">${m.sofort?"wirkt sofort":"braucht Historie"}</span>` +
+      `<span class="sp"></span>`);
+    const a = el("a","chartbtn","↗ Chart öffnen");
+    a.href = m.url; a.target = "_blank"; a.rel = "noopener noreferrer";
+    a.title = m.chart;
+    top.appendChild(a);
+    r.appendChild(top);
+
+    const i = el("input"); i.id="m_"+m.k; i.type="number"; i.step="any"; i.inputMode="decimal";
+    i.placeholder = "Wert eintragen"; i.value = draft[m.k] ?? "";
+    i.setAttribute("aria-label", m.n + (m.u ? " in " + m.u : ""));
+    i.oninput = ()=>{ draft[m.k] = i.value; store.set("manual_draft",draft); snippet(); };
+    r.appendChild(i);
+    r.appendChild(el("div","read",esc(m.read)));
+    const have = series[m.k] || [];
+    if(have.length) r.appendChild(el("div","last",
+      `${have.length} Lesung(en) hinterlegt, zuletzt ${esc(dateDE(have.at(-1).d))}: ${nf(have.at(-1).v, 2)}`));
+    rows.appendChild(r);
+  }
+  box.appendChild(rows);
+
+  const out = el("pre","calc"); out.style.whiteSpace="pre-wrap"; out.style.fontSize="11.5px";
+  box.appendChild(out);
+  const row = el("div","btnrow");
+  const cp = el("button","btn ghost","Block kopieren");
+  cp.onclick = async ()=>{ try{ await navigator.clipboard.writeText(out.textContent); cp.textContent="Kopiert"; setTimeout(()=>cp.textContent="Block kopieren",1600); }
+    catch{ cp.textContent="Kopieren nicht erlaubt"; } };
+  const ed = el("a","btn ghost","data/manual.json bearbeiten");
+  ed.href="https://github.com/Panta-rey/Panta-Rey-BTC-Ampel/edit/main/data/manual.json";
+  ed.target="_blank"; ed.rel="noopener"; ed.style.textDecoration="none";
+  row.append(cp,ed); box.appendChild(row);
+
+  function snippet(){
+    const week = D.week_id;
+    // Immer alle fünf Reihen ausgeben, auch die leeren. Sonst würden beim Einfügen
+    // die bestehenden Lesungen der anderen Kennzahlen verloren gehen.
+    const lines = [];
+    let neu = 0;
+    for(const m of MANUAL){
+      const have = (series[m.k] || []).filter(r => r.d !== week);
+      const v = parseFloat(draft[m.k]);
+      const list = isFinite(v) ? [...have, { d: week, v }] : have;
+      if(isFinite(v)) neu++;
+      lines.push(`  "${m.k}": [${list.length ? "\n" + list.map(r=>`    { "d": "${r.d}", "v": ${r.v} }`).join(",\n") + "\n  " : ""}]`);
+    }
+    out.textContent = `{\n  "_hinweis": "Werte aus charts.checkonchain.com. Eine Lesung gilt 30 Tage. Siehe SPEC.md 3.5.",\n${lines.join(",\n")}\n}`;
+    cp.textContent = neu ? `Block kopieren (${neu} neu)` : "Block kopieren";
+  }
+  snippet();
+
+  const have = D.manual?.readings || {};
+  const n = Object.values(have).reduce((a,b)=>a+b,0);
+  box.appendChild(el("div","why", n
+    ? `Aktuell wirken ${n} manuelle Lesung(en). Eine Lesung gilt ${D.manual?.max_age_days ?? 30} Tage, danach gilt der Wert als alt.`
+    : "Derzeit sind keine manuellen Werte hinterlegt."));
+  return box;
+}
+
 $("#btnSettings").onclick=()=>{
   const inner=$("#sheetIn");
   inner.innerHTML=`<div class="grabber"></div><h3 id="sheetTitle">Einstellungen</h3>
     <div class="sub">Konfiguration ${esc(D.config_version||D.stage||"")} · Daten ${esc(D.week_id)}</div>`;
+  const mv=el("section"); mv.appendChild(el("h4",null,"Fehlende Kennzahlen von Hand nachtragen"));
+  mv.appendChild(manualPanel()); inner.appendChild(mv);
   const s=el("section",null,`<h4>Speicher</h4><p>Bestand, Tranchen und Journal liegen ausschliesslich in diesem Browser.
     Safari auf iOS löscht den Speicher nach längerer Inaktivität, deshalb lohnt sich ein jährliches Backup.</p>`);
   inner.appendChild(s);

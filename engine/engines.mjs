@@ -32,6 +32,12 @@ export function pctOf(id, row, history, cfg) {
   const win = history.slice(-(window_weeks - 1)).map((r) => r[field]);
   win.push(row[field]);
   const usable = win.filter((v) => v != null);
+  // Untergrenze: unter 26 Wochen ist ein Perzentil bedeutungslos. Ein einzelner Wert
+  // würde sonst das 100. Perzentil ergeben und den Indikator fälschlich in Zone bringen.
+  // Das betrifft vor allem manuell eingetragene Kennzahlen, die erst Historie aufbauen.
+  if (usable.length < (cfg.percentile.floor_weeks ?? 26)) {
+    return { value: null, basis: "zu_kurz", n: usable.length };
+  }
   if (usable.length < Math.min(min_weeks, window_weeks)) {
     return { value: percentile(usable, row[field]), basis: "kurz", n: usable.length };
   }

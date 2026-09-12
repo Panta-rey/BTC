@@ -138,6 +138,8 @@ Die Wochenauswertung ist zweigeteilt, weil die freie BGeometrics-API höchstens 
 
 Eine Woche endet am Sonntag um 24:00 UTC. Der **Wochenschluss** ist der Tagesschlusskurs dieses Sonntags. Die Woche wird mit dem Sonntagsdatum bezeichnet (`week_id: "2026-09-06"`). Alle Wochen-Durchschnitte werden aus diesen Wochenschlüssen gebildet, unabhängig davon, wie eine Börse ihre Wochenkerzen schneidet.
 
+**Alle Indikatoren rechnen mit dem Wochenschluss, nicht mit dem Tageskurs.** Das ist die häufigste Ursache für Abweichungen beim Nachrechnen. Liegt der Tageskurs 4 % unter dem letzten Wochenschluss, weichen Mayer Multiple, Abstand zum Realized Price, Abstand zum 200-Wochen-Schnitt und Drawdown alle um etwa 4 % ab. Ebenso benutzt die Ampel durchgehend **Tagesschlüsse**, auch für das Allzeithoch. Eine Intraday-Spitze ist kein Schluss und wird bewusst ignoriert. Das Allzeithoch der Ampel liegt deshalb bei 124'728 statt bei 126'200.
+
 Jede Signalbedingung wird ausschliesslich auf Wochenschlüssen geprüft. **Jeder Phasenwechsel braucht zwei Wochenschlüsse in Folge.** Diese eine Regel verhindert Flackern und ist leicht zu merken.
 
 ---
@@ -177,13 +179,38 @@ Jede Signalbedingung wird ausschliesslich auf Wochenschlüssen geprüft. **Jeder
 | Überschreitet ein Wert sein Höchstalter, gilt er als „alt": Er wird angezeigt, zählt ab M2 aber nicht in den Score. | Wie beim Cockpit mit `ANCHOR_MAX_AGE_DAYS`. |
 | Rohdaten bleiben in `data/raw/` erhalten. | Jede Auswertung ist reproduzierbar. |
 
-`data/manual.json` dient als Notnagel und lässt sich über die GitHub-Weboberfläche oder die GitHub-App bearbeiten:
+### 3.5 Manuelle Werte aus Checkonchain
+
+Alle fünf fehlenden Kennzahlen sind auf `charts.checkonchain.com` ablesbar. Sie lassen sich in `data/manual.json` nachtragen, entweder als einzelner Wert oder als Reihe, die über Monate Historie aufbaut. Eine Lesung gilt 30 Tage, danach wird sie als „alt" gekennzeichnet und zählt nicht mehr.
+
+| Kennzahl | Chart (Adresse geprüft am 12.09.2026) | Was ablesen | Wirkung |
+|---|---|---|---|
+| STH-Realized-Price | `btconchain/pricing/pricing_costbasisoriginals/` — „Key Cost Basis Models" | Linie „Short-Term Holder Realised Price" | **sofort**: Trendfilter und Nachkauf-Chance |
+| Angebot im Gewinn | `btconchain/unrealised/pctsupplyinprofit_all/` — „Percent Supply in Profit" | Prozentwert der Hauptlinie | **sofort**: Gate B und die Familie „Halter & Stimmung" |
+| Reserve Risk | `btconchain/lifespan/reserverisk/` — „Bitcoin Reserve Risk" | Wert der Reserve-Risk-Linie | erst mit Historie |
+| RHODL-Ratio | `btconchain/supply/rhodl/` — „RHODL Ratio" | Wert der RHODL-Linie | erst mit Historie |
+| LTH-Positionsänderung 30 T | `btconchain/supply/lthnetposchange_0/` — „LTH Supply Net Position Change (30-day)" | Wert mit Vorzeichen, negativ heisst Abgabe | erst mit Historie |
+
+Alle Adressen beginnen mit `https://charts.checkonchain.com/` und enden auf `<name>_light.html`. Es gibt zwei Varianten der LTH-Positionsänderung (`lthnetposchange_0` und `_1`, BTC und USD). Wichtig ist nur, immer dieselbe zu verwenden, damit die Reihe vergleichbar bleibt: Der Indikator wird ohnehin relativ zu seiner eigenen Historie bewertet.
+
+Die Einstellungen der Seite enthalten je Kennzahl einen Knopf „↗ Chart öffnen", der die geprüfte Adresse in einem neuen Fenster öffnet, dazu einen Hinweis, welche Linie abzulesen ist.
+
+Der Unterschied ist wichtig: Die ersten zwei werden über absolute Ankerpunkte bewertet und wirken ab der ersten Lesung. Die letzten drei werden über Perzentile der letzten vier Jahre bewertet. Ein einzelner Wert wäre automatisch das 100. Perzentil und würde den Indikator fälschlich in Zone bringen. Deshalb gilt eine **Untergrenze von 26 Wochen**: darunter liefert das Perzentil keinen Wert, und der Indikator zählt nicht in den Score. Der Rohwert wird trotzdem angezeigt.
+
+Das Angebot im Gewinn ist der grösste Gewinn: Damit erreicht die Familie „Halter & Stimmung" zwei von drei Mitgliedern und wird wieder wertend. Die Abdeckung des Kauf-Motors steigt von 80 auf 100 %.
+
+Format:
 
 ```json
 {
-  "sth_realized_price": { "value": 80100, "as_of": "2026-09-06", "note": "checkonchain" }
+  "sth_realized_price": [ { "d": "2026-09-06", "v": 80100 } ],
+  "supply_in_profit":   [ { "d": "2026-09-06", "v": 52.3 } ]
 }
 ```
+
+Der erzeugte Block enthält immer **alle fünf Reihen**, auch die leeren, und übernimmt die bisherigen Lesungen. So lässt er sich gefahrlos über die ganze Datei einfügen, ohne dass Historie verloren geht. Eine Lesung für dieselbe Woche wird ersetzt, nicht doppelt angelegt.
+
+Die Werte werden nicht vom Browser aus gespeichert: Die Auswertung läuft in der Pipeline, also muss der Block ins Repo. Dafür gibt es einen Knopf, der direkt die GitHub-Bearbeitungsansicht von `data/manual.json` öffnet.
 
 ### 3.3 Abrufbudget BGeometrics (frei: 8 pro Stunde, 15 pro Tag; nur relevant nach Lizenzklärung, siehe 3.4)
 
@@ -220,7 +247,7 @@ Der Name ist das, was die Oberfläche zeigt. Die Leitfrage steht klein darunter 
 
 | ID | Name | Leitfrage | Berechnung | Motor → Familie |
 |---|---|---|---|---|
-| `mvrv_z` | MVRV-Z-Score | Wie teuer ist Bitcoin gegenüber dem Einstandswert aller Coins? | Quelle | Kauf → Bewertung; Verkauf → Relative Bewertung |
+| `mvrv_z` | MVRV-Z-Score | Wie teuer ist Bitcoin gegenüber dem Einstandswert aller Coins? | (Marktkapitalisierung − Realized Cap) ÷ σ(Marktkapitalisierung), klassische Definition nach Awe & Wonder. Andere Anbieter zeigen teils einen rollierenden Z-Wert des MVRV-Verhältnisses, der dasselbe Marktbild mit umgekehrtem Vorzeichen darstellen kann. | Kauf → Bewertung; Verkauf → Relative Bewertung |
 | `p_rp` | Abstand zum Realized Price | Ist Bitcoin günstiger als der Durchschnittskäufer? | Wochenschluss ÷ Realized Price | Kauf → Bewertung |
 | `p_200w` | Abstand zum 200-Wochen-Schnitt | Wie nah ist der Preis am Langzeitschnitt? | Wochenschluss ÷ SMA der letzten 200 Wochenschlüsse | Kauf → Bewertung |
 | `mayer` | Mayer Multiple | Wie weit liegt der Preis über dem 200-Tage-Schnitt? | Sonntagsschluss ÷ SMA 200 Tage | Kauf → Bewertung; Verkauf → Relative Bewertung |

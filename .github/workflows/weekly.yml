@@ -10,6 +10,7 @@ on:
 
 permissions:
   contents: write
+  issues: write
 
 concurrency:
   group: data
@@ -32,6 +33,11 @@ jobs:
         env:
           MODE: weekly
         run: node scripts/build.mjs
+      - name: Benachrichtigen
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+        run: node scripts/notify.mjs
       - name: Backtest aktualisieren
         run: node scripts/backtest.mjs
       - name: Zusammenfassung

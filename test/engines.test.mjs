@@ -237,6 +237,11 @@ test("toRows ergänzt den 52-Wochen-Rückgang und kennzeichnet fehlende Quellen"
   assert.equal(rs[2].dd_52w, -50);
   assert.equal(rs[0].supply_loss, null);
   assert.deepEqual(rs[0]._stale, []);
+
+  const withManual = toRows(weekly, { manual: { supply_loss: { "2025-01-19": 48 }, sth_rp: { "2025-01-19": 60000 } } });
+  assert.equal(withManual[2].supply_loss, 48);
+  assert.equal(withManual[2].sth_rp, 60000);
+  assert.equal(withManual[0].supply_loss, null, "nur die Woche mit Lesung");
 });
 
 test("Nur wertende Familien zählen zur Konvergenz", () => {
@@ -269,4 +274,74 @@ test("Weg E2 koppelt seine Schwelle an die Abdeckung", () => {
   const fixed = { ...cfg, gates: { ...cfg.gates, sell_E2: { ...cfg.gates.sell_E2, scale_by_coverage: false } } };
   const gFixed = gates(r, s2, fixed, engineScore(s2, fixed.engines.buy, "buy"), sell, 533);
   assert.equal(gFixed.e2_min, 40);
+});
+
+test("Ein einzelner manueller Wert ergibt kein Perzentil und damit keinen Score", () => {
+  // Manuelle Kennzahlen bauen erst über Monate Historie auf. Ohne Untergrenze
+  // wäre ein einzelner Wert automatisch das 100. Perzentil.
+  const r = row("2026-09-06", { rhodl: 2100 });
+  const s = scoreIndicators(r, [], cfg);
+  assert.equal(s.rhodl.value, 2100, "der Rohwert wird angezeigt");
+  assert.equal(s.rhodl.pct, null);
+  assert.equal(s.rhodl.pct_basis, "zu_kurz");
+  assert.equal(s.rhodl.score_sell, null, "zählt nicht in den Score");
+
+  // Mit genügend Historie greift das Perzentil
+  const hist = Array.from({ length: 40 }, (_, i) => row(addDays("2025-12-07", i * 7), { rhodl: 1000 + i }));
+  const s2 = scoreIndicators(r, hist, cfg);
+  assert.equal(s2.rhodl.pct, 100);
+  assert.ok(s2.rhodl.score_sell > 0);
+});
+
+test("Ein manuelles Angebot im Verlust macht die Familie Halter und Stimmung verfügbar", () => {
+  const withOut = engineScore(scoreIndicators(row("2026-09-06", BEAR), [], cfg), cfg.engines.buy, "buy");
+  assert.equal(withOut.families.halter_stimmung.available, false);
+  assert.equal(Math.round(withOut.coverage * 100), 80);
+
+  const withIt = engineScore(scoreIndicators(row("2026-09-06", { ...BEAR, supply_loss: 52 }), [], cfg), cfg.engines.buy, "buy");
+  assert.equal(withIt.families.halter_stimmung.available, true, "2 von 3 Mitgliedern genügen");
+  assert.equal(Math.round(withIt.coverage * 100), 100);
+});
+
+// ---------------------------------------------------------------- Benachrichtigungen
+
+test("Alte Ereignisse werden stumm abgehakt, nicht verschickt", async () => {
+  const { selectPending } = await import("../scripts/lib/events.mjs");
+  const now = Date.parse("2026-09-12T00:00:00Z");
+  const events = [
+    { id: "a", week_id: "2018-12-02", type: "TRANCHE_DUE", notified_at: null },
+    { id: "b", week_id: "2026-09-06", type: "TRANCHE_DUE", notified_at: null },
+    { id: "c", week_id: "2026-09-06", type: "ALERT", notified_at: "2026-09-07T00:00:00Z" },
+  ];
+  const r = selectPending(events, { now });
+  assert.deepEqual(r.send.map((e) => e.id), ["b"], "nur das frische Ereignis");
+  assert.deepEqual(r.backfill.map((e) => e.id), ["a"], "das alte wird stumm abgehakt");
+});
+
+test("Pro Lauf höchstens die Obergrenze, älteste zuerst", async () => {
+  const { selectPending } = await import("../scripts/lib/events.mjs");
+  const now = Date.parse("2026-09-12T00:00:00Z");
+  const events = ["2026-09-06", "2026-09-06", "2026-08-30", "2026-08-30", "2026-08-23", "2026-08-23"]
+    .map((w, i) => ({ id: "e" + i, week_id: w, type: "COUNTER", notified_at: null }));
+  const r = selectPending(events, { now, cap: 2 });
+  assert.equal(r.send.length, 2);
+  assert.equal(r.send[0].week_id, "2026-08-23", "älteste zuerst");
+  assert.equal(r.skipped, 4);
+});
+
+test("Die Pipeline gilt nach neun Tagen ohne Auswertung als stehen geblieben", async () => {
+  const { stale } = await import("../scripts/lib/events.mjs");
+  const now = Date.parse("2026-09-12T00:00:00Z");
+  assert.equal(stale("2026-09-06", { now }), false);
+  assert.equal(stale("2026-08-30", { now }), true);
+  assert.equal(stale(null, { now }), true);
+});
+
+test("Der Jahres-Review kommt einmal pro Jahr in der ersten Januarwoche", async () => {
+  const { yearlyReview } = await import("../scripts/lib/events.mjs");
+  const jan = Date.parse("2027-01-03T00:00:00Z");
+  const first = yearlyReview([], { now: jan });
+  assert.ok(first && first.id === "2027:YEARLY_REVIEW");
+  assert.equal(yearlyReview([first], { now: jan }), null, "nicht zweimal");
+  assert.equal(yearlyReview([], { now: Date.parse("2027-03-01T00:00:00Z") }), null, "nur im Januar");
 });

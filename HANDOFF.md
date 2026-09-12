@@ -2,7 +2,7 @@
 
 Zustandsbericht des Projekts. Wer hier einsteigt, liest zuerst dieses Dokument, dann `SPEC.md`.
 
-**Stand:** 12. September 2026 · Konfiguration `1.0-rc` · Node 22, keine Abhängigkeiten · 40 Tests grün
+**Stand:** 12. September 2026 · Konfiguration `1.0-rc` · Node 22, keine Abhängigkeiten · 46 Tests grün
 **Seite:** https://panta-rey.github.io/Panta-Rey-BTC-Ampel/ · **Repo:** https://github.com/Panta-rey/Panta-Rey-BTC-Ampel
 
 ---
@@ -28,11 +28,12 @@ Keine Anlageberatung. Das Modell beruht auf vier Zyklen und kann falsch liegen.
 | M0 | Quellen-Check aus dem GitHub-Runner | ✅ `reports/sources-check.md` |
 | M1 | Datenpipeline: Abruf, Wochenreihe, 17 Indikatorwerte | ✅ läuft wöchentlich |
 | M2 | Normierung, zwei Motoren, Gates, Phasenmaschine, Backtest | ✅ kalibriert, `1.0-rc` |
+| M2b | Manuelle Werte aus Checkonchain, Herkunftsanzeige | ✅ |
 | M3 | Oberfläche: Ampel, Phasenleiste, Motoren, Checkliste, Kacheln | ✅ `index.html` |
 | M4 | Position und Journal im Browser | ✅ in `index.html` |
 | M6 | Verlauf und Zyklus-Uhr als Grafik | ✅ eigenes SVG, ohne Bibliothek |
-| M5 | Benachrichtigungen (GitHub Issues, optional ntfy) | ⬜ **nächster Schritt** |
-| M7 | Härtung, Barrierefreiheit, Grenzfälle | ⬜ |
+| M5 | Benachrichtigungen (GitHub Issues, optional ntfy) | ✅ `scripts/notify.mjs` |
+| M7 | Härtung, Barrierefreiheit, Grenzfälle | ⬜ **nächster Schritt** |
 
 **Aktueller Marktstand laut Ampel:** Phase 4 Abwärtstrend seit 9. November 2025. Kauf-Motor 42, Verkaufs-Motor 1, Ampel gelb, „Bereit machen. Die Kaufzone rückt näher, noch nicht kaufen." Es fehlen 18 Punkte zur Kaufzone, kein Tor ist offen, 2 von 4 Indikatoren in Zone aus 2 von 3 Familien.
 
@@ -95,7 +96,24 @@ Der Realized Price wird aus `PriceUSD ÷ CapMVRVCur` abgeleitet, weil Coin Metri
 
 Die Gratis-Stufe von BGeometrics verbietet genau unseren Aufbau: Abrufe von fremden Systemen (GitHub-Runner) und die Anzeige auf einer öffentlichen Seite gelten als kommerzielle Weiterverbreitung. **Eine Anfrage an info@bgeometrics.com läuft.** Der Token liegt als Secret `BGEOMETRICS_TOKEN` bereit und wird nicht benutzt.
 
-**Folgen, solange die Antwort aussteht:**
+### Manuelle Werte aus Checkonchain (Zwischenlösung)
+
+Alle fünf Kennzahlen sind auf `charts.checkonchain.com` ablesbar und lassen sich in `data/manual.json` nachtragen. Die Einstellungen der Seite haben dafür Eingabefelder mit Links zu den Charts; sie erzeugen den fertigen JSON-Block und verlinken auf die GitHub-Bearbeitungsansicht. Der nächste Wochenlauf rechnet damit.
+
+| Kennzahl | Chart-Pfad unter `charts.checkonchain.com/` | Wirkung |
+|---|---|---|
+| STH-Realized-Price | `btconchain/pricing/pricing_costbasisoriginals/` | **sofort** |
+| Angebot im Gewinn | `btconchain/unrealised/pctsupplyinprofit_all/` | **sofort** |
+| Reserve Risk | `btconchain/lifespan/reserverisk/` | braucht Historie |
+| RHODL-Ratio | `btconchain/supply/rhodl/` | braucht Historie |
+| LTH-Positionsänderung 30 T | `btconchain/supply/lthnetposchange_0/` | braucht Historie |
+
+Alle Adressen wurden am 12. September 2026 einzeln aufgerufen und über den Seitentitel bestätigt. Sie beginnen mit `https://charts.checkonchain.com/` und enden auf `<name>_light.html`. Jede Zeile in den Einstellungen hat einen Knopf „↗ Chart öffnen" und einen Hinweis, welche Linie abzulesen ist. Der erzeugte JSON-Block enthält immer alle fünf Reihen samt bisheriger Lesungen, damit das Einfügen keine Historie löscht.
+Der Unterschied: Die ersten zwei nutzen absolute Ankerpunkte und wirken ab der ersten Lesung. Die letzten drei nutzen Perzentile über vier Jahre. Ein einzelner Wert wäre automatisch das 100. Perzentil und brächte den Indikator fälschlich in Zone. Deshalb gilt eine Untergrenze von 26 Wochen; darunter zählt der Indikator nicht, der Rohwert wird aber angezeigt. Wer monatlich einträgt, hat nach etwa einem halben Jahr genug Historie.
+
+**Wichtigster Gewinn:** Mit dem Angebot im Gewinn erreicht die Familie „Halter & Stimmung" zwei von drei Mitgliedern und wird wieder wertend. Die Abdeckung des Kauf-Motors steigt von 80 auf 100 %. Nachgemessen: Kauf-Score 33 → 34, Familien in Zone 2 → 3.
+
+**Folgen, solange nichts eingetragen ist:**
 
 - Die Familie „Halter & Stimmung" im Kauf-Motor fällt aus (1 von 3 Mitgliedern). Abdeckung 80 %.
 - Die Familie „Halterverhalten" im Verkaufs-Motor fällt aus. Abdeckung 80 %.
@@ -199,10 +217,34 @@ Alle sind in `SPEC.md` eingearbeitet. Hier die Begründungen:
 
 ---
 
-## 9. Nächste Schritte
+## 9. Warum Nachrechnen andere Zahlen ergibt
+
+Ein Abgleich gegen Checkonchain am 12. September 2026 (Tageskurs 77'123) ergab durchgehend Abweichungen. Alle haben systematische Ursachen, keine ist ein Fehler.
+
+| Indikator | Ampel | nachgerechnet | Ursache |
+|---|---|---|---|
+| Abstand zum Realized Price | 1,51 | 1,45 | Wochenschluss 80'339 statt Tageskurs 77'123. Der Realized Price selbst stimmt auf 0,03 % (53'204 gegen 53'187). |
+| Abstand zum 200-Wochen-Schnitt | 1,24 | 1,18 | Wochenschluss. Der Schnitt selbst weicht um 0,6 % ab (64'790 gegen 65'176), weil die Ampel Sonntagsschlüsse von Bitstamp nimmt. |
+| Mayer Multiple | 1,15 | 1,10 | Wochenschluss. Der 200-Tage-Schnitt weicht um 0,4 % ab. |
+| Puell Multiple | 1,13 | 1,08 | Stichtag der On-Chain-Daten, und die Ampel bewertet nur die Neuemission ohne Gebühren. |
+| Abstand vom Allzeithoch | −35,6 % | −38,9 % | Doppelt: Wochenschluss statt Tageskurs, und höchster **Tagesschluss** (124'728) statt Intraday-Spitze (126'200). |
+| MVRV-Z-Score | +0,89 | −0,89 | **Definitionsunterschied**, nicht nur ein Vorzeichen. |
+
+**Die zwei Hauptursachen:**
+
+1. **Wochenschluss statt Tageskurs.** Das ist der Kern des Konzepts: Signale werden ausschliesslich auf Wochenschlüssen geprüft, sonst flackern sie. Lag der Tageskurs 4 % unter dem letzten Wochenschluss, weichen alle preisbasierten Indikatoren um etwa 4 % ab.
+2. **Tagesschlüsse statt Intraday.** Auch das Allzeithoch ist ein Tagesschluss. Eine Spitze, die nur Minuten hielt, ist kein Schluss.
+
+**Zum MVRV-Z-Score.** Die Ampel nutzt die klassische Definition nach Awe & Wonder: (Marktkapitalisierung − Realized Cap) ÷ Standardabweichung der Marktkapitalisierung. Dieser Wert ist immer positiv, solange der Preis über dem Realized Price liegt, also aktuell notwendigerweise. Ein negativer Wert von −0,89 kann nur aus einer anderen Rechnung stammen, typischerweise einem rollierenden Z-Wert des MVRV-*Verhältnisses* gegen seinen eigenen Mehrjahresschnitt. Beide beschreiben dasselbe Marktbild: Bitcoin liegt über dem Einstandswert, aber unter seinem eigenen Mehrjahresdurchschnitt. Die Ampel drückt das zweite über das Perzentil aus, aktuell das 43. Die Ankerpunkte sind auf die klassische Definition kalibriert und im Backtest an den Tiefen 2015, 2018 und 2022 bestätigt. Sie werden deshalb nicht umgestellt.
+
+Die Seite zeigt die Herkunft jetzt selbst: Jede Kachel trägt eine Rechenzeile mit den eingesetzten Zahlen, und das Erklär-Sheet nennt Formel, alle Operanden und den Hinweis auf den Wochenschluss.
+
+---
+
+## 10. Nächste Schritte
 
 1. **Empfindlichkeitsprüfung** laufen lassen, dann `config/engine.json` auf `version: "1.0"` einfrieren.
-2. **M5, Benachrichtigungen.** `notify.mjs` fehlt. Vorgesehen sind GitHub Issues als Standardkanal (E-Mail und Push über die GitHub-App) und optional ntfy. Die Ereignisse liegen bereits vollständig in `data/events.json`, jedes mit eindeutiger ID und dem Feld `notified_at`, das über Läufe hinweg erhalten bleibt. Einzelheiten in SPEC 9.
+2. **Benachrichtigungen prüfen.** `node scripts/notify.mjs --test` im Wochenlauf-Workflow oder lokal erzeugt eine Testmeldung. Im Repo unter „Watch" → „Custom" → „Issues" anhaken, damit E-Mails kommen. Optional ein Secret `NTFY_TOPIC` mit einem zufälligen Namen für Push ohne GitHub-App.
 3. **M7, Härtung.** Barrierefreiheit prüfen, Grenzfälle der Oberfläche, Ladezeit.
 4. **STH-Realized-Price** monatlich in `data/manual.json` eintragen, solange BGeometrics offen ist. Zum Ablesen: checkonchain.com oder charts.bgeometrics.com im Browser.
 5. **Nach der Antwort von BGeometrics** die fünf Kennzahlen anbinden und den Backtest neu bewerten.

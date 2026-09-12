@@ -16,7 +16,7 @@ Schwesterprojekt: [Panta Rey · BTC Cockpit](https://github.com/Panta-rey/Panta-
 | M1 | Datenpipeline: Abruf, Wochenreihe, Indikatorwerte | fertig |
 | M2 | Motoren, Gates, Phasenmaschine, Backtest | fertig, Konfiguration `1.0-rc` |
 | M3, M4, M6 | Oberfläche, Position, Journal, Verlauf | fertig (`index.html`) |
-| M5 | Benachrichtigungen | offen |
+| M5 | Benachrichtigungen | fertig (`scripts/notify.mjs`) |
 | M7 | Härtung | offen |
 
 Der aktuelle Projektzustand steht in [`HANDOFF.md`](HANDOFF.md), die vollständige Spezifikation in [`SPEC.md`](SPEC.md).
@@ -49,6 +49,7 @@ node --test "test/**/*.test.mjs"   # Tests
 node scripts/fetch.mjs             # Daten holen (dauert beim ersten Mal einige Minuten)
 node scripts/build.mjs             # auswerten
 node scripts/backtest.mjs          # Historie abspielen, Report schreiben
+node scripts/notify.mjs --dry-run  # Benachrichtigungen anzeigen, nichts senden
 ```
 
 Benötigt Node 22 oder neuer. Keine Abhängigkeiten.
@@ -59,13 +60,16 @@ Benötigt Node 22 oder neuer. Keine Abhängigkeiten.
 
 ## Manuelle Werte
 
-Der STH-Realized-Price hat derzeit keine freie Quelle. Er wird in [`data/manual.json`](data/manual.json) eingetragen:
+Fünf On-Chain-Kennzahlen haben derzeit keine freie Quelle. Sie sind auf [charts.checkonchain.com](https://charts.checkonchain.com/) ablesbar und werden in [`data/manual.json`](data/manual.json) eingetragen:
 
 ```json
-{ "sth_realized_price": { "value": 80100, "as_of": "2026-09-06", "note": "checkonchain" } }
+{
+  "sth_realized_price": [ { "d": "2026-09-06", "v": 80100 } ],
+  "supply_in_profit":   [ { "d": "2026-09-06", "v": 52.3 } ]
+}
 ```
 
-Ohne Eintrag arbeitet der Trendfilter später nur mit dem Bull Market Support Band. Werte, die älter als 30 Tage sind, werden als „alt" gekennzeichnet.
+Die Einstellungen der Seite haben Eingabefelder mit Links zu den Charts und erzeugen den fertigen Block. Eine Lesung gilt 30 Tage. STH-Realized-Price und Angebot im Gewinn wirken sofort; Reserve Risk, RHODL und LTH-Positionsänderung werden relativ bewertet und brauchen rund 26 Wochen Historie.
 
 ## Datenquellen
 

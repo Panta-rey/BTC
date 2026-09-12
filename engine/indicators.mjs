@@ -57,6 +57,7 @@ export function computeDaily(d) {
 
   return {
     ath, athIdx,
+    rc, mcStd, iss365,   // Zwischenwerte für die Herkunftsanzeige
     sma200d: sma(close, 200),
     sma111d: sma(close, 111),
     sma350d: sma(close, 350),

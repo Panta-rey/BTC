@@ -2,14 +2,16 @@
 
 const PENDING = ["supply_loss", "reserve_risk", "rhodl", "lth_dist"];
 
-export function toRows(weekly, { sthByWeek = {}, staleIds = {} } = {}) {
+// manual: { supply_loss: {woche: wert}, reserve_risk: {...}, rhodl: {...}, lth_dist: {...}, sth_rp: {...} }
+export function toRows(weekly, { manual = {}, staleIds = {} } = {}) {
   const cols = weekly.columns;
   const idx = Object.fromEntries(cols.map((c, i) => [c, i]));
   const rows = weekly.rows.map((r) => {
     const o = {};
     for (const c of cols) o[c] = r[idx[c]];
-    for (const p of PENDING) o[p] = null; // Quelle ausstehend (SPEC 3.4)
-    o.sth_rp = sthByWeek[o.w] ?? null;
+    // Quelle ausstehend (SPEC 3.4). Manuelle Werte springen ein, wo vorhanden.
+    for (const p of PENDING) o[p] = manual[p]?.[o.w] ?? null;
+    o.sth_rp = manual.sth_rp?.[o.w] ?? null;
     o._stale = staleIds[o.w] ?? [];
     return o;
   });

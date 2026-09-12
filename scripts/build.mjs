@@ -24,6 +24,7 @@ const MODE = process.env.MODE || "manual";
 const FRESH = { price: 2, onchain: 3, fng: 3, funding: 3, wiki: 7, manual: 30 };
 
 // Kennzahlen, die nur BGeometrics liefert (SPEC 3.4)
+const PENDING_UNIT = { supply_loss: "%", reserve_risk: "", rhodl: "", lth_dist: "BTC / 30 T" };
 const PENDING = {
   supply_loss: "Angebot im Verlust",
   reserve_risk: "Reserve Risk",
@@ -41,8 +42,21 @@ async function main() {
     readJSON(`${RAW}/funding_deribit.json`), readJSON(`${RAW}/network.json`),
     readJSON("data/manual.json", {}), readJSON(`${RAW}/_status.json`, {}),
   ]);
-  const sthManual = manual?.sth_realized_price ?? {};
-  const sthValue = sthManual.value != null && Number.isFinite(+sthManual.value) ? +sthManual.value : null;
+  // Manuelle Kennzahlen. Zwei Formen erlaubt:
+  //   "schluessel": { "value": 80100, "as_of": "2026-09-06", "note": "" }   einzelner Wert
+  //   "schluessel": [ { "d": "2026-09-06", "v": 80100 }, ... ]              Reihe, baut Historie auf
+  const readings = (key) => {
+    const raw = manual?.[key];
+    if (!raw) return [];
+    const list = Array.isArray(raw)
+      ? raw.map((r) => [r?.d, +r?.v])
+      : [[raw.as_of, +raw.value]];
+    return list.filter(([d, v]) => d && Number.isFinite(v)).sort((a, b) => (a[0] < b[0] ? -1 : 1));
+  };
+  const sthManual = Array.isArray(manual?.sth_realized_price)
+    ? { as_of: readings("sth_realized_price").at(-1)?.[0], value: readings("sth_realized_price").at(-1)?.[1], note: "Reihe" }
+    : (manual?.sth_realized_price ?? {});
+  const sthValue = Number.isFinite(+sthManual.value) ? +sthManual.value : null;
   if (!bs?.values?.length && !cmRaw?.values?.PriceUSD?.length) throw new Error("Keine Preisdaten vorhanden. Zuerst scripts/fetch.mjs ausführen.");
 
   // ---------------------------------------------------------- Kalender und Preis
@@ -105,8 +119,30 @@ async function main() {
 
   // ---------------------------------------------------------- Motoren und Phasen (M2)
   const cfg = await readJSON("config/engine.json");
-  const sthByWeek = weekId && sthValue != null ? { [weekId]: sthValue } : {};
-  const engineRows = toRows({ columns: COLS.map(([k]) => k), rows: rows.map((r) => COLS.map((c) => cell(r, c))) }, { sthByWeek });
+
+  // Eine Lesung gilt für die Woche, in die sie fällt, und bis zu 30 Tage danach.
+  // So wirkt ein monatlich eingetragener Wert, ohne dass er ewig weiterläuft.
+  const MANUAL_MAX_AGE = 30;
+  const byWeekFrom = (list, transform = (v) => v) => {
+    const out = {};
+    if (!list.length) return out;
+    for (const r of rows) {
+      let best = null;
+      for (const [d, v] of list) if (d <= r.w && daysBetween(d, r.w) <= MANUAL_MAX_AGE) best = v;
+      if (best != null) out[r.w] = transform(best);
+    }
+    return out;
+  };
+  const manualByWeek = {
+    sth_rp:       byWeekFrom(readings("sth_realized_price")),
+    supply_loss:  byWeekFrom(readings("supply_in_profit"), (v) => 100 - v),
+    reserve_risk: byWeekFrom(readings("reserve_risk")),
+    rhodl:        byWeekFrom(readings("rhodl")),
+    lth_dist:     byWeekFrom(readings("lth_net_position_change"), (v) => -v),
+  };
+  const manualCount = Object.fromEntries(Object.entries(manualByWeek).map(([k, v]) => [k, Object.keys(v).length]));
+
+  const engineRows = toRows({ columns: COLS.map(([k]) => k), rows: rows.map((r) => COLS.map((c) => cell(r, c))) }, { manual: manualByWeek });
   const run = replay(engineRows, cfg);
   const cur = run.weeks.at(-1);
   if (!cur || cur.w !== weekId) throw new Error("Phasenmaschine lieferte keine aktuelle Woche.");
@@ -136,9 +172,48 @@ async function main() {
     };
   };
   const r4 = (v) => round(v, 4), r2 = (v) => round(v, 2);
+  let lastFngIdx = input.fng.length - 1;
+  while (lastFngIdx > 0 && input.fng[lastFngIdx] == null) lastFngIdx--;
   const CM = "Coin Metrics (berechnet)";
 
   const sthAge = sthValue != null && sthManual.as_of ? daysBetween(sthManual.as_of, weekId) : null;
+
+  // Herkunft: Formel und die tatsächlich eingesetzten Zahlen. Damit ist jeder
+  // Indikatorwert auf der Seite nachrechenbar.
+  const ocIdx = row.onchain_as_of ? dates.indexOf(row.onchain_as_of) : -1;
+  const at = (arr) => (ocIdx >= 0 ? arr[ocIdx] : null);
+  const P = (label, value, unit) => ({ label, value: round(value, Math.abs(value ?? 0) >= 1000 ? 0 : 4), unit });
+  const src = {
+    mvrv_z: { formula: "(Marktkapitalisierung − Realized Cap) ÷ σ(Marktkapitalisierung)", parts: [
+      P("Marktkapitalisierung", at(input.cm.mc), "USD"), P("Realized Cap", at(daily.rc), "USD"),
+      P("σ (ganze Historie)", at(daily.mcStd), "USD")] },
+    p_rp: { formula: "Wochenschluss ÷ Realized Price", parts: [
+      P("Wochenschluss", row.close, "USD"), P("Realized Price", row.realized_price, "USD")] },
+    p_200w: { formula: "Wochenschluss ÷ Schnitt der letzten 200 Wochenschlüsse", parts: [
+      P("Wochenschluss", row.close, "USD"), P("200-Wochen-Schnitt", row.sma200w, "USD")] },
+    mayer: { formula: "Wochenschluss ÷ Schnitt der letzten 200 Tagesschlüsse", parts: [
+      P("Wochenschluss", row.close, "USD"), P("200-Tage-Schnitt", row.sma200d, "USD")] },
+    puell: { formula: "Tageserlös der Miner ÷ Schnitt der letzten 365 Tage", parts: [
+      P("Tageserlös", at(input.cm.iss), "USD"), P("365-Tage-Schnitt", at(daily.iss365), "USD")] },
+    hash_ribbons: { formula: "30-Tage-Schnitt der Hashrate gegen 60-Tage-Schnitt", parts: [
+      P("30-Tage-Schnitt", at(daily.ribbons.h30), "TH/s"), P("60-Tage-Schnitt", at(daily.ribbons.h60), "TH/s")] },
+    drawdown: { formula: "Wochenschluss ÷ höchster Tagesschluss aller Zeiten − 1", parts: [
+      P("Wochenschluss", row.close, "USD"), P("höchster Tagesschluss", row.ath, "USD")] },
+    months_since_ath: { formula: "Tage seit dem Allzeithoch ÷ 30,44", parts: [
+      P("Allzeithoch am", row.ath_date ? null : null, row.ath_date || "–"),
+      P("Tage seither", row.ath_date ? daysBetween(row.ath_date, weekId) : null, "Tage")] },
+    bmsb_ext: { formula: "Wochenschluss ÷ Oberkante des Trendbands", parts: [
+      P("Wochenschluss", row.close, "USD"), P("Oberkante (max aus SMA 20 W und EMA 21 W)", row.bmsb_hi, "USD")] },
+    pi_cycle: { formula: "111-Tage-Schnitt ÷ (2 × 350-Tage-Schnitt)", parts: [
+      P("111-Tage-Schnitt", at(daily.sma111d), "USD"), P("350-Tage-Schnitt", at(daily.sma350d), "USD")] },
+    fng_4w: { formula: "Schnitt des Fear-&-Greed-Index über 28 Tage", parts: [
+      P("Tageswert", input.fng[lastFngIdx], "0–100")] },
+    funding_30d: { formula: "Schnitt der Finanzierungsrate über 30 Tage", parts: [] },
+    retail_attention: { formula: "Schnitt der Wikipedia-Aufrufe (en + de) über 28 Tage", parts: [] },
+    fng_fear_weeks: { formula: "Wochen mit Fear-&-Greed-Schnitt unter 25 in den letzten 8", parts: [] },
+    cycle_clock: { formula: "Tage seit dem Halving, das den aktuellen Zyklus prägt", parts: [] },
+    days_since_halving: { formula: "Tage seit dem letzten Halving", parts: [] },
+  };
 
   const indicators = {
     mvrv_z: ind(r4(row.mvrv_z), "σ", row.onchain_as_of, CM, "onchain"),
@@ -157,9 +232,15 @@ async function main() {
     fng_4w: ind(round(row.fng_4w, 1), "0–100", weekId, "alternative.me", "fng"),
     funding_30d: ind(round(row.funding_30d, 5), "% / 8 h", weekId, "Deribit", "funding"),
     retail_attention: ind(round(row.wiki_4w, 0), "Aufrufe/Tag", weekId, "Wikimedia", "wiki", "Perzentil folgt in M2"),
-    ...Object.fromEntries(Object.entries(PENDING).map(([k, name]) => [k,
-      ind(null, null, null, "BGeometrics", "onchain", `${name}: Quelle ausstehend (Nutzungsbedingungen, SPEC 3.4)`)])),
+    ...Object.fromEntries(Object.entries(PENDING).map(([k, name]) => {
+      const v = cur.scores?.[k]?.value ?? null;
+      const asOf = v != null ? weekId : null;
+      return [k, ind(v == null ? null : round(v, 4), PENDING_UNIT[k], asOf, v == null ? "BGeometrics" : "manuell", "manual",
+        v == null ? `${name}: Quelle ausstehend. Wert aus charts.checkonchain.com in data/manual.json eintragen.`
+                  : `Manuell eingetragen. ${cur.scores[k].pct_basis === "zu_kurz" ? "Für den Score fehlt noch Historie (mindestens 26 Wochen)." : ""}`.trim())];
+    })),
   };
+  for (const [k, v] of Object.entries(src)) if (indicators[k]) indicators[k].source_calc = v;
 
   // Die Zyklus-Uhr kennt erst die Phasenmaschine (relevantes Halving, SPEC 6.2).
   indicators.cycle_clock = ind(cur.cycle_days ?? 0, "Tage", weekId, "Halving-Tabelle", "price",
@@ -231,6 +312,9 @@ async function main() {
     scores: cur.scores,
     indicators,
     filters,
+    manual: { readings: manualCount, max_age_days: MANUAL_MAX_AGE,
+      series: Object.fromEntries(["sth_realized_price","supply_in_profit","reserve_risk","rhodl","lth_net_position_change"]
+        .map((k) => [k, readings(k).map(([d, v]) => ({ d, v }))])) },
     missing: Object.entries(indicators).filter(([, v]) => v.missing).map(([k]) => k),
     stale: Object.entries(indicators).filter(([, v]) => v.stale).map(([k]) => k),
     sources: Object.fromEntries(Object.entries(status).filter(([k]) => !k.startsWith("_"))

@@ -9,6 +9,7 @@ on:
 
 permissions:
   contents: write
+  issues: write
 
 concurrency:
   group: data
@@ -29,6 +30,11 @@ jobs:
         env:
           MODE: daily
         run: node scripts/build.mjs
+      - name: Gesundheitsprüfung
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+        run: node scripts/notify.mjs
       - name: Committen
         run: |
           git config user.name "github-actions[bot]"
