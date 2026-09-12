@@ -1,0 +1,42 @@
+name: Tageslauf
+
+# Täglich 06:15 UTC: Tageswerte aktualisieren. Löst nie Signale aus.
+
+on:
+  schedule:
+    - cron: "15 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: data
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - name: Daten holen
+        run: node scripts/fetch.mjs
+      - name: Auswerten
+        env:
+          MODE: daily
+        run: node scripts/build.mjs
+      - name: Committen
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/
+          if git diff --cached --quiet; then
+            echo "Keine Änderungen."
+          else
+            git commit -m "data: Tagesstand $(date -u +%F), Woche $(node -p "require('./data/latest.json').week_id")"
+            git push
+          fi

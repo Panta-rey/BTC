@@ -1,0 +1,4 @@
+{
+  "_hinweis": "Manuelle Notwerte. value in USD eintragen, as_of = Datum des Werts (YYYY-MM-DD). Werte älter als 30 Tage gelten als alt. Quelle z. B. checkonchain.com oder charts.bgeometrics.com (Ansicht im Browser).",
+  "sth_realized_price": { "value": null, "as_of": null, "note": "" }
+}

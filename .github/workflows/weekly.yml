@@ -1,0 +1,45 @@
+name: Wochenlauf
+
+# Montag 03:10 UTC, nach dem Wochenschluss (So 24:00 UTC) und nach dem
+# Tagesupdate von Coin Metrics. Ab M2 folgen hier Motoren, Phasen und Signale.
+
+on:
+  schedule:
+    - cron: "10 3 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: data
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - name: Tests
+        run: node --test "test/**/*.test.mjs"
+      - name: Daten holen
+        run: node scripts/fetch.mjs
+      - name: Auswerten
+        env:
+          MODE: weekly
+        run: node scripts/build.mjs
+      - name: Committen
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/
+          if git diff --cached --quiet; then
+            echo "Keine Änderungen."
+          else
+            git commit -m "data: Woche $(node -p "require('./data/latest.json').week_id")"
+            git push
+          fi
