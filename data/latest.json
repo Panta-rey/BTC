@@ -1,0 +1,329 @@
+{
+  "schema": 1,
+  "stage": "M1",
+  "mode": "weekly",
+  "generated_at": "2026-09-12T06:10:18.824Z",
+  "week_id": "2026-09-06",
+  "price": {
+    "close": 80338.98,
+    "date": "2026-09-06",
+    "source": "Bitstamp",
+    "provenance": {
+      "bitstamp": 5504,
+      "coinbase": 0,
+      "coinmetrics_seed": 396,
+      "aufgefuellt": 0,
+      "fehlt": 0
+    }
+  },
+  "today": {
+    "date": "2026-09-11",
+    "close": 77212.48,
+    "fng": 56,
+    "note": "Tageswert, vorläufig, löst nichts aus"
+  },
+  "cycle_clock": {
+    "ath": 124728,
+    "ath_date": "2025-10-06",
+    "days_since_ath": 335,
+    "halvings": [
+      "2012-11-28",
+      "2016-07-09",
+      "2020-05-11",
+      "2024-04-20"
+    ],
+    "last_halving": "2024-04-20",
+    "days_since_last_halving": 869,
+    "next_halving": {
+      "height": 1050000,
+      "blocks_left": 83375,
+      "estimate": "2028-03-20",
+      "tip_height": 966625,
+      "as_of": "2026-09-12"
+    }
+  },
+  "indicators": {
+    "mvrv_z": {
+      "value": 0.8911,
+      "unit": "σ",
+      "as_of": "2026-09-06",
+      "age_days": 0,
+      "source": "Coin Metrics (berechnet)",
+      "stale": false,
+      "missing": false,
+      "note": null
+    },
+    "realized_price": {
+      "value": 53174.57,
+      "unit": "USD",
+      "as_of": "2026-09-06",
+      "age_days": 0,
+      "source": "Coin Metrics (berechnet)",
+      "stale": false,
+      "missing": false,
+      "note": "Preis ÷ MVRV-Verhältnis"
+    },
+    "p_rp": {
+      "value": 1.5109,
+      "unit": "×",
+      "as_of": "2026-09-06",
+      "age_days": 0,
+      "source": "Coin Metrics (berechnet)",
+      "stale": false,
+      "missing": false,
+      "note": null
+    },
+    "p_200w": {
+      "value": 1.2385,
+      "unit": "×",
+      "as_of": "2026-09-06",
+      "age_days": 0,
+      "source": "Bitstamp",
+      "stale": false,
+      "missing": false,
+      "note": null,
+      "sma200w": 64869.08
+    },
+    "mayer": {
+      "value": 1.1517,
+      "unit": "×",
+      "as_of": "2026-09-06",
+      "age_days": 0,
+      "source": "Bitstamp",
+      "stale": false,
+      "missing": false,
+      "note": null,
+      "sma200d": 69756.35
+    },
+    "puell": {
+      "value": 1.1255,
+      "unit": "×",
+      "as_of": "2026-09-06",
+      "age_days": 0,
+      "source": "Coin Metrics (berechnet)",
+      "stale": false,
+      "missing": false,
+      "note": null
+    },
+    "hash_ribbons": {
+      "value": "normal",
+      "unit": "Zustand",
+      "as_of": "2026-09-06",
+      "age_days": 0,
+      "source": "Coin Metrics (berechnet)",
+      "stale": false,
+      "missing": false,
+      "note": null,
+      "last_buy_signal": "2026-08-26"
+    },
+    "drawdown": {
+      "value": -35.59,
+      "unit": "%",
+      "as_of": "2026-09-06",
+      "age_days": 0,
+      "source": "Bitstamp",
+      "stale": false,
+      "missing": false,
+      "note": null
+    },
+    "months_since_ath": {
+      "value": 11.01,
+      "unit": "Monate",
+      "as_of": "2026-09-06",
+      "age_days": 0,
+      "source": "Bitstamp",
+      "stale": false,
+      "missing": false,
+      "note": null
+    },
+    "days_since_halving": {
+      "value": 869,
+      "unit": "Tage",
+      "as_of": "2026-09-06",
+      "age_days": 0,
+      "source": "Halving-Tabelle",
+      "stale": false,
+      "missing": false,
+      "note": "Relevantes Halving (SPEC 6.2) folgt mit der Phasenmaschine in M2"
+    },
+    "bmsb_ext": {
+      "value": 1.1281,
+      "unit": "×",
+      "as_of": "2026-09-06",
+      "age_days": 0,
+      "source": "Bitstamp",
+      "stale": false,
+      "missing": false,
+      "note": null
+    },
+    "pi_cycle": {
+      "value": 0.4183,
+      "unit": "×",
+      "as_of": "2026-09-06",
+      "age_days": 0,
+      "source": "Bitstamp",
+      "stale": false,
+      "missing": false,
+      "note": null
+    },
+    "fng_fear_weeks": {
+      "value": 0,
+      "unit": "Wochen",
+      "as_of": "2026-09-06",
+      "age_days": 0,
+      "source": "alternative.me",
+      "stale": false,
+      "missing": false,
+      "note": "Wochen mit Ø < 25 in den letzten 8"
+    },
+    "fng_4w": {
+      "value": 56.2,
+      "unit": "0–100",
+      "as_of": "2026-09-06",
+      "age_days": 0,
+      "source": "alternative.me",
+      "stale": false,
+      "missing": false,
+      "note": null
+    },
+    "funding_30d": {
+      "value": 0.00363,
+      "unit": "% / 8 h",
+      "as_of": "2026-09-06",
+      "age_days": 0,
+      "source": "Deribit",
+      "stale": false,
+      "missing": false,
+      "note": null
+    },
+    "retail_attention": {
+      "value": 3225,
+      "unit": "Aufrufe/Tag",
+      "as_of": "2026-09-06",
+      "age_days": 0,
+      "source": "Wikimedia",
+      "stale": false,
+      "missing": false,
+      "note": "Perzentil folgt in M2"
+    },
+    "supply_loss": {
+      "value": null,
+      "unit": null,
+      "as_of": null,
+      "age_days": null,
+      "source": "BGeometrics",
+      "stale": false,
+      "missing": true,
+      "note": "Angebot im Verlust: Quelle ausstehend (Nutzungsbedingungen, SPEC 3.4)"
+    },
+    "reserve_risk": {
+      "value": null,
+      "unit": null,
+      "as_of": null,
+      "age_days": null,
+      "source": "BGeometrics",
+      "stale": false,
+      "missing": true,
+      "note": "Reserve Risk: Quelle ausstehend (Nutzungsbedingungen, SPEC 3.4)"
+    },
+    "rhodl": {
+      "value": null,
+      "unit": null,
+      "as_of": null,
+      "age_days": null,
+      "source": "BGeometrics",
+      "stale": false,
+      "missing": true,
+      "note": "RHODL-Ratio: Quelle ausstehend (Nutzungsbedingungen, SPEC 3.4)"
+    },
+    "lth_dist": {
+      "value": null,
+      "unit": null,
+      "as_of": null,
+      "age_days": null,
+      "source": "BGeometrics",
+      "stale": false,
+      "missing": true,
+      "note": "Abgabe der Langzeithalter: Quelle ausstehend (Nutzungsbedingungen, SPEC 3.4)"
+    }
+  },
+  "filters": {
+    "bmsb": {
+      "lower": 70170.43,
+      "upper": 71217.1,
+      "as_of": "2026-09-06"
+    },
+    "sth_rp": {
+      "value": null,
+      "as_of": null,
+      "age_days": null,
+      "stale": false,
+      "source": null,
+      "missing": true,
+      "note": "In data/manual.json eintragen"
+    }
+  },
+  "missing": [
+    "supply_loss",
+    "reserve_risk",
+    "rhodl",
+    "lth_dist"
+  ],
+  "stale": [],
+  "sources": {
+    "price_bitstamp": {
+      "ok": true,
+      "last": "2026-09-11",
+      "error": null,
+      "at": "2026-09-12T06:08:38.938Z"
+    },
+    "price_coinbase": {
+      "ok": true,
+      "last": "2026-09-11",
+      "error": null,
+      "at": "2026-09-12T06:08:39.036Z"
+    },
+    "coinmetrics": {
+      "ok": true,
+      "last": "2026-09-11",
+      "error": null,
+      "at": "2026-09-12T06:08:39.833Z"
+    },
+    "fng": {
+      "ok": true,
+      "last": "2026-09-11",
+      "error": null,
+      "at": "2026-09-12T06:08:40.189Z"
+    },
+    "wiki_en": {
+      "ok": true,
+      "last": "2026-09-11",
+      "error": null,
+      "at": "2026-09-12T06:08:40.696Z"
+    },
+    "wiki_de": {
+      "ok": true,
+      "last": "2026-09-11",
+      "error": null,
+      "at": "2026-09-12T06:08:41.211Z"
+    },
+    "funding_deribit": {
+      "ok": true,
+      "last": "2026-09-11",
+      "error": null,
+      "at": "2026-09-12T06:10:18.300Z"
+    },
+    "network": {
+      "ok": true,
+      "last": "2026-09-12",
+      "error": null,
+      "at": "2026-09-12T06:10:18.780Z"
+    }
+  },
+  "attribution": [
+    "On-Chain-Daten: Coin Metrics Community Data, CC BY-NC 4.0 (coinmetrics.io)",
+    "Fear & Greed Index: alternative.me",
+    "Seitenaufrufe: Wikimedia Foundation",
+    "Preise: Bitstamp, Coinbase · Funding: Deribit · Blockhöhe: mempool.space"
+  ]
+}
