@@ -3,7 +3,7 @@
   "stage": "M2",
   "config_version": "1.0-rc",
   "mode": "daily",
-  "generated_at": "2026-09-12T10:41:10.466Z",
+  "generated_at": "2026-09-12T19:32:25.872Z",
   "week_id": "2026-09-06",
   "price": {
     "close": 80338.98,
@@ -37,9 +37,9 @@
     "days_since_last_halving": 869,
     "next_halving": {
       "height": 1050000,
-      "blocks_left": 83339,
-      "estimate": "2028-03-16",
-      "tip_height": 966661,
+      "blocks_left": 83291,
+      "estimate": "2028-03-20",
+      "tip_height": 966709,
       "as_of": "2026-09-12"
     }
   },
@@ -698,49 +698,49 @@
       "ok": true,
       "last": "2026-09-11",
       "error": null,
-      "at": "2026-09-12T10:41:08.458Z"
+      "at": "2026-09-12T19:32:18.214Z"
     },
     "price_coinbase": {
       "ok": true,
       "last": "2026-09-11",
       "error": null,
-      "at": "2026-09-12T10:41:08.507Z"
+      "at": "2026-09-12T19:32:18.375Z"
     },
     "coinmetrics": {
       "ok": true,
       "last": "2026-09-11",
       "error": null,
-      "at": "2026-09-12T10:41:08.615Z"
+      "at": "2026-09-12T19:32:23.224Z"
     },
     "fng": {
       "ok": true,
       "last": "2026-09-11",
       "error": null,
-      "at": "2026-09-12T10:41:08.833Z"
+      "at": "2026-09-12T19:32:23.476Z"
     },
     "wiki_en": {
       "ok": true,
       "last": "2026-09-11",
       "error": null,
-      "at": "2026-09-12T10:41:09.075Z"
+      "at": "2026-09-12T19:32:24.003Z"
     },
     "wiki_de": {
       "ok": true,
       "last": "2026-09-11",
       "error": null,
-      "at": "2026-09-12T10:41:09.230Z"
+      "at": "2026-09-12T19:32:24.474Z"
     },
     "funding_deribit": {
       "ok": true,
       "last": "2026-09-11",
       "error": null,
-      "at": "2026-09-12T10:41:09.721Z"
+      "at": "2026-09-12T19:32:25.000Z"
     },
     "network": {
       "ok": true,
       "last": "2026-09-12",
       "error": null,
-      "at": "2026-09-12T10:41:10.407Z"
+      "at": "2026-09-12T19:32:25.818Z"
     }
   },
   "attribution": [
