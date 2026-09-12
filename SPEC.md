@@ -584,9 +584,13 @@ Zwei bewusste Abweichungen vom Cockpit: Abschnittstitel in normaler Satzschreibu
 └──────────────────────────────────────┘
 ```
 
-**Desktop (ab 960 px)**: zwei Spalten bei 1120 px Gesamtbreite. Links eine feste Spalte von 400 px: Ampel, Phasenleiste, Motoren, Checkliste. Rechts: Zyklus-Uhr, Position, Kacheln im Zweierraster, Verlauf, Journal. Die linke Spalte beantwortet „Was tun?", die rechte „Warum?".
+**Desktop (ab 960 px)**: drei Bereiche bei 1160 px Gesamtbreite.
 
-Die linke Spalte bleibt beim Scrollen stehen, aber nur ab 920 px Fensterhöhe. Auf niedrigeren Fenstern würde sie sonst oben abgeschnitten. Die Position steht rechts und nicht links, weil die linke Spalte sonst zu hoch für das Fixieren würde.
+- Oben links, feste Spalte von 400 px: Ampel, Phasenleiste, Motoren, Checkliste. Das ist die Antwort auf „Was tun?".
+- Oben rechts: Zyklus-Uhr und Position. Das ist die Einordnung.
+- Darunter über die volle Breite: Indikator-Kacheln im Dreierraster, Verlauf, Journal. Das sind die Belege.
+
+Die beiden oberen Bereiche sind absichtlich etwa gleich hoch. Eine kurze Spalte neben einer langen wirkt unfertig, und die Kacheln nutzen die volle Breite besser als eine schmale Spalte. Auf dem Handy stapelt sich alles in derselben Reihenfolge.
 
 Ausrichtung: linksbündig, nur die Ampel sitzt frei links neben dem Text. Keine zentrierten Textblöcke.
 
