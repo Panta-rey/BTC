@@ -269,6 +269,22 @@ function report(run, sim, trades, dcaPlain, dcaFactor, checks, sens, rows, cfg) 
     L.push("");
   }
 
+  // Laufender Zyklus: Wie nah war die Maschine seit dem letzten Phasenwechsel am nächsten Schritt?
+  const sincePhase = run.weeks.filter((w) => w.w >= run.state.phase_since);
+  const side = last.active;
+  const bestNow = sincePhase.reduce((b, w) => ((w[side] ?? -1) > (b[side] ?? -1) ? w : b), sincePhase[0]);
+  L.push("## Laufender Abschnitt", "");
+  L.push(`Phase ${last.phase} ${PHASE_NAMES[last.phase]} seit ${run.state.phase_since} (${sincePhase.length} Wochen). Aktiver Motor: ${side === "buy" ? "Kauf" : "Verkauf"}.`, "");
+  L.push("| | Woche | Kurs | Score | Gates | Familien |", "|---|---|---|---|---|---|");
+  const gs = (x) => Object.entries(x).filter(([k]) => (side === "buy" ? "AB" : "E").includes(k[0]) && k !== "e2_min").map(([k, v]) => `${k}=${v ? "✓" : "✗"}`).join(" ");
+  const famOf = (w) => JSON.stringify(Object.fromEntries(Object.entries(w.engines[side].families).map(([k, v]) => [k, v.available ? v.score : null])));
+  L.push(`| stärkste Woche | ${bestNow.w} | ${fmtUSD(bestNow.close)} | ${bestNow[side]} | ${gs(bestNow.gates)} | ${famOf(bestNow)} |`);
+  L.push(`| jetzt | ${last.w} | ${fmtUSD(last.close)} | ${last[side]} | ${gs(last.gates)} | ${famOf(last)} |`);
+  L.push("", "Bedingungen für den nächsten Schritt:", "");
+  L.push("| Bedingung | aktuell | Ziel | |", "|---|---|---|---|");
+  for (const c of last.conditions) L.push(`| ${c.label} | ${typeof c.value === "number" ? fmtUSD(c.value) : c.value} | ${typeof c.target === "number" ? fmtUSD(c.target) : c.target} | ${c.met ? "✓" : "✗"} |`);
+  L.push("");
+
   L.push("## Aktueller Stand", "");
   L.push(`Phase ${last.phase} ${PHASE_NAMES[last.phase]} seit ${run.state.phase_since} · Kauf-Motor ${last.buy} · Verkauf-Motor ${last.sell} · Zähler ${last.counter} von ${cfg.confirm_weeks}`);
   return L.join("\n") + "\n";

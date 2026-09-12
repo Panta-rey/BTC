@@ -150,7 +150,7 @@ async function main() {
     hash_ribbons: ind(row.hash_state, "Zustand", row.onchain_as_of, CM, "onchain", null, { last_buy_signal: row.hash_buy_date }),
     drawdown: ind(r2(row.drawdown), "%", weekId, "Bitstamp", "price"),
     months_since_ath: ind(r2(row.months_since_ath), "Monate", weekId, "Bitstamp", "price"),
-    days_since_halving: ind(row.days_since_halving, "Tage", weekId, "Halving-Tabelle", "price", "Relevantes Halving (SPEC 6.2) folgt mit der Phasenmaschine in M2"),
+    days_since_halving: ind(row.days_since_halving, "Tage", weekId, "Halving-Tabelle", "price", "Tage seit dem letzten Halving, unabhängig vom Zyklus"),
     bmsb_ext: ind(r4(row.bmsb_ext), "×", weekId, "Bitstamp", "price"),
     pi_cycle: ind(r4(row.pi_cycle), "×", weekId, "Bitstamp", "price"),
     fng_fear_weeks: ind(row.fng_fear_weeks, "Wochen", weekId, "alternative.me", "fng", "Wochen mit Ø < 25 in den letzten 8"),
@@ -160,6 +160,11 @@ async function main() {
     ...Object.fromEntries(Object.entries(PENDING).map(([k, name]) => [k,
       ind(null, null, null, "BGeometrics", "onchain", `${name}: Quelle ausstehend (Nutzungsbedingungen, SPEC 3.4)`)])),
   };
+
+  // Die Zyklus-Uhr kennt erst die Phasenmaschine (relevantes Halving, SPEC 6.2).
+  indicators.cycle_clock = ind(cur.cycle_days ?? 0, "Tage", weekId, "Halving-Tabelle", "price",
+    cur.cycle_days == null ? "Das relevante Halving steht noch aus, die Uhr zählt 0." : null,
+    { relevant_halving: run.state.relevant_halving });
 
   const filters = {
     bmsb: { lower: r2(row.bmsb_lo), upper: r2(row.bmsb_hi), as_of: weekId },
@@ -196,6 +201,7 @@ async function main() {
   const latest = {
     schema: 1,
     stage: "M2",
+    config_version: cfg.version,
     mode: MODE,
     generated_at: new Date(NOW).toISOString(),
     week_id: weekId,

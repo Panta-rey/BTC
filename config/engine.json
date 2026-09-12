@@ -1,6 +1,6 @@
 {
-  "version": "0.9-entwurf",
-  "note": "Startwerte aus SPEC.md Abschnitt 4 und 5. Wird nach dem Backtest (M2) als 1.0 eingefroren.",
+  "version": "1.0-rc",
+  "note": "Kalibriert an vier Zyklen (Backtest Lauf 4). Wird nach der Empfindlichkeitsprüfung als 1.0 eingefroren.",
   "confirm_weeks": 2,
   "bootstrap": { "start_week": "2014-01-05", "start_phase": 4 },
   "phase_override": null,

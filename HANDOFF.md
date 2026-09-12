@@ -2,7 +2,7 @@
 
 Kurzer Zustandsbericht des Projekts. Wer hier einsteigt, liest zuerst dieses Dokument, dann `SPEC.md`.
 
-**Stand:** 12. September 2026 · Konfiguration `0.9-entwurf` · Node 22, keine Abhängigkeiten · **40 Tests grün**
+**Stand:** 12. September 2026 · Konfiguration `1.0-rc` · Node 22, keine Abhängigkeiten · **40 Tests grün**
 
 ---
 
@@ -26,10 +26,10 @@ Keine Anlageberatung. Das Modell beruht auf vier Zyklen und kann falsch liegen.
 | M0 | Quellen-Check aus dem GitHub-Runner | ✅ gelaufen, `reports/sources-check.md` |
 | M1 | Datenpipeline: Abruf, Wochenreihe, 16 Indikatorwerte | ✅ läuft im Runner |
 | M2 | Normierung, zwei Motoren, Gates, Phasenmaschine, Backtest | ✅ Code fertig, erster Backtest gelaufen, **Kalibrierung offen** (siehe 6.1) |
-| M3 | Oberfläche: Ampel, Phasenleiste, Motoren, Checkliste, Kacheln | ⬜ nächster Schritt |
-| M4 | Position und Journal im Browser (`localStorage`) | ⬜ |
+| M3 | Oberfläche: Ampel, Phasenleiste, Motoren, Checkliste, Kacheln, Verlauf | ✅ `index.html` |
+| M4 | Position und Journal im Browser (`localStorage`) | ✅ in `index.html` |
 | M5 | Benachrichtigungen (GitHub Issues, optional ntfy) | ⬜ |
-| M6 | Verlauf und Zyklus-Uhr als Grafik | ⬜ |
+| M6 | Verlauf und Zyklus-Uhr als Grafik | ✅ als eigenes SVG, ohne Bibliothek |
 | M7 | Härtung, Barrierefreiheit | ⬜ |
 
 **40 Tests, alle grün** (`node --test "test/**/*.test.mjs"`).
@@ -143,6 +143,30 @@ Behebung: `zone_min_coverage` von 0,70 auf 0,60. Die beiden tragenden Verkaufs-F
 
 Dafür schreibt der Backtest jetzt einen **Diagnose-Abschnitt**: für jedes bekannte Extrem die nächstgelegene und die stärkste Woche im Fenster von ±26 Wochen, mit Score, Abdeckung, Gates und allen Familienwerten. Damit lässt sich der Hebel gezielt bestimmen, statt zu raten.
 
+### Lauf 4 (echte Daten, E2-Schwelle an Abdeckung gekoppelt) — Kalibrierung abgeschlossen
+
+| Strategie | BTC am Ende | Wert | Transaktionen |
+|---|---|---|---|
+| Halten | 1,0000 | 80'339 | 0 |
+| **Ampel** | **3,32** (Lauf 3) | | 12 |
+
+| Extrem | Phase-Eintritt | Abstand | Ø Preis | Verhältnis | Ziel | |
+|---|---|---|---|---|---|---|
+| Tief 2015 | 2015-01-11 | 0 W | – | – | ≤ 1,6 × | Zeitpunkt exakt, kein Cash vorhanden |
+| Tief 2018 | 2018-12-02 | −2 W | 4'364 | 1,36 × | ≤ 1,6 × | ✓ |
+| Tief 2022 | 2022-06-26 | −21 W | 22'103 | 1,43 × | ≤ 1,6 × | ✓ |
+| Hoch 2017 | – | −9 W | 10'831 | 0,55 × | ≥ 0,6 × | ✗ Parabel, nur 65 % Abdeckung |
+| Hoch 2021 | – | +5 W | 50'124 | 0,73 × | ≥ 0,6 × | ✓ |
+| Hoch 2025 | – | +5 W | 104'705 | **0,83 ×** | ≥ 0,6 × | ✓ bestes Ergebnis |
+
+Phasenverlauf des letzten Zyklus: Verteilung ab 2025-10-12 (eine Woche nach dem Hoch), Trendbruch 2025-11-09 bei 104'705.
+
+**Aktueller Stand: Phase 4 Abwärtstrend seit 2025-11-09.** Kauf-Motor 42, Verkauf-Motor 1. Das Juni-Tief 2026 bei rund 60'000 hat Phase 1 nicht ausgelöst: Gate A scheiterte (der Realized Price wurde nie unterschritten), Gate B vermutlich am MVRV-Perzentil. Ob das richtig war, zeigt erst der weitere Verlauf.
+
+**Bewertung:** Fünf von sieben Kriterien erfüllt. Die beiden Ausnahmen sind erklärt und dokumentiert: 2015 fehlte das Startkapital, 2017 war eine Parabel bei halber Datenlage. SPEC 10.5 verbietet ausdrücklich, für einen einzelnen Zyklus nachzujustieren. Konfiguration steht auf `1.0-rc`.
+
+**Noch offen vor dem Einfrieren auf 1.0:** die Empfindlichkeitsprüfung (`node scripts/backtest.mjs --sensitivity` oder im Workflow das Häkchen setzen). Kriterium aus SPEC 10.3: Wird eine einzelne Schwelle um ±15 % verschoben, darf höchstens einer von drei Zyklen durchfallen.
+
 ### Lauf 3 (echte Daten, Abdeckungsschwelle 60 %, Konvergenz korrigiert)
 
 | Strategie | BTC am Ende | Wert | Transaktionen |
@@ -193,13 +217,21 @@ Geprüft: 2021 (Score 51) und 2017 (Score 100) lagen ohnehin darüber, die Ände
 
 **Offene Nebenfrage:** ob das Juni-Tief 2026 bei rund 60'000 über Gate B ausgelöst hätte. Der Phasen-Abschnitt zeigt bisher durchgehend Phase 2 seit Januar 2023, also nein. Auch das klärt die Diagnose.
 
-### 6.2 M3, die Oberfläche
+### 6.2 Die Oberfläche (fertig)
 
-`latest.json` enthält bereits alles Nötige: `phase`, `lamp`, `action`, `engines` (Scores, Familien, Konvergenz, Gates), `next_transition` mit der Checkliste, `flags`, `tranches`, `scores` je Indikator, `indicators` mit Rohwerten und Alter, `filters`, `cycle_clock`.
+`index.html` ist eine einzelne Datei ohne Abhängigkeiten, in der Gestaltung des Cockpits, mit einer senkrechten Ampel als einzigem lautem Element. Aufbau von oben nach unten: Ampel mit Handlungssatz und Betrag, Phasenleiste, beide Motoren, Checkliste „bis zum nächsten Schritt", Zyklus-Uhr, Position, Indikator-Kacheln nach Familien, Verlauf, Journal.
 
-Zu bauen ist eine einzelne `index.html` in der Gestaltung des Cockpits, mit einer senkrechten Ampel als einzigem lautem Element. Einzelheiten in SPEC 8. Aus dem Cockpit direkt übernehmbar: CSS-Variablen, Karten- und Bottom-Sheet-Stile, der `store`-Helfer, Export und Import, das Zahlenformat.
+Der Verlauf ist ein selbst gezeichnetes SVG aus `data/phases.json`, logarithmisch, mit den Phasen als Hintergrundbänder und Dreiecken für die Tranchen. Keine Chart-Bibliothek.
 
-Für die Entwicklung soll `index.html?fixture=2022-06-19` eine Datei aus `data/fixtures/` laden statt `latest.json`, damit sich jeder Zustand prüfen lässt, ohne auf den Markt zu warten.
+Position, erledigte Tranchen und Journal liegen ausschliesslich im Browser (`localStorage`, Präfix `zy_`), mit Export und Import. Sie gehen nie ins Repo.
+
+**Testzustände:** `index.html?fixture=kauf-tranche`, `?fixture=verkauf`, `?fixture=datenluecke` laden Dateien aus `data/fixtures/` statt `data/latest.json`. Damit lässt sich jeder Zustand prüfen, ohne auf den Markt zu warten.
+
+**Noch offen an der Oberfläche:** Antippen des Verlaufs für Details zu einer Woche, und die Anzeige von Systemsignalen aus `events.json` im Journal.
+
+### 6.3 M5, Benachrichtigungen
+
+`notify.mjs` fehlt noch. Vorgesehen sind GitHub Issues als Standardkanal (E-Mail und Push über die GitHub-App) und optional ntfy. Die Ereignisse liegen bereits vollständig in `data/events.json`, jedes mit eindeutiger ID und dem Feld `notified_at`, das über Läufe hinweg erhalten bleibt. Einzelheiten in SPEC 9.
 
 ---
 

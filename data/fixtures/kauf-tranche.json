@@ -1,0 +1,735 @@
+{
+ "schema": 1,
+ "stage": "M2",
+ "config_version": "1.0-rc",
+ "mode": "manual",
+ "generated_at": "2026-09-12T05:50:00.000Z",
+ "week_id": "2026-09-06",
+ "price": {
+  "close": 75714.16,
+  "date": "2026-09-06",
+  "source": "Bitstamp",
+  "provenance": {
+   "bitstamp": 5504,
+   "coinbase": 0,
+   "coinmetrics_seed": 396,
+   "aufgefuellt": 0,
+   "fehlt": 0
+  }
+ },
+ "today": {
+  "date": "2026-09-11",
+  "close": 77400,
+  "fng": 54,
+  "note": "Tageswert, vorläufig, löst nichts aus"
+ },
+ "cycle_clock": {
+  "ath": 127584.44,
+  "ath_date": "2025-09-09",
+  "days_since_ath": 362,
+  "halvings": [
+   "2012-11-28",
+   "2016-07-09",
+   "2020-05-11",
+   "2024-04-20"
+  ],
+  "last_halving": "2024-04-20",
+  "days_since_last_halving": 869,
+  "next_halving": {
+   "height": 1050000,
+   "blocks_left": 83447,
+   "estimate": "2028-04-11",
+   "tip_height": 966553,
+   "as_of": "2026-09-12"
+  }
+ },
+ "phase": {
+  "id": 1,
+  "name": "Akkumulation",
+  "since": "2026-06-21",
+  "weeks": 11,
+  "cycle_no": 4
+ },
+ "lamp": "gruen",
+ "action": {
+  "code": "B2_DUE",
+  "tranche": "B2",
+  "text": "Kauftranche 2 von 3 fällig."
+ },
+ "engines": {
+  "buy": {
+   "score": 73,
+   "zone": "aktiv",
+   "coverage": 0.8,
+   "families": {
+    "bewertung": {
+     "label": "Bewertung",
+     "weight": 50,
+     "score": 30,
+     "available": true,
+     "coverage": 1,
+     "members": {
+      "mvrv_z": 31,
+      "p_rp": 0,
+      "p_200w": 71,
+      "mayer": 19
+     }
+    },
+    "halter_stimmung": {
+     "label": "Halter & Stimmung",
+     "weight": 20,
+     "score": null,
+     "available": false,
+     "coverage": 0.3333333333333333,
+     "members": {
+      "supply_loss": null,
+      "reserve_risk": null,
+      "fng_fear_weeks": 0
+     }
+    },
+    "miner": {
+     "label": "Miner",
+     "weight": 15,
+     "score": 10,
+     "available": true,
+     "coverage": 1,
+     "members": {
+      "puell": 20,
+      "hash_ribbons": 0
+     }
+    },
+    "zeit": {
+     "label": "Zeit",
+     "weight": 15,
+     "score": 64,
+     "available": true,
+     "coverage": 1,
+     "members": {
+      "drawdown": 28,
+      "months_since_ath": 100
+     }
+    }
+   },
+   "confluence": {
+    "in_zone": 6,
+    "families": 3,
+    "ids": [],
+    "available_families": 3,
+    "need_indicators": 4,
+    "need_families": 3,
+    "ok": true,
+    "reduced": false
+   },
+   "gates": {
+    "A": false,
+    "B": true
+   }
+  },
+  "sell": {
+   "score": 7,
+   "zone": "ruhig",
+   "coverage": 0.8,
+   "families": {
+    "zeit_trend": {
+     "label": "Zeit & Trend",
+     "weight": 40,
+     "score": 0,
+     "available": true,
+     "coverage": 1,
+     "members": {
+      "cycle_clock": 0,
+      "bmsb_ext": 0
+     }
+    },
+    "rel_bewertung": {
+     "label": "Relative Bewertung",
+     "weight": 25,
+     "score": 0,
+     "available": true,
+     "coverage": 1,
+     "members": {
+      "mvrv_z": 0,
+      "mayer": 0,
+      "pi_cycle": 0
+     }
+    },
+    "halter": {
+     "label": "Halterverhalten",
+     "weight": 20,
+     "score": null,
+     "available": false,
+     "coverage": 0,
+     "members": {
+      "rhodl": null,
+      "lth_dist": null
+     }
+    },
+    "euphorie": {
+     "label": "Euphorie",
+     "weight": 15,
+     "score": 35,
+     "available": true,
+     "coverage": 1,
+     "members": {
+      "fng_4w": 6,
+      "funding_30d": 0,
+      "retail_attention": 100
+     }
+    }
+   },
+   "confluence": {
+    "in_zone": 1,
+    "families": 1,
+    "ids": [
+     "retail_attention"
+    ],
+    "available_families": 3,
+    "need_indicators": 3,
+    "need_families": 2,
+    "ok": false,
+    "reduced": false
+   },
+   "gates": {
+    "E1": false,
+    "E2": false
+   }
+  },
+  "active": "buy"
+ },
+ "next_transition": {
+  "to": 2,
+  "counter": 0,
+  "needed": 2,
+  "conditions": [
+   {
+    "label": "Wochenschluss über Bandoberkante",
+    "value": 77050,
+    "target": 74900,
+    "met": true
+   },
+   {
+    "label": "Wochenschluss über STH-Einstand",
+    "value": 77050,
+    "target": 80100,
+    "met": false
+   }
+  ]
+ },
+ "flags": {
+  "data_gap": false
+ },
+ "tranches": {
+  "B1": "2026-06-21",
+  "B2": "2026-09-06",
+  "B3": null,
+  "S1": null,
+  "S2": null,
+  "S3": null
+ },
+ "scores": {
+  "mvrv_z": {
+   "value": 1.2361,
+   "pct": 56.730769230769226,
+   "pct_basis": "voll",
+   "score_buy": 31,
+   "score_sell": 0,
+   "state_buy": "neutral",
+   "state_sell": "neutral",
+   "stale": false,
+   "missing": false
+  },
+  "p_rp": {
+   "value": 1.9421,
+   "pct": null,
+   "pct_basis": null,
+   "score_buy": 0,
+   "score_sell": null,
+   "state_buy": "neutral",
+   "state_sell": "fehlt",
+   "stale": false,
+   "missing": false
+  },
+  "p_200w": {
+   "value": 1.1164,
+   "pct": null,
+   "pct_basis": null,
+   "score_buy": 71,
+   "score_sell": null,
+   "state_buy": "in_zone",
+   "state_sell": "fehlt",
+   "stale": false,
+   "missing": false
+  },
+  "mayer": {
+   "value": 1.0742,
+   "pct": 34.13461538461539,
+   "pct_basis": "voll",
+   "score_buy": 19,
+   "score_sell": 0,
+   "state_buy": "neutral",
+   "state_sell": "neutral",
+   "stale": false,
+   "missing": false
+  },
+  "supply_loss": {
+   "value": null,
+   "pct": null,
+   "pct_basis": null,
+   "score_buy": null,
+   "score_sell": null,
+   "state_buy": "fehlt",
+   "state_sell": "fehlt",
+   "stale": false,
+   "missing": true
+  },
+  "reserve_risk": {
+   "value": null,
+   "pct": null,
+   "pct_basis": "kurz",
+   "score_buy": null,
+   "score_sell": null,
+   "state_buy": "fehlt",
+   "state_sell": "fehlt",
+   "stale": false,
+   "missing": true
+  },
+  "fng_fear_weeks": {
+   "value": 0,
+   "pct": null,
+   "pct_basis": null,
+   "score_buy": 0,
+   "score_sell": null,
+   "state_buy": "neutral",
+   "state_sell": "fehlt",
+   "stale": false,
+   "missing": false
+  },
+  "puell": {
+   "value": 0.8658,
+   "pct": null,
+   "pct_basis": null,
+   "score_buy": 20,
+   "score_sell": null,
+   "state_buy": "neutral",
+   "state_sell": "fehlt",
+   "stale": false,
+   "missing": false
+  },
+  "drawdown": {
+   "value": -40.66,
+   "pct": null,
+   "pct_basis": null,
+   "score_buy": 28,
+   "score_sell": null,
+   "state_buy": "neutral",
+   "state_sell": "fehlt",
+   "stale": false,
+   "missing": false
+  },
+  "months_since_ath": {
+   "value": 11.89,
+   "pct": null,
+   "pct_basis": null,
+   "score_buy": 100,
+   "score_sell": null,
+   "state_buy": "in_zone",
+   "state_sell": "fehlt",
+   "stale": false,
+   "missing": false
+  },
+  "cycle_clock": {
+   "value": 0,
+   "pct": null,
+   "pct_basis": null,
+   "score_buy": null,
+   "score_sell": 0,
+   "state_buy": "fehlt",
+   "state_sell": "neutral",
+   "stale": false,
+   "missing": false
+  },
+  "bmsb_ext": {
+   "value": 1.0531,
+   "pct": null,
+   "pct_basis": null,
+   "score_buy": null,
+   "score_sell": 0,
+   "state_buy": "fehlt",
+   "state_sell": "neutral",
+   "stale": false,
+   "missing": false
+  },
+  "pi_cycle": {
+   "value": 0.391,
+   "pct": null,
+   "pct_basis": null,
+   "score_buy": null,
+   "score_sell": 0,
+   "state_buy": "fehlt",
+   "state_sell": "neutral",
+   "stale": false,
+   "missing": false
+  },
+  "rhodl": {
+   "value": null,
+   "pct": null,
+   "pct_basis": "kurz",
+   "score_buy": null,
+   "score_sell": null,
+   "state_buy": "fehlt",
+   "state_sell": "fehlt",
+   "stale": false,
+   "missing": true
+  },
+  "lth_dist": {
+   "value": null,
+   "pct": null,
+   "pct_basis": "kurz",
+   "score_buy": null,
+   "score_sell": null,
+   "state_buy": "fehlt",
+   "state_sell": "fehlt",
+   "stale": false,
+   "missing": true
+  },
+  "fng_4w": {
+   "value": 56.8,
+   "pct": null,
+   "pct_basis": null,
+   "score_buy": null,
+   "score_sell": 6,
+   "state_buy": "fehlt",
+   "state_sell": "neutral",
+   "stale": false,
+   "missing": false
+  },
+  "funding_30d": {
+   "value": 0.004,
+   "pct": null,
+   "pct_basis": null,
+   "score_buy": null,
+   "score_sell": 0,
+   "state_buy": "fehlt",
+   "state_sell": "neutral",
+   "stale": false,
+   "missing": false
+  },
+  "retail_attention": {
+   "value": 2930,
+   "pct": 100,
+   "pct_basis": "voll",
+   "score_buy": null,
+   "score_sell": 100,
+   "state_buy": "fehlt",
+   "state_sell": "in_zone",
+   "stale": false,
+   "missing": false
+  },
+  "hash_ribbons": {
+   "value": null,
+   "pct": null,
+   "pct_basis": null,
+   "score_buy": 0,
+   "score_sell": null,
+   "state_buy": "neutral",
+   "state_sell": "fehlt",
+   "stale": false,
+   "missing": false
+  }
+ },
+ "indicators": {
+  "mvrv_z": {
+   "value": 1.2361,
+   "unit": "σ",
+   "as_of": "2026-09-06",
+   "age_days": 0,
+   "source": "Coin Metrics (berechnet)",
+   "stale": false,
+   "missing": false,
+   "note": null
+  },
+  "realized_price": {
+   "value": 38986.18,
+   "unit": "USD",
+   "as_of": "2026-09-06",
+   "age_days": 0,
+   "source": "Coin Metrics (berechnet)",
+   "stale": false,
+   "missing": false,
+   "note": "Preis ÷ MVRV-Verhältnis"
+  },
+  "p_rp": {
+   "value": 1.9421,
+   "unit": "×",
+   "as_of": "2026-09-06",
+   "age_days": 0,
+   "source": "Coin Metrics (berechnet)",
+   "stale": false,
+   "missing": false,
+   "note": null
+  },
+  "p_200w": {
+   "value": 1.1164,
+   "unit": "×",
+   "as_of": "2026-09-06",
+   "age_days": 0,
+   "source": "Bitstamp",
+   "stale": false,
+   "missing": false,
+   "note": null,
+   "sma200w": 67819.77
+  },
+  "mayer": {
+   "value": 1.0742,
+   "unit": "×",
+   "as_of": "2026-09-06",
+   "age_days": 0,
+   "source": "Bitstamp",
+   "stale": false,
+   "missing": false,
+   "note": null,
+   "sma200d": 70481.82
+  },
+  "puell": {
+   "value": 0.8658,
+   "unit": "×",
+   "as_of": "2026-09-06",
+   "age_days": 0,
+   "source": "Coin Metrics (berechnet)",
+   "stale": false,
+   "missing": false,
+   "note": null
+  },
+  "hash_ribbons": {
+   "value": "normal",
+   "unit": "Zustand",
+   "as_of": "2026-09-06",
+   "age_days": 0,
+   "source": "Coin Metrics (berechnet)",
+   "stale": false,
+   "missing": false,
+   "note": null,
+   "last_buy_signal": null
+  },
+  "drawdown": {
+   "value": -40.66,
+   "unit": "%",
+   "as_of": "2026-09-06",
+   "age_days": 0,
+   "source": "Bitstamp",
+   "stale": false,
+   "missing": false,
+   "note": null
+  },
+  "months_since_ath": {
+   "value": 11.89,
+   "unit": "Monate",
+   "as_of": "2026-09-06",
+   "age_days": 0,
+   "source": "Bitstamp",
+   "stale": false,
+   "missing": false,
+   "note": null
+  },
+  "days_since_halving": {
+   "value": 869,
+   "unit": "Tage",
+   "as_of": "2026-09-06",
+   "age_days": 0,
+   "source": "Halving-Tabelle",
+   "stale": false,
+   "missing": false,
+   "note": "Tage seit dem letzten Halving, unabhängig vom Zyklus"
+  },
+  "bmsb_ext": {
+   "value": 1.0531,
+   "unit": "×",
+   "as_of": "2026-09-06",
+   "age_days": 0,
+   "source": "Bitstamp",
+   "stale": false,
+   "missing": false,
+   "note": null
+  },
+  "pi_cycle": {
+   "value": 0.391,
+   "unit": "×",
+   "as_of": "2026-09-06",
+   "age_days": 0,
+   "source": "Bitstamp",
+   "stale": false,
+   "missing": false,
+   "note": null
+  },
+  "fng_fear_weeks": {
+   "value": 0,
+   "unit": "Wochen",
+   "as_of": "2026-09-06",
+   "age_days": 0,
+   "source": "alternative.me",
+   "stale": false,
+   "missing": false,
+   "note": "Wochen mit Ø < 25 in den letzten 8"
+  },
+  "fng_4w": {
+   "value": 56.8,
+   "unit": "0–100",
+   "as_of": "2026-09-06",
+   "age_days": 0,
+   "source": "alternative.me",
+   "stale": false,
+   "missing": false,
+   "note": null
+  },
+  "funding_30d": {
+   "value": 0.004,
+   "unit": "% / 8 h",
+   "as_of": "2026-09-06",
+   "age_days": 0,
+   "source": "Deribit",
+   "stale": false,
+   "missing": false,
+   "note": null
+  },
+  "retail_attention": {
+   "value": 2930,
+   "unit": "Aufrufe/Tag",
+   "as_of": "2026-09-06",
+   "age_days": 0,
+   "source": "Wikimedia",
+   "stale": false,
+   "missing": false,
+   "note": "Perzentil folgt in M2"
+  },
+  "supply_loss": {
+   "value": null,
+   "unit": null,
+   "as_of": null,
+   "age_days": null,
+   "source": "BGeometrics",
+   "stale": false,
+   "missing": true,
+   "note": "Angebot im Verlust: Quelle ausstehend (Nutzungsbedingungen, SPEC 3.4)"
+  },
+  "reserve_risk": {
+   "value": null,
+   "unit": null,
+   "as_of": null,
+   "age_days": null,
+   "source": "BGeometrics",
+   "stale": false,
+   "missing": true,
+   "note": "Reserve Risk: Quelle ausstehend (Nutzungsbedingungen, SPEC 3.4)"
+  },
+  "rhodl": {
+   "value": null,
+   "unit": null,
+   "as_of": null,
+   "age_days": null,
+   "source": "BGeometrics",
+   "stale": false,
+   "missing": true,
+   "note": "RHODL-Ratio: Quelle ausstehend (Nutzungsbedingungen, SPEC 3.4)"
+  },
+  "lth_dist": {
+   "value": null,
+   "unit": null,
+   "as_of": null,
+   "age_days": null,
+   "source": "BGeometrics",
+   "stale": false,
+   "missing": true,
+   "note": "Abgabe der Langzeithalter: Quelle ausstehend (Nutzungsbedingungen, SPEC 3.4)"
+  },
+  "cycle_clock": {
+   "value": 0,
+   "unit": "Tage",
+   "as_of": "2026-09-06",
+   "age_days": 0,
+   "source": "Halving-Tabelle",
+   "stale": false,
+   "missing": false,
+   "note": "Das relevante Halving steht noch aus, die Uhr zählt 0.",
+   "relevant_halving": null
+  }
+ },
+ "filters": {
+  "bmsb": {
+   "lower": 67058.95,
+   "upper": 71896.21,
+   "as_of": "2026-09-06"
+  },
+  "sth_rp": {
+   "value": null,
+   "as_of": null,
+   "age_days": null,
+   "stale": false,
+   "source": null,
+   "missing": true,
+   "note": "In data/manual.json eintragen"
+  }
+ },
+ "missing": [
+  "supply_loss",
+  "reserve_risk",
+  "rhodl",
+  "lth_dist"
+ ],
+ "stale": [],
+ "sources": {
+  "price_bitstamp": {
+   "ok": true,
+   "last": "2026-09-11",
+   "error": null,
+   "at": "2026-09-12T05:43:31.048Z"
+  },
+  "price_coinbase": {
+   "ok": true,
+   "last": "2026-09-11",
+   "error": null,
+   "at": "2026-09-12T05:43:31.056Z"
+  },
+  "coinmetrics": {
+   "ok": true,
+   "last": "2026-09-10",
+   "error": null,
+   "at": "2026-09-12T05:43:31.243Z"
+  },
+  "fng": {
+   "ok": true,
+   "last": "2026-09-11",
+   "error": null,
+   "at": "2026-09-12T05:43:31.259Z"
+  },
+  "wiki_en": {
+   "ok": true,
+   "last": "2026-09-10",
+   "error": null,
+   "at": "2026-09-12T05:43:31.275Z"
+  },
+  "wiki_de": {
+   "ok": true,
+   "last": "2026-09-10",
+   "error": null,
+   "at": "2026-09-12T05:43:31.305Z"
+  },
+  "funding_deribit": {
+   "ok": true,
+   "last": "2026-09-11",
+   "error": null,
+   "at": "2026-09-12T05:43:55.125Z"
+  },
+  "network": {
+   "ok": true,
+   "last": "2026-09-12",
+   "error": null,
+   "at": "2026-09-12T05:43:55.127Z"
+  }
+ },
+ "attribution": [
+  "On-Chain-Daten: Coin Metrics Community Data, CC BY-NC 4.0 (coinmetrics.io)",
+  "Fear & Greed Index: alternative.me",
+  "Seitenaufrufe: Wikimedia Foundation",
+  "Preise: Bitstamp, Coinbase · Funding: Deribit · Blockhöhe: mempool.space"
+ ]
+}

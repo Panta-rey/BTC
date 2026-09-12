@@ -14,8 +14,10 @@ Schwesterprojekt: [Panta Rey · BTC Cockpit](https://github.com/Panta-rey/Panta-
 |---|---|---|
 | M0 | Quellen-Check | fertig, siehe `reports/sources-check.md` |
 | M1 | Datenpipeline: Abruf, Wochenreihe, Indikatorwerte | fertig |
-| M2 | Motoren, Gates, Phasenmaschine, Backtest | Code fertig, Kalibrierung offen |
-| M3–M7 | Oberfläche, Position, Benachrichtigungen, Verlauf | offen |
+| M2 | Motoren, Gates, Phasenmaschine, Backtest | fertig, Konfiguration `1.0-rc` |
+| M3, M4, M6 | Oberfläche, Position, Journal, Verlauf | fertig (`index.html`) |
+| M5 | Benachrichtigungen | offen |
+| M7 | Härtung | offen |
 
 Der aktuelle Projektzustand steht in [`HANDOFF.md`](HANDOFF.md), die vollständige Spezifikation in [`SPEC.md`](SPEC.md).
 
@@ -24,6 +26,7 @@ Der aktuelle Projektzustand steht in [`HANDOFF.md`](HANDOFF.md), die vollständi
 Eine GitHub Action holt die Daten und legt sie als JSON ins Repo. Die Seite liest später nur diese Dateien.
 
 ```
+index.html             die Seite, eine Datei, ohne Abhängigkeiten
 scripts/fetch.mjs      Quellen  → data/raw/
 scripts/build.mjs      data/raw → data/latest.json, weekly.json, events.json, state.json
 scripts/backtest.mjs   Historie abspielen → reports/backtest.md
@@ -49,6 +52,10 @@ node scripts/backtest.mjs          # Historie abspielen, Report schreiben
 ```
 
 Benötigt Node 22 oder neuer. Keine Abhängigkeiten.
+
+## Testzustände
+
+`index.html?fixture=kauf-tranche`, `?fixture=verkauf` und `?fixture=datenluecke` laden eine Datei aus `data/fixtures/` statt des echten Wochenstands. So lässt sich jede Ansicht prüfen, ohne auf den Markt zu warten.
 
 ## Manuelle Werte
 

@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Panta Rey · Ampel</title>
+<meta name="description" content="Wöchentliche Bitcoin-Zyklus-Ampel: wann kaufen, wann verkaufen, warum.">
+<meta name="color-scheme" content="dark">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0A0E16; --card:#141C28; --line:#222D3C; --ink:#E8EDF2; --mut:#7E8B9C;
+  --buy:#2DD4A7; --ready:#F0B429; --sell:#F0656A; --info:#5B9DF0; --lamp-off:#111925;
+  --r:14px; --gap:14px; --maxw:440px;
+  --num:"Space Grotesk",system-ui,sans-serif;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);
+  -webkit-font-smoothing:antialiased;font-size:15px;line-height:1.5}
+body{padding:0 16px calc(40px + env(safe-area-inset-bottom))}
+.wrap{max-width:var(--maxw);margin:0 auto}
+.num{font-family:var(--num);font-variant-numeric:tabular-nums}
+h1,h2,h3{margin:0;font-family:var(--num);font-weight:600}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+a{color:var(--info)}
+:focus-visible{outline:2px solid var(--info);outline-offset:2px;border-radius:6px}
+
+/* ---------- Kopf ---------- */
+header{display:flex;align-items:center;gap:10px;padding:18px 0 14px}
+.mark{display:flex;align-items:center;gap:8px;font-family:var(--num);font-weight:700;letter-spacing:.02em}
+.mark .hex{color:var(--buy);font-size:18px}
+.mark small{font-weight:500;color:var(--mut);letter-spacing:.06em;text-transform:uppercase;font-size:11px}
+.spacer{flex:1}
+.iconbtn{width:34px;height:34px;border-radius:10px;border:1px solid var(--line);
+  display:grid;place-items:center;color:var(--mut);background:var(--card)}
+.iconbtn:hover{color:var(--ink)}
+.stamp{color:var(--mut);font-size:12.5px;margin:-8px 0 16px}
+
+/* ---------- Karten ---------- */
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);
+  padding:16px;margin-bottom:var(--gap)}
+.card h2{font-size:13px;color:var(--mut);font-weight:500;letter-spacing:.04em;margin-bottom:12px}
+
+/* ---------- Ampel ---------- */
+.hero{display:flex;gap:18px;align-items:flex-start}
+.light{flex:0 0 auto;width:72px;height:188px;border-radius:16px;background:#0B111B;
+  border:1px solid var(--line);padding:12px 12px;display:flex;flex-direction:column;
+  justify-content:space-between;align-items:center}
+.lamp{width:48px;height:48px;border-radius:50%;background:var(--lamp-off);
+  box-shadow:inset 0 0 0 1px #1C2736;display:grid;place-items:center;
+  transition:background .25s,box-shadow .25s;color:transparent;font-size:15px;font-weight:700}
+.lamp.on[data-c=rot]{background:var(--sell);box-shadow:0 0 22px -2px var(--sell),inset 0 0 0 1px var(--sell);color:#2A0A0C}
+.lamp.on[data-c=gelb]{background:var(--ready);box-shadow:0 0 22px -2px var(--ready),inset 0 0 0 1px var(--ready);color:#2B2000}
+.lamp.on[data-c=gruen]{background:var(--buy);box-shadow:0 0 22px -2px var(--buy),inset 0 0 0 1px var(--buy);color:#042118}
+@media (prefers-reduced-motion:reduce){.lamp{transition:none}}
+.heroText{flex:1;min-width:0;padding-top:2px}
+.phaseName{color:var(--mut);font-size:12.5px;letter-spacing:.04em;margin-bottom:6px}
+.action{font-family:var(--num);font-size:21px;line-height:1.25;font-weight:600;margin-bottom:8px}
+.amount{font-family:var(--num);font-size:16px;color:var(--buy);font-weight:600;margin-bottom:8px}
+.amount.sell{color:var(--sell)}
+.why{color:var(--mut);font-size:13px}
+.btnrow{display:flex;gap:10px;align-items:center;margin-top:14px;flex-wrap:wrap}
+.btn{background:var(--buy);color:#042118;font-weight:600;padding:9px 16px;border-radius:10px;font-size:14px}
+.btn.sell{background:var(--sell);color:#2A0A0C}
+.btn.ghost{background:none;border:1px solid var(--line);color:var(--mut);font-weight:500}
+.btn.ghost:hover{color:var(--ink)}
+
+/* ---------- Phasenleiste ---------- */
+.phases{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.ph{border:1px solid var(--line);border-radius:10px;padding:9px 6px;text-align:center;
+  font-size:11.5px;color:var(--mut);background:#0E1520}
+.ph b{display:block;font-family:var(--num);font-size:15px;color:var(--mut);font-weight:600}
+.ph.done{background:#131B27}
+.ph.done b{color:#556478}
+.ph.now{border-color:var(--buy);background:rgba(45,212,167,.10)}
+.ph.now b,.ph.now{color:var(--ink)}
+.ph.now[data-side=sell]{border-color:var(--sell);background:rgba(240,101,106,.10)}
+
+/* ---------- Motoren ---------- */
+.eng{margin-bottom:14px}
+.eng:last-child{margin-bottom:0}
+.engTop{display:flex;align-items:baseline;gap:8px;margin-bottom:7px}
+.engName{font-size:13.5px;font-weight:600}
+.engScore{font-family:var(--num);font-size:22px;font-weight:700;margin-left:auto}
+.engZone{color:var(--mut);font-size:12px}
+.bar{height:9px;border-radius:5px;background:#0E1520;position:relative;overflow:hidden}
+.bar i{position:absolute;inset:0 auto 0 0;border-radius:5px;display:block}
+
+.tick{position:absolute;top:0;bottom:0;width:1px;background:#2B384A}
+.meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:9px;align-items:center}
+.chip{font-size:11.5px;color:var(--mut);border:1px solid var(--line);border-radius:999px;padding:3px 9px}
+.chip.ok{color:var(--buy);border-color:rgba(45,212,167,.35)}
+.chip.no{color:var(--mut)}
+.chip.warn{color:var(--ready);border-color:rgba(240,180,41,.35)}
+.dim{opacity:.55}
+
+/* ---------- Checkliste ---------- */
+.chk{list-style:none;margin:0;padding:0}
+.chk li{display:flex;align-items:baseline;gap:9px;padding:7px 0;border-bottom:1px solid var(--line);font-size:13.5px}
+.chk li:last-child{border-bottom:0}
+.chk .m{flex:0 0 16px;font-weight:700}
+.chk .m.y{color:var(--buy)}
+.chk .m.n{color:var(--mut)}
+.chk .l{flex:1;min-width:0}
+.chk .v{font-family:var(--num);color:var(--mut);white-space:nowrap;font-size:13px}
+.counter{margin-top:10px;font-size:12.5px;color:var(--mut);display:flex;align-items:center;gap:8px}
+.dots{display:flex;gap:5px}
+.dots span{width:8px;height:8px;border-radius:50%;background:#1D2736}
+.dots span.f{background:var(--ready)}
+
+/* ---------- Zyklus-Uhr ---------- */
+.clock{position:relative;height:58px;margin:6px 0 10px}
+.clockLine{position:absolute;left:0;right:0;top:26px;height:2px;background:var(--line);border-radius:2px}
+.band{position:absolute;top:18px;height:18px;border-radius:4px}
+.band.low{background:rgba(45,212,167,.18)}
+.band.top{background:rgba(240,101,106,.18)}
+.mk{position:absolute;top:10px;width:2px;height:34px;background:var(--mut)}
+.mk.now{background:var(--ink);width:2px}
+.mk span{position:absolute;top:36px;left:50%;transform:translateX(-50%);font-size:10.5px;
+  color:var(--mut);white-space:nowrap}
+.mk.now span{color:var(--ink)}
+.kv{display:flex;justify-content:space-between;font-size:13px;padding:5px 0;border-bottom:1px solid var(--line)}
+.kv:last-child{border-bottom:0}
+.kv span:first-child{color:var(--mut)}
+.kv span:last-child{font-family:var(--num)}
+
+/* ---------- Kacheln ---------- */
+.famhead{display:flex;align-items:baseline;gap:8px;margin:16px 0 9px;font-size:12.5px;color:var(--mut)}
+.famhead b{font-family:var(--num);color:var(--ink);font-size:13.5px;font-weight:600}
+.famhead .fs{margin-left:auto;font-family:var(--num)}
+.tiles{display:grid;gap:9px}
+@media(min-width:720px){.tiles{grid-template-columns:1fr 1fr}}
+.tile{background:#0E1520;border:1px solid var(--line);border-radius:11px;padding:11px 12px;
+  text-align:left;width:100%;display:block}
+.tile:hover{border-color:#2E3B4D}
+.tt{display:flex;align-items:center;gap:8px;font-size:13.5px;font-weight:600}
+.dot{width:9px;height:9px;border-radius:50%;flex:0 0 auto;border:1.5px solid var(--mut)}
+.dot[data-s=in_zone]{background:currentColor;border-color:currentColor}
+.dot[data-s=nahe]{background:linear-gradient(90deg,currentColor 50%,transparent 50%);border-color:currentColor}
+.dot[data-s=fehlt]{border-style:dashed}
+.tq{color:var(--mut);font-size:11.5px;margin:3px 0 8px}
+.tv{display:flex;align-items:baseline;gap:7px}
+.tv b{font-family:var(--num);font-size:17px;font-weight:600}
+.tv i{font-style:normal;color:var(--mut);font-size:11.5px}
+.trend{margin-left:auto;color:var(--mut);font-size:13px}
+.mini{height:6px;border-radius:3px;background:#0A111A;margin-top:9px;position:relative;overflow:hidden}
+.mini i{position:absolute;top:0;bottom:0;left:0;border-radius:3px;opacity:.75}
+.mini u{position:absolute;top:-2px;bottom:-2px;width:1px;background:#3A4A5E}
+.tfoot{margin-top:7px;font-size:11px;color:var(--mut);display:flex;gap:7px;flex-wrap:wrap}
+.tag{border:1px solid var(--line);border-radius:5px;padding:0 5px;font-size:10.5px}
+.tag.old{color:var(--ready);border-color:rgba(240,180,41,.35)}
+
+details.group{margin-top:6px}
+details.group>summary{list-style:none;cursor:pointer;color:var(--mut);font-size:13px;
+  padding:11px 0;display:flex;align-items:center;gap:8px;border-top:1px solid var(--line)}
+details.group>summary::-webkit-details-marker{display:none}
+details.group>summary::after{content:"▸";margin-left:auto;transition:transform .2s}
+details.group[open]>summary::after{transform:rotate(90deg)}
+
+/* ---------- Position ---------- */
+.field{display:flex;align-items:center;gap:10px;padding:7px 0}
+.field label{flex:1;font-size:13.5px;color:var(--mut)}
+.field input{width:130px;background:#0A111A;border:1px solid var(--line);color:var(--ink);
+  border-radius:8px;padding:7px 10px;font-family:var(--num);text-align:right;font-size:14px}
+.trancheRow{display:flex;gap:7px;margin-top:12px;flex-wrap:wrap}
+.tr{border:1px solid var(--line);border-radius:8px;padding:5px 9px;font-size:11.5px;color:var(--mut)}
+.tr.due{border-color:var(--ready);color:var(--ready)}
+.tr.done{border-color:rgba(45,212,167,.4);color:var(--buy)}
+.tr.skip{opacity:.5;text-decoration:line-through}
+
+/* ---------- Verlauf ---------- */
+.chartBox{position:relative}
+svg.chart{width:100%;height:190px;display:block}
+.legend{display:flex;gap:12px;flex-wrap:wrap;margin-top:8px;font-size:11.5px;color:var(--mut)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+
+/* ---------- Bottom-Sheet ---------- */
+.sheet{position:fixed;inset:0;background:rgba(5,8,13,.72);display:none;z-index:50;
+  align-items:flex-end;justify-content:center;backdrop-filter:blur(3px)}
+.sheet.open{display:flex}
+.sheetIn{background:var(--card);border:1px solid var(--line);border-bottom:0;
+  border-radius:18px 18px 0 0;padding:18px 18px calc(26px + env(safe-area-inset-bottom));
+  width:100%;max-width:var(--maxw);max-height:86vh;overflow:auto}
+@media(min-width:720px){.sheet{align-items:center}.sheetIn{border-radius:18px;border-bottom:1px solid var(--line);max-height:80vh}}
+.sheetIn h3{font-size:17px;margin-bottom:4px}
+.sheetIn .sub{color:var(--mut);font-size:12.5px;margin-bottom:14px}
+.sheetIn section{margin-bottom:14px}
+.sheetIn section h4{margin:0 0 5px;font-size:12px;color:var(--mut);font-weight:600;letter-spacing:.03em}
+.sheetIn p{margin:0;font-size:13.5px}
+.grabber{width:38px;height:4px;background:var(--line);border-radius:2px;margin:0 auto 14px}
+
+/* ---------- Banner, Fuss ---------- */
+.banner{border-radius:11px;padding:11px 13px;font-size:13px;margin-bottom:var(--gap);
+  border:1px solid var(--line);background:#0E1520}
+.banner.warn{border-color:rgba(240,180,41,.4);color:var(--ready)}
+.banner.info{border-color:rgba(91,157,240,.4);color:var(--info)}
+footer{color:var(--mut);font-size:11.5px;padding:18px 0 0;border-top:1px solid var(--line);margin-top:6px}
+footer p{margin:0 0 6px}
+.skeleton{color:var(--mut);font-size:13px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="mark"><span class="hex">⬡</span>PANTA REY <small>Ampel</small></div>
+    <div class="spacer"></div>
+    <button class="iconbtn" id="btnSettings" aria-label="Einstellungen">⚙</button>
+    <a class="iconbtn" href="https://panta-rey.github.io/Panta-Rey-BTC-Dashboard/" aria-label="Zum Cockpit" style="text-decoration:none">↗</a>
+  </header>
+  <div class="stamp" id="stamp">Lade Wochenstand …</div>
+  <div id="banners"></div>
+  <main id="app" class="skeleton">Einen Moment.</main>
+  <footer id="foot"></footer>
+</div>
+
+<div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+  <div class="sheetIn" id="sheetIn"></div>
+</div>
+
+<script type="module">
+// ============================================================ Beschriftungen
+// Leitfragen und Erklärungen liegen hier statt im JSON: sie ändern sich selten
+// und halten die Datendatei klein.
+const I = {
+  mvrv_z:{n:"MVRV-Z-Score",q:"Wie teuer ist Bitcoin gegenüber dem Einstandswert aller Coins?",
+    w:"Wie weit der Marktwert aller Coins über ihrem Einstandswert liegt, gemessen in Standardabweichungen.",
+    g:"Die Spitzen sinken von Zyklus zu Zyklus. Auf der Verkaufsseite wird er deshalb nur relativ zur eigenen Historie bewertet."},
+  p_rp:{n:"Abstand zum Realized Price",q:"Ist Bitcoin günstiger als der Durchschnittskäufer?",
+    w:"Verhältnis des Preises zum durchschnittlichen Einstandspreis aller Coins. Unter 1 liegt der Durchschnittshalter im Verlust.",
+    g:"2026 wurde er bisher nicht unterschritten. Nicht jedes Tief geht so tief."},
+  p_200w:{n:"Abstand zum 200-Wochen-Schnitt",q:"Wie nah ist der Preis am Langzeitschnitt?",
+    w:"Verhältnis des Wochenschlusses zum Durchschnitt der letzten 200 Wochenschlüsse.",
+    g:"2022 fiel der Preis rund 20 Prozent darunter. Eine Berührung allein ist noch kein Tief."},
+  mayer:{n:"Mayer Multiple",q:"Wie weit liegt der Preis über dem 200-Tage-Schnitt?",
+    w:"Verhältnis des Preises zum Durchschnitt der letzten 200 Tage.",
+    g:"Reagiert schneller als der 200-Wochen-Schnitt, dafür unruhiger."},
+  supply_loss:{n:"Angebot im Verlust",q:"Wie viele Coins liegen unter Wasser?",
+    w:"Anteil aller Coins, die unter ihrem Einstandspreis liegen.",
+    g:"Kann Monate im Extrem verharren. Quelle derzeit nicht verfügbar."},
+  reserve_risk:{n:"Reserve Risk",q:"Wie überzeugt sind Langzeithalter im Verhältnis zum Preis?",
+    w:"Setzt den Preis ins Verhältnis zur Überzeugung der Langzeithalter.",
+    g:"Nur relativ zur eigenen Historie aussagekräftig. Quelle derzeit nicht verfügbar."},
+  fng_fear_weeks:{n:"Dauer der extremen Angst",q:"Wie lange herrscht schon Panik?",
+    w:"Wie viele der letzten acht Wochen im Durchschnitt unter 25 lagen.",
+    g:"Daten erst ab Februar 2018."},
+  puell:{n:"Puell Multiple",q:"Stehen die Miner unter Druck?",
+    w:"Tageserlös der Miner im Verhältnis zum Durchschnitt der letzten 365 Tage.",
+    g:"Die Spitzen fallen nach jedem Halving schwächer aus. Deshalb nur auf der Kaufseite."},
+  hash_ribbons:{n:"Hash Ribbons",q:"Ist die Miner-Kapitulation vorbei?",
+    w:"Vergleicht den 30- mit dem 60-Tage-Schnitt der Hashrate und wartet auf die Preisbestätigung.",
+    g:"Reiner Bestätiger. Meldet sich auch mitten im Zyklus."},
+  drawdown:{n:"Abstand vom Allzeithoch",q:"Wie tief ist der Fall?",
+    w:"Wie weit der Wochenschluss unter dem höchsten Tagesschluss aller Zeiten liegt.",
+    g:"Die Rückgänge werden flacher: −85, −84, −77 Prozent."},
+  months_since_ath:{n:"Monate seit dem Hoch",q:"Passt das Timing zu einem Zyklustief?",
+    w:"Zeit seit dem letzten Allzeithoch.",
+    g:"Die Tiefs kamen bisher 12 bis 13 Monate nach dem Hoch. Vier Datenpunkte, kein Naturgesetz."},
+  cycle_clock:{n:"Zyklus-Uhr",q:"Wie weit ist der Zyklus fortgeschritten?",
+    w:"Tage seit dem Halving, das den aktuellen Zyklus prägt.",
+    g:"Die Hochs lagen bei 526, 548 und 534 Tagen. Sehr konstant, aber seit den ETFs umstritten."},
+  bmsb_ext:{n:"Überdehnung über dem Trendband",q:"Rennt der Preis dem Trend davon?",
+    w:"Verhältnis des Preises zur Oberkante des Bull Market Support Band.",
+    g:"2025 lief der Kurs fast ohne Überdehnung nach oben."},
+  pi_cycle:{n:"Pi-Cycle-Nähe",q:"Nähern sich die beiden Top-Linien?",
+    w:"Verhältnis der 111-Tage-Linie zur doppelten 350-Tage-Linie. Bei 1 kreuzen sie.",
+    g:"Traf 2013, 2017 und April 2021, verfehlte November 2021 und 2025. Nur Bestätiger."},
+  rhodl:{n:"RHODL-Ratio",q:"Übernehmen neue Käufer von alten Haltern?",
+    w:"Vergleicht das Gewicht junger und alter Coins.",
+    g:"Nur relativ aussagekräftig. Quelle derzeit nicht verfügbar."},
+  lth_dist:{n:"Abgabe der Langzeithalter",q:"Verkaufen die alten Hände?",
+    w:"Wie stark Langzeithalter in den letzten 30 Tagen netto verkauft haben.",
+    g:"Langzeithalter verteilen auch mitten im Bullenmarkt. Quelle derzeit nicht verfügbar."},
+  fng_4w:{n:"Gier-Niveau",q:"Wie gierig ist der Markt?",
+    w:"Durchschnittliche Marktstimmung der letzten vier Wochen.",
+    g:"Stark von kurzfristigen Kursbewegungen getrieben."},
+  funding_30d:{n:"Hebel der Spekulanten",q:"Wie viel zahlen gehebelte Käufer?",
+    w:"Durchschnittliche Finanzierungsrate der letzten 30 Tage.",
+    g:"Seit den ETFs weniger ausgeprägt."},
+  retail_attention:{n:"Aufmerksamkeit der Öffentlichkeit",q:"Schaut die breite Masse hin?",
+    w:"Aufrufe der Wikipedia-Artikel zu Bitcoin, englisch und deutsch.",
+    g:"Ersatz für App-Store-Ranglisten, die es nicht kostenlos gibt. 2025 blieb die breite Masse weg."},
+};
+const PHASES = {1:{n:"Akkumulation",s:"Kaufen"},2:{n:"Aufwärtstrend",s:"Halten"},
+                3:{n:"Verteilung",s:"Verkaufen"},4:{n:"Abwärtstrend",s:"Warten"}};
+const TR = {B1:"Kauf 1",B2:"Kauf 2",B3:"Kauf 3",S1:"Verkauf 1",S2:"Verkauf 2",S3:"Verkauf 3"};
+
+// ============================================================ Helfer
+const $ = (s,r=document)=>r.querySelector(s);
+const el = (t,c,h)=>{const e=document.createElement(t); if(c)e.className=c; if(h!=null)e.innerHTML=h; return e;};
+const esc = (s)=>String(s ?? "").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const nf = (v,d=0)=>v==null||!isFinite(v)?"–":new Intl.NumberFormat("de-CH",{minimumFractionDigits:d,maximumFractionDigits:d}).format(v);
+const usd = (v)=>v==null?"–":nf(Math.round(v));
+const dateDE = (s)=>{ if(!s) return "–"; const [y,m,d]=s.split("-");
+  return `${+d}. ${["Jan.","Feb.","März","Apr.","Mai","Juni","Juli","Aug.","Sep.","Okt.","Nov.","Dez."][+m-1]} ${y}`; };
+const clamp=(v,a=0,b=100)=>Math.min(b,Math.max(a,v));
+
+// Privater Speicher. Nur auf diesem Gerät, nie im Repo.
+const store = {
+  get(k,f){ try{ const v=localStorage.getItem("zy_"+k); return v==null?f:JSON.parse(v);}catch{ return f; } },
+  set(k,v){ try{ localStorage.setItem("zy_"+k,JSON.stringify(v)); return true;}catch{ return false; } },
+};
+let POS = store.get("position",{btc:null,cash:null,currency:"USD",core_pct:40,split_buy:[34,33,33],split_sell:[34,33,33]});
+let DONE = store.get("tranches",{});
+let JOURNAL = store.get("journal",[]);
+
+// ============================================================ Laden
+const params = new URLSearchParams(location.search);
+const fixture = params.get("fixture");
+const SRC = fixture ? `data/fixtures/${fixture}.json` : "data/latest.json";
+let D=null, PH=null;
+
+(async function init(){
+  try{
+    const res = await fetch(SRC,{cache:"no-store"});
+    if(!res.ok) throw new Error("HTTP "+res.status);
+    D = await res.json();
+  }catch(e){
+    $("#stamp").textContent = "";
+    $("#app").innerHTML = `<div class="card"><h2>Kein Wochenstand</h2>
+      <p style="font-size:13.5px">Die Datei <code>${esc(SRC)}</code> konnte nicht geladen werden.
+      Läuft GitHub Pages für dieses Repo, und war der Wochenlauf schon erfolgreich?</p></div>`;
+    return;
+  }
+  render();
+  loadHistory();
+})();
+
+async function loadHistory(){
+  try{ const r = await fetch("data/phases.json",{cache:"no-store"}); if(r.ok){ PH = await r.json(); drawChart(); } }catch{}
+}
+
+// ============================================================ Aufbau
+function render(){
+  const app = $("#app"); app.className=""; app.innerHTML="";
+  const ageDays = Math.round((Date.now()-Date.parse(D.week_id+"T00:00:00Z"))/86400000);
+
+  $("#stamp").innerHTML = `Wochenschluss ${esc(dateDE(D.week_id))} · <span class="num">${usd(D.price?.close)} USD</span>` +
+    (D.today && D.today.date!==D.week_id ? ` <span class="dim">· Tageswert ${esc(dateDE(D.today.date))}: ${usd(D.today.close)}, vorläufig</span>` : "");
+
+  // Banner
+  const b = $("#banners"); b.innerHTML="";
+  if(fixture) b.appendChild(el("div","banner info",`Testansicht <b>${esc(fixture)}</b>. Es werden keine echten Daten gezeigt.`));
+  if(ageDays>8) b.appendChild(el("div","banner warn",
+    `Der letzte Wochenstand ist vom ${esc(dateDE(D.week_id))}. Die Pipeline hat seither nicht geliefert. Im Actions-Tab des Repos nachsehen.`));
+  if(D.flags?.data_gap) b.appendChild(el("div","banner warn","Die Daten sind unvollständig. Diese Woche wird nicht ausgewertet, die Zähler bleiben stehen."));
+  if(D.flags?.alert==="buy_in_uptrend") b.appendChild(el("div","banner info","Ausserordentliche Kaufgelegenheit: Der Kauf-Motor steht im Aufwärtstrend hoch. Die Reserve ist einsetzbar."));
+  if(D.flags?.alert==="sell_in_bear") b.appendChild(el("div","banner info","Der Verkaufs-Motor steht in der Bärenphase hoch. Nur zur Information, keine Aktion."));
+  if(D.flags?.cycle_anomaly) b.appendChild(el("div","banner warn","Der Zyklus läuft länger als je zuvor. Die Kernposition trägt, das Bewertungsgate bleibt aktiv."));
+  if(D.filters?.sth_rp?.missing) b.appendChild(el("div","banner warn",
+    `Der STH-Einstand fehlt, der Trendfilter arbeitet vereinfacht nur mit dem Trendband. Wert in <code>data/manual.json</code> eintragen.`));
+
+  app.appendChild(hero());
+  app.appendChild(phaseBar());
+  app.appendChild(engines());
+  app.appendChild(checklist());
+  app.appendChild(clock());
+  app.appendChild(position());
+  app.appendChild(tiles());
+  app.appendChild(history());
+  app.appendChild(journalCard());
+  foot();
+}
+
+// ---------------------------------------------------------- Ampel
+function hero(){
+  const c = el("div","card");
+  const h = el("div","hero");
+  const lamp = D.lamp || "aus";
+  h.appendChild(el("div","light",
+    ["rot","gelb","gruen"].map(k=>
+      `<span class="lamp ${lamp===k?"on":""}" data-c="${k}" aria-hidden="true">${{rot:"↓",gelb:"!",gruen:"↑"}[k]}</span>`
+    ).join("")));
+  h.firstChild.setAttribute("role","img");
+  h.firstChild.setAttribute("aria-label",
+    lamp==="aus" ? "Ampel aus: nichts tun" : `Ampel ${lamp}: ${PHASES[D.phase.id].s}`);
+
+  const t = el("div","heroText");
+  t.appendChild(el("div","phaseName",`Phase ${D.phase.id} · ${esc(D.phase.name)} · seit ${D.phase.weeks} Wochen`));
+  const act = el("div","action",esc(D.action?.text||"–")); act.setAttribute("aria-live","polite");
+  t.appendChild(act);
+
+  const amt = trancheAmount(D.action?.tranche);
+  if(amt) t.appendChild(el("div","amount"+(D.action.tranche[0]==="S"?" sell":""),esc(amt)));
+  t.appendChild(el("div","why",esc(why())));
+
+  const row = el("div","btnrow");
+  const tr = D.action?.tranche;
+  if(tr && !DONE[key(tr)]){
+    const b1 = el("button","btn"+(tr[0]==="S"?" sell":""),"Erledigt");
+    b1.onclick = ()=>markTranche(tr,"done");
+    const b2 = el("button","btn ghost","Überspringen");
+    b2.onclick = ()=>markTranche(tr,"skip");
+    row.append(b1,b2);
+  } else if(tr && DONE[key(tr)]){
+    row.appendChild(el("span","chip ok",`${TR[tr]} erledigt am ${esc(dateDE(DONE[key(tr)].date))}`));
+  }
+  if(row.children.length) t.appendChild(row);
+  h.appendChild(t); c.appendChild(h);
+  return c;
+}
+
+function why(){
+  if(D.flags?.data_gap) return "Die Auswertung wurde ausgesetzt.";
+  const e = D.engines[D.engines.active];
+  const gates = Object.entries(e.gates||{}).filter(([k])=>k!=="e2_min");
+  const open = gates.filter(([,v])=>v).map(([k])=>k);
+  const side = D.engines.active==="buy"?"Kauf":"Verkauf";
+  const base = `${side}-Motor ${e.score} von 100, ${e.confluence.in_zone} Indikatoren in Zone aus ${e.confluence.families} Familien.`;
+  return open.length ? base+` Offene Tore: ${open.join(", ")}.` : base+" Kein Tor offen.";
+}
+
+// ---------------------------------------------------------- Phasenleiste
+function phaseBar(){
+  const c = el("div","card"); c.appendChild(el("h2",null,"Zyklusphase"));
+  const g = el("div","phases");
+  for(const id of [1,2,3,4]){
+    const now = id===D.phase.id;
+    const done = passed(id);
+    const d = el("div","ph"+(now?" now":done?" done":""),
+      `<b>${id}</b>${esc(PHASES[id].n)}${now?`<br><span class="num">${D.phase.weeks} W</span>`:""}`);
+    if(now) d.dataset.side = (id===3?"sell":"buy");
+    g.appendChild(d);
+  }
+  c.appendChild(g);
+  return c;
+}
+// Welche Phasen der laufende Zyklus schon durchlaufen hat (④→①→②→③)
+function passed(id){
+  const order=[4,1,2,3], cur=order.indexOf(D.phase.id), me=order.indexOf(id);
+  return me<cur;
+}
+
+// ---------------------------------------------------------- Motoren
+function engines(){
+  const c = el("div","card"); c.appendChild(el("h2",null,"Motoren"));
+  c.appendChild(engRow("buy",D.engines.buy,D.engines.active==="buy"));
+  c.appendChild(engRow("sell",D.engines.sell,D.engines.active==="sell"));
+  return c;
+}
+function engRow(side,e,active){
+  const col = side==="buy"?"var(--buy)":"var(--sell)";
+  const w = el("div","eng"+(active?"":" dim"));
+  const top = el("div","engTop");
+  top.appendChild(el("span","engName",side==="buy"?"Kauf-Motor":"Verkaufs-Motor"));
+  top.appendChild(el("span","engZone",active?esc(zoneText(e.zone)):"im Hintergrund"));
+  const sc = el("span","engScore",e.score==null?"–":e.score); sc.style.color=col;
+  top.appendChild(sc); w.appendChild(top);
+
+  const bar = el("div","bar",`<i style="width:${clamp(e.score??0)}%;background:${col}"></i>`);
+  for(const t of [40,60,80]) bar.appendChild(el("span","tick")).style.left=t+"%";
+  w.appendChild(bar);
+
+  if(active){
+    const m = el("div","meta");
+    const cf = e.confluence;
+    m.appendChild(el("span","chip "+(cf.ok?"ok":"no"),
+      `${cf.in_zone} von ${cf.need_indicators} in Zone · ${cf.families} von ${cf.need_families} Familien`));
+    for(const [k,v] of Object.entries(e.gates||{})){
+      if(k==="e2_min") continue;
+      m.appendChild(el("span","chip "+(v?"ok":"no"),`Tor ${k} ${v?"✓":"✗"}`));
+    }
+    if(e.coverage<1) m.appendChild(el("span","chip warn",`Abdeckung ${Math.round(e.coverage*100)} %`));
+    if(cf.reduced) m.appendChild(el("span","chip warn","Anforderung gesenkt, Quelle fehlt"));
+    w.appendChild(m);
+  }
+  return w;
+}
+const zoneText = (z)=>({ruhig:"ruhig",annaeherung:"Annäherung",aktiv:"aktiv",stark:"stark",unbekannt:"unbekannt"}[z]||z);
+
+// ---------------------------------------------------------- Checkliste
+function checklist(){
+  const c = el("div","card");
+  const nt = D.next_transition||{};
+  c.appendChild(el("h2",null,`Bis Phase ${nt.to} · ${esc(PHASES[nt.to]?.n||"")}`));
+  const ul = el("ul","chk");
+  for(const cond of nt.conditions||[]){
+    const li = el("li");
+    li.appendChild(el("span","m "+(cond.met?"y":"n"),cond.met?"✓":"✗"));
+    li.appendChild(el("span","l",esc(cond.label)));
+    const fmt = (v)=>typeof v==="number" ? (Math.abs(v)>=1000?usd(v):nf(v,v%1?2:0)) : esc(v);
+    li.appendChild(el("span","v",`${fmt(cond.value)} / ${fmt(cond.target)}`));
+    ul.appendChild(li);
+  }
+  if(!ul.children.length) ul.appendChild(el("li",null,'<span class="l">Keine Bedingungen, die Woche wurde nicht ausgewertet.</span>'));
+  c.appendChild(ul);
+
+  const ctr = el("div","counter");
+  ctr.appendChild(el("span",null,"Bestätigte Wochen"));
+  const dots = el("div","dots");
+  for(let i=0;i<(nt.needed||2);i++) dots.appendChild(el("span",i<(nt.counter||0)?"f":""));
+  ctr.appendChild(dots);
+  ctr.appendChild(el("span",null,`${nt.counter||0} von ${nt.needed||2}`));
+  c.appendChild(ctr);
+  return c;
+}
+
+// ---------------------------------------------------------- Zyklus-Uhr
+function clock(){
+  const cc = D.cycle_clock||{};
+  const c = el("div","card"); c.appendChild(el("h2",null,"Zyklus-Uhr"));
+  const t0 = Date.parse(cc.ath_date+"T00:00:00Z");
+  const t1 = Date.parse((cc.next_halving?.estimate||"2028-04-14")+"T00:00:00Z") + 200*86400000;
+  const x = (ms)=>clamp(((ms-t0)/(t1-t0))*100,0,100);
+  const box = el("div","clock",'<div class="clockLine"></div>');
+  const band=(a,b,cls)=>{const d=el("div","band "+cls);d.style.left=x(a)+"%";d.style.width=Math.max(1,x(b)-x(a))+"%";box.appendChild(d);};
+  band(t0+9*30.44*86400000, t0+16*30.44*86400000, "low");
+  if(cc.next_halving){
+    const h=Date.parse(cc.next_halving.estimate+"T00:00:00Z");
+    band(h+450*86400000, h+640*86400000, "top");
+  }
+  const mark=(ms,label,now)=>{const m=el("div","mk"+(now?" now":""),`<span>${esc(label)}</span>`);m.style.left=x(ms)+"%";box.appendChild(m);};
+  mark(t0,"Hoch");
+  if(cc.next_halving) mark(Date.parse(cc.next_halving.estimate+"T00:00:00Z"),"Halving");
+  mark(Date.parse(D.week_id+"T00:00:00Z"),"heute",true);
+  c.appendChild(box);
+
+  const kv=(a,b)=>c.appendChild(el("div","kv",`<span>${esc(a)}</span><span>${esc(b)}</span>`));
+  kv("Allzeithoch",`${usd(cc.ath)} USD am ${dateDE(cc.ath_date)}`);
+  kv("Seit dem Hoch",`${cc.days_since_ath} Tage · ${nf(cc.days_since_ath/30.44,1)} Monate`);
+  kv("Letztes Halving",`${dateDE(cc.last_halving)} · ${cc.days_since_last_halving} Tage`);
+  if(cc.next_halving) kv("Nächstes Halving",`geschätzt ${dateDE(cc.next_halving.estimate)} · ${nf(cc.next_halving.blocks_left)} Blöcke`);
+  c.appendChild(el("div","why","Die schraffierten Felder zeigen, wo die Tiefs und Hochs der vier bisherigen Zyklen lagen. Muster, keine Prognose."));
+  return c;
+}
+
+// ---------------------------------------------------------- Position
+function position(){
+  const c = el("div","card"); c.appendChild(el("h2",null,"Deine Position · nur auf diesem Gerät"));
+  const mk=(label,k,ph)=>{
+    const f=el("div","field",`<label for="f_${k}">${esc(label)}</label>`);
+    const i=el("input"); i.id="f_"+k; i.type="number"; i.step="any"; i.placeholder=ph;
+    i.value = POS[k] ?? ""; i.inputMode="decimal";
+    i.oninput=()=>{ POS[k]= i.value===""?null:parseFloat(i.value); store.set("position",POS); refreshAmounts(); };
+    f.appendChild(i); return f;
+  };
+  c.appendChild(mk("BTC-Bestand","btc","0.5"));
+  c.appendChild(mk("Cash in USD","cash","10000"));
+  c.appendChild(mk("Kernposition in Prozent","core_pct","40"));
+
+  const row = el("div","trancheRow");
+  for(const t of ["B1","B2","B3","S1","S2","S3"]){
+    const due = D.tranches?.[t];
+    const st = DONE[key(t)];
+    const cls = st?.state==="done"?"tr done":st?.state==="skip"?"tr skip":due?"tr due":"tr";
+    row.appendChild(el("span",cls,`${TR[t]}${due?"":" · offen"}`));
+  }
+  c.appendChild(row);
+  if(POS.btc==null && POS.cash==null)
+    c.appendChild(el("div","why","Trag deinen Bestand ein, dann rechnet die Seite die Tranchen in BTC und USD aus. Die Angaben verlassen dieses Gerät nicht."));
+  return c;
+}
+function trancheAmount(t){
+  if(!t) return null;
+  const core=(POS.core_pct??40)/100;
+  if(t[0]==="B"){
+    if(POS.cash==null) return null;
+    const share=(POS.split_buy||[34,33,33])[+t[1]-1]/100;
+    const usdAmt=POS.cash*share;
+    return `≈ ${usd(usdAmt)} USD · ${nf(usdAmt/D.price.close,4)} BTC`;
+  }
+  if(POS.btc==null) return null;
+  const tradable=POS.btc*(1-core);
+  const share=(POS.split_sell||[34,33,33])[+t[1]-1]/100;
+  const qty=tradable*share;
+  return `≈ ${nf(qty,4)} BTC · ${usd(qty*D.price.close)} USD · Kernposition ${nf(POS.btc*core,4)} BTC bleibt`;
+}
+function refreshAmounts(){ render(); }
+const key=(t)=>`${D.phase.cycle_no||0}:${t}`;
+
+function markTranche(t,state){
+  DONE[key(t)] = {state,date:D.week_id,price:D.price.close};
+  store.set("tranches",DONE);
+  JOURNAL.unshift({date:new Date().toISOString().slice(0,10),week:D.week_id,
+    text:`${TR[t]} ${state==="done"?"erledigt":"übersprungen"} bei ${usd(D.price.close)} USD`});
+  store.set("journal",JOURNAL);
+  render();
+}
+
+// ---------------------------------------------------------- Kacheln
+function tiles(){
+  const wrap = el("div");
+  wrap.appendChild(group(D.engines.active,true));
+  wrap.appendChild(group(D.engines.active==="buy"?"sell":"buy",false));
+
+  const ctx = el("details","group");
+  ctx.appendChild(el("summary",null,"Kontext und Quellen"));
+  const c = el("div","card");
+  for(const [k,v] of Object.entries(D.sources||{}))
+    c.appendChild(el("div","kv",`<span>${esc(k)}</span><span>${v.ok?"✓ "+esc(v.last||""):"✗ "+esc(v.error||"Fehler")}</span>`));
+  ctx.appendChild(c); wrap.appendChild(ctx);
+  return wrap;
+}
+function group(side,open){
+  const e = D.engines[side];
+  const title = side==="buy"?"Indikatoren des Kauf-Motors":"Indikatoren des Verkaufs-Motors";
+  if(!open){
+    const d = el("details","group");
+    d.appendChild(el("summary",null,title));
+    d.appendChild(famList(side,e));
+    return d;
+  }
+  const c = el("div","card"); c.appendChild(el("h2",null,title));
+  c.appendChild(famList(side,e));
+  return c;
+}
+function famList(side,e){
+  const box = el("div");
+  for(const [fid,f] of Object.entries(e.families)){
+    const head = el("div","famhead",
+      `<b>${esc(f.label)}</b> Gewicht ${f.weight} %<span class="fs">${f.available?f.score:"nicht verfügbar"}</span>`);
+    box.appendChild(head);
+    const g = el("div","tiles");
+    for(const id of Object.keys(f.members)) g.appendChild(tile(id,side));
+    box.appendChild(g);
+  }
+  return box;
+}
+function tile(id,side){
+  const s = D.scores?.[id]||{}, ind = D.indicators?.[id]||{};
+  const meta = I[id]||{n:id,q:""};
+  const st = side==="buy"?(s.state_buy||"fehlt"):(s.state_sell||"fehlt");
+  const score = side==="buy"?s.score_buy:s.score_sell;
+  const col = side==="buy"?"var(--buy)":"var(--sell)";
+  const b = el("button","tile");
+  b.setAttribute("aria-label",`${meta.n}: ${ind.missing?"keine Daten":nf(ind.value,2)+" "+(ind.unit||"")}`);
+  const dot = `<span class="dot" data-s="${esc(st)}" style="color:${col}"></span>`;
+  b.appendChild(el("div","tt",dot+esc(meta.n)));
+  b.appendChild(el("div","tq",esc(meta.q)));
+  const val = ind.missing ? "–" : (typeof ind.value==="string" ? esc(ind.value) : nf(ind.value, Math.abs(ind.value)>=1000?0:2));
+  const tv = el("div","tv",`<b>${val}</b><i>${esc(ind.unit||"")}</i>`);
+  if(s.pct!=null) tv.appendChild(el("span","trend",`${Math.round(s.pct)}. Perzentil`));
+  b.appendChild(tv);
+  const mini = el("div","mini",`<i style="width:${clamp(score??0)}%;background:${col}"></i>`);
+  mini.appendChild(el("u")).style.left="70%";
+  b.appendChild(mini);
+  const foot = el("div","tfoot");
+  foot.appendChild(el("span",null,score==null?"zählt nicht":`Score ${score}`));
+  if(ind.stale) foot.appendChild(el("span","tag old",`alt · ${esc(dateDE(ind.as_of))}`));
+  if(ind.source) foot.appendChild(el("span","tag",esc(ind.source)));
+  b.appendChild(foot);
+  b.onclick = ()=>sheet(id,side);
+  return b;
+}
+
+// ---------------------------------------------------------- Erklär-Sheet
+function sheet(id,side){
+  const meta = I[id]||{n:id}, s=D.scores?.[id]||{}, ind=D.indicators?.[id]||{};
+  const score = side==="buy"?s.score_buy:s.score_sell;
+  const inner = $("#sheetIn");
+  inner.innerHTML = `<div class="grabber"></div>
+    <h3 id="sheetTitle">${esc(meta.n)}</h3>
+    <div class="sub">${esc(meta.q||"")}</div>`;
+  const sec=(h,p)=>{const x=el("section",null,`<h4>${esc(h)}</h4><p>${p}</p>`);inner.appendChild(x);};
+  sec("Was es misst", esc(meta.w||"–"));
+  if(ind.missing) sec("Aktueller Stand", esc(ind.note||"Keine Daten verfügbar."));
+  else{
+    let t = `Aktuell <b class="num">${typeof ind.value==="string"?esc(ind.value):nf(ind.value,2)} ${esc(ind.unit||"")}</b>.`;
+    if(s.pct!=null) t += ` Das ist das ${Math.round(s.pct)}. Perzentil der letzten vier Jahre${s.pct_basis==="kurz"?" (kurze Historie)":""}.`;
+    if(score!=null) t += ` Score ${score} von 100, ab 70 gilt der Indikator als in Zone.`;
+    else t += " Der Wert zählt derzeit nicht in den Score.";
+    sec("Aktueller Stand", t);
+  }
+  sec("Herkunft", `${esc(ind.source||"–")}${ind.as_of?`, Stand ${esc(dateDE(ind.as_of))}`:""}${ind.stale?" · als alt gekennzeichnet":""}`);
+  sec("Grenzen", esc(meta.g||"–"));
+  const close = el("button","btn ghost","Schliessen"); close.onclick=closeSheet;
+  inner.appendChild(close);
+  const sh=$("#sheet"); sh.classList.add("open"); close.focus();
+}
+function closeSheet(){ $("#sheet").classList.remove("open"); }
+$("#sheet").addEventListener("click",e=>{ if(e.target.id==="sheet") closeSheet(); });
+document.addEventListener("keydown",e=>{ if(e.key==="Escape") closeSheet(); });
+
+// ---------------------------------------------------------- Verlauf
+function history(){
+  const c = el("div","card"); c.id="histCard";
+  c.appendChild(el("h2",null,"Verlauf"));
+  c.appendChild(el("div","chartBox",'<div class="why" id="chartHint">Lade Historie …</div>'));
+  return c;
+}
+function drawChart(){
+  const box = $("#histCard .chartBox"); if(!box||!PH) return;
+  const rows = PH.rows.filter(r=>r[1]>0);
+  if(!rows.length) return;
+  const W=400,H=190,P={l:2,r:2,t:8,b:14};
+  const xs=(i)=>P.l+(i/(rows.length-1))*(W-P.l-P.r);
+  const lo=Math.log10(Math.min(...rows.map(r=>r[1]))), hi=Math.log10(Math.max(...rows.map(r=>r[1])));
+  const ys=(v)=>P.t+(1-(Math.log10(v)-lo)/(hi-lo))*(H-P.t-P.b);
+  const COL={1:"rgba(45,212,167,.14)",2:"transparent",3:"rgba(240,101,106,.14)",4:"rgba(34,45,60,.5)"};
+  let bands="",start=0;
+  for(let i=1;i<=rows.length;i++){
+    if(i===rows.length||rows[i][2]!==rows[start][2]){
+      bands+=`<rect x="${xs(start).toFixed(1)}" y="${P.t}" width="${Math.max(.5,xs(i-1)-xs(start)).toFixed(1)}" height="${H-P.t-P.b}" fill="${COL[rows[start][2]]}"/>`;
+      start=i;
+    }
+  }
+  const path = rows.map((r,i)=>`${i?"L":"M"}${xs(i).toFixed(1)},${ys(r[1]).toFixed(1)}`).join("");
+  const marks = (D.tranches?Object.entries(D.tranches).filter(([,w])=>w):[]).map(([t,w])=>{
+    const i=rows.findIndex(r=>r[0]===w); if(i<0) return "";
+    const up=t[0]==="B";
+    return `<path d="M${xs(i).toFixed(1)},${(ys(rows[i][1])+(up?7:-7)).toFixed(1)} l-4,${up?5:-5} l8,0 z" fill="${up?"var(--buy)":"var(--sell)"}"/>`;
+  }).join("");
+  box.innerHTML = `<svg class="chart" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img"
+      aria-label="Bitcoin-Kurs seit ${rows[0][0]} mit den Zyklusphasen als Hintergrund">
+      ${bands}<path d="${path}" fill="none" stroke="var(--ink)" stroke-width="1.1" vector-effect="non-scaling-stroke"/>${marks}</svg>
+    <div class="legend">
+      <span><i style="background:rgba(45,212,167,.5)"></i>Akkumulation</span>
+      <span><i style="background:rgba(240,101,106,.5)"></i>Verteilung</span>
+      <span><i style="background:rgba(34,45,60,.9)"></i>Abwärtstrend</span>
+      <span>▲ Kauf ▼ Verkauf</span>
+    </div>
+    <div class="why">Logarithmisch, ${rows.length} Wochen ab ${esc(dateDE(rows[0][0]))}.</div>`;
+}
+
+// ---------------------------------------------------------- Journal
+function journalCard(){
+  const c = el("div","card"); c.appendChild(el("h2",null,"Journal"));
+  if(!JOURNAL.length) c.appendChild(el("div","why","Noch keine Einträge. Sobald du eine Tranche als erledigt markierst, erscheint sie hier."));
+  for(const j of JOURNAL.slice(0,12))
+    c.appendChild(el("div","kv",`<span>${esc(dateDE(j.date))}</span><span>${esc(j.text)}</span>`));
+  const row = el("div","btnrow");
+  const ex = el("button","btn ghost","Backup exportieren"); ex.onclick=exportBackup;
+  const im = el("button","btn ghost","Backup importieren"); im.onclick=importBackup;
+  row.append(ex,im); c.appendChild(row);
+  return c;
+}
+function exportBackup(){
+  const data={_app:"panta-rey-ampel",_v:1,position:POS,tranches:DONE,journal:JOURNAL};
+  const a=el("a"); a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:"application/json"}));
+  a.download=`ampel-backup-${new Date().toISOString().slice(0,10)}.json`; a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),2000);
+}
+function importBackup(){
+  const i=el("input"); i.type="file"; i.accept="application/json";
+  i.onchange=async()=>{ try{
+    const j=JSON.parse(await i.files[0].text());
+    if(j._app!=="panta-rey-ampel") throw new Error("Falsches Format");
+    POS=j.position||POS; DONE=j.tranches||DONE; JOURNAL=j.journal||JOURNAL;
+    store.set("position",POS); store.set("tranches",DONE); store.set("journal",JOURNAL);
+    render();
+  }catch(e){ alert("Backup konnte nicht gelesen werden: "+e.message); } };
+  i.click();
+}
+$("#btnSettings").onclick=()=>{
+  const inner=$("#sheetIn");
+  inner.innerHTML=`<div class="grabber"></div><h3 id="sheetTitle">Einstellungen</h3>
+    <div class="sub">Konfiguration ${esc(D.config_version||D.stage||"")} · Daten ${esc(D.week_id)}</div>`;
+  const s=el("section",null,`<h4>Speicher</h4><p>Bestand, Tranchen und Journal liegen ausschliesslich in diesem Browser.
+    Safari auf iOS löscht den Speicher nach längerer Inaktivität, deshalb lohnt sich ein jährliches Backup.</p>`);
+  inner.appendChild(s);
+  const r=el("div","btnrow");
+  const ex=el("button","btn ghost","Backup exportieren"); ex.onclick=exportBackup;
+  const rs=el("button","btn ghost","Alles löschen");
+  rs.onclick=()=>{ if(confirm("Bestand, Tranchen und Journal auf diesem Gerät löschen?")){
+    ["position","tranches","journal"].forEach(k=>localStorage.removeItem("zy_"+k));
+    POS=store.get("position",{btc:null,cash:null,core_pct:40}); DONE={}; JOURNAL=[]; closeSheet(); render(); } };
+  r.append(ex,rs); inner.appendChild(r);
+  const cl=el("button","btn ghost","Schliessen"); cl.onclick=closeSheet; inner.appendChild(cl);
+  $("#sheet").classList.add("open"); cl.focus();
+};
+
+function foot(){
+  $("#foot").innerHTML =
+    `<p>${(D.attribution||[]).map(esc).join(" · ")}</p>
+     <p>Konfiguration ${esc(D.config_version||"–")} · Stand ${esc(dateDE(D.week_id))} ·
+     <a href="https://github.com/Panta-rey/Panta-Rey-BTC-Ampel">Quellcode</a></p>
+     <p>Keine Anlageberatung. Das Modell beruht auf vier Zyklen und kann falsch liegen.</p>`;
+}
+</script>
+</body>
+</html>
