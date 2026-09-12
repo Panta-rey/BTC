@@ -89,6 +89,21 @@ Ampel gegen Halten: ✓ 2.6800 BTC statt 1,0000 BTC (plus 0 Cash).
 | 2025 | 80.0 % | 80.0 % | 0 |
 | 2026 | 80.0 % | 80.0 % | 0 |
 
+## Empfindlichkeit (±15 %)
+
+| Schwelle | Faktor | BTC am Ende | Transaktionen | Kriterien erfüllt |
+|---|---|---|---|---|
+| `engines.buy.zone_min_score` | 0.85 | 2.6800 | 12 | 3 von 7 |
+| `engines.buy.zone_min_score` | 1.15 | 2.6800 | 12 | 3 von 7 |
+| `engines.sell.zone_min_score` | 0.85 | 2.6800 | 12 | 3 von 7 |
+| `engines.sell.zone_min_score` | 1.15 | 2.6800 | 12 | 3 von 7 |
+| `gates.buy_B.drawdown_max` | 0.85 | 2.6800 | 12 | 3 von 7 |
+| `gates.buy_B.drawdown_max` | 1.15 | 2.6800 | 12 | 3 von 7 |
+| `gates.sell_E2.halving_days_min` | 0.85 | 2.6800 | 12 | 3 von 7 |
+| `gates.sell_E2.halving_days_min` | 1.15 | 2.6800 | 12 | 3 von 7 |
+| `gates.sell_E2.score_min` | 0.85 | 2.6800 | 12 | 3 von 7 |
+| `gates.sell_E2.score_min` | 1.15 | 1.3600 | 6 | 1 von 7 |
+
 ## Aktueller Stand
 
 Phase 2 Aufwärtstrend seit 2023-01-22 · Kauf-Motor 42 · Verkauf-Motor 1 · Zähler 0 von 2
