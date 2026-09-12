@@ -150,6 +150,17 @@ function diagnose(run, side, date) {
 
 function diagnosticsSection(run) {
   const L = ["## Diagnose an den bekannten Extremen", "",
+    "| Extrem | Datum | nächste Woche | Score | Abdeckung | Gates | stärkste Woche | Score |",
+    "|---|---|---|---|---|---|---|---|",
+    ...[["Tief", LOWS, "buy"], ["Hoch", HIGHS, "sell"]].flatMap(([kind, list, side]) =>
+      list.map(([date]) => {
+        const d = diagnose(run, side, date);
+        if (!d) return `| ${kind} | ${date} | – | – | – | – | – | – |`;
+        const g = Object.entries(d.at.gates).filter(([k]) => (side === "buy" ? "AB" : "E").includes(k[0]))
+          .map(([k, v]) => `${k}=${v ? "✓" : "✗"}`).join(" ");
+        return `| ${kind} | ${date} | ${d.at.w} | ${d.at.score ?? "–"} | ${pct(d.at.cov)} | ${g} | ${d.best.w} | ${d.best.score ?? "–"} |`;
+      })),
+    "",
     "Für jedes Extrem: die nächstgelegene Woche und die stärkste Woche im Fenster von ±26 Wochen. `cov` ist die Abdeckung des jeweiligen Motors, `gaps` die Zahl der Wochen mit Datenlücke im Fenster.", ""];
   for (const [kind, list, side] of [["Tief", LOWS, "buy"], ["Hoch", HIGHS, "sell"]]) {
     for (const [date, price] of list) {

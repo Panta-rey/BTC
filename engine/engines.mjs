@@ -104,14 +104,18 @@ export function engineScore(scores, engineCfg, side) {
     const totalInner = Object.values(f.members).reduce((a, b) => a + b, 0);
     let innerSum = 0, innerWeight = 0;
     const members = {};
+    const zoneHere = [];
     for (const [id, w] of Object.entries(f.members)) {
       const s = scores[id]?.[key];
       members[id] = s ?? null;
       if (s != null) { innerSum += s * w; innerWeight += w; }
-      if (scores[id]?.[stateKey] === "in_zone") { inZone++; zoneFamilies.add(fid); zoneIds.push(id); }
+      if (scores[id]?.[stateKey] === "in_zone") zoneHere.push(id);
     }
     // Eine Familie zählt nur, wenn mindestens 50 % ihres Innengewichts vorhanden sind.
     const enough = innerWeight >= totalInner * 0.5;
+    // Nur Familien, die auch in den Score eingehen, dürfen zur Konvergenz zählen.
+    // Sonst wäre die Bedingung leichter zu erfüllen als der Score selbst.
+    if (enough && zoneHere.length) { zoneFamilies.add(fid); inZone += zoneHere.length; zoneIds.push(...zoneHere); }
     const fScore = enough ? innerSum / innerWeight : null;
     families[fid] = {
       label: f.label, weight: f.weight, score: fScore == null ? null : Math.round(fScore),

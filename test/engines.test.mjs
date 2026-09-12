@@ -238,3 +238,14 @@ test("toRows ergänzt den 52-Wochen-Rückgang und kennzeichnet fehlende Quellen"
   assert.equal(rs[0].supply_loss, null);
   assert.deepEqual(rs[0]._stale, []);
 });
+
+test("Nur wertende Familien zählen zur Konvergenz", () => {
+  // "Halter & Stimmung" hat nur Fear & Greed: die Familie geht nicht in den Score ein
+  // und darf deshalb auch keinen Indikator zur Konvergenz beisteuern.
+  const r = row("2018-12-16", { ...BEAR, fng_fear_weeks: 8 });
+  const buy = engineScore(scoreIndicators(r, [], cfg), cfg.engines.buy, "buy");
+  assert.equal(buy.families.halter_stimmung.available, false);
+  assert.ok(!buy.confluence.ids.includes("fng_fear_weeks"), "darf nicht mitzählen");
+  assert.ok(buy.confluence.families <= buy.confluence.available_families,
+    `mehr Zonen-Familien (${buy.confluence.families}) als verfügbare (${buy.confluence.available_families})`);
+});

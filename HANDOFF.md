@@ -2,7 +2,7 @@
 
 Kurzer Zustandsbericht des Projekts. Wer hier einsteigt, liest zuerst dieses Dokument, dann `SPEC.md`.
 
-**Stand:** 12. September 2026 · Konfiguration `0.9-entwurf` · Node 22, keine Abhängigkeiten · **38 Tests grün**
+**Stand:** 12. September 2026 · Konfiguration `0.9-entwurf` · Node 22, keine Abhängigkeiten · **39 Tests grün**
 
 ---
 
@@ -32,7 +32,7 @@ Keine Anlageberatung. Das Modell beruht auf vier Zyklen und kann falsch liegen.
 | M6 | Verlauf und Zyklus-Uhr als Grafik | ⬜ |
 | M7 | Härtung, Barrierefreiheit | ⬜ |
 
-**38 Tests, alle grün** (`node --test "test/**/*.test.mjs"`).
+**39 Tests, alle grün** (`node --test "test/**/*.test.mjs"`).
 
 ---
 
@@ -112,6 +112,8 @@ Beim Bauen zeigten sich vier Stellen, an denen die Spezifikation nachgezogen wur
 | Zyklus-Uhr ohne relevantes Halving | fehlender Wert | Score 0 | Als „fehlt" wäre die Familie „Zeit & Trend" (Innengewicht 25 von 40) unter die 50-Prozent-Regel gefallen und der ganze Verkaufs-Motor auf 40 % Abdeckung gesunken, also dauerhafte Datenlücke in den Phasen ② und ③. |
 | Konvergenz | fest 3 Familien | `min(3, verfügbare Familien)`, mindestens 2 | Da eine Kauf-Familie dauerhaft fehlt, blieben nur drei. Ein Signal darf nicht daran scheitern, dass eine Quelle nicht lizenziert ist. Das Feld `reduced` in `latest.json` zeigt an, wenn die Anforderung gesenkt wurde. |
 | Trendbruch-Meldung | nur bei offenen Tranchen | immer beim Übergang ③ → ④ | Der Trendbruch ist auch dann eine wichtige Information, wenn nichts mehr zu verkaufen ist. |
+| Mindestabdeckung | 70 % | 60 % | Ohne Fear & Greed (ab Feb. 2018) und Funding (ab 2019) erreicht der Verkaufs-Motor nur 65 %. Mit 70 % war er bis 2018 dauerhaft blind und verpasste das Hoch 2017. |
+| Konvergenz-Zählung | alle Familien mit einem Indikator in Zone | nur Familien, die auch in den Score eingehen | Sonst war die Konvergenzbedingung leichter zu erfüllen als der Score. |
 
 ---
 
@@ -140,7 +142,22 @@ Behebung: `zone_min_coverage` von 0,70 auf 0,60. Die beiden tragenden Verkaufs-F
 
 Dafür schreibt der Backtest jetzt einen **Diagnose-Abschnitt**: für jedes bekannte Extrem die nächstgelegene und die stärkste Woche im Fenster von ±26 Wochen, mit Score, Abdeckung, Gates und allen Familienwerten. Damit lässt sich der Hebel gezielt bestimmen, statt zu raten.
 
-**Vorgehen für Lauf 2:** `node scripts/backtest.mjs --sensitivity`, dann den Diagnose-Abschnitt für „Hoch 2025-10-06" lesen. Erst danach Parameter ändern, und nur solche, die in allen Zyklen helfen. Am Ende `config/engine.json` auf `version: "1.0"` setzen.
+**Diagnose Lauf 2 (Kaufseite, echte Daten):** Alle drei Tiefs sauber erkannt, keine einzige Datenlücke im Fenster von ±26 Wochen.
+
+| Tief | nächste Woche | Kauf-Score | Gates | Familien (Bewertung / Miner / Zeit) |
+|---|---|---|---|---|
+| 2015-01-14 | 2015-01-11 | 79 | A ✓ | 84 / 42 / 100 |
+| 2018-12-15 | 2018-12-16 | 95 | A ✓ B ✓ | 97 / 80 / 100 |
+| 2022-11-21 | 2022-11-20 | 87 | A ✓ B ✓ | 97 / 41 / 100 |
+
+**Dabei ist ein Zählfehler aufgefallen und behoben.** Die Diagnose meldete für 2018 „8 Indikatoren in Zone aus 4 Familien (3 verfügbar)". Vier von drei ist unmöglich. Die Konvergenz zählte auch Familien mit, die mangels Mitgliedern gar nicht in den Score eingehen, hier „Halter & Stimmung" mit nur noch Fear & Greed. Damit war die Konvergenzbedingung leichter zu erfüllen als der Score selbst. Jetzt zählen nur wertende Familien, ein Test sichert das ab.
+
+**Achtung, das verschärft die Kaufbedingung.** Verfügbar sind drei Familien, gefordert sind damit drei, also muss auch die Miner-Familie einen Indikator in Zone haben. In der Tabelle oben liegt sie 2015 bei 42 und 2022 bei 41. Der Phaseneintritt 2022 erfolgte allerdings schon im Juni, als die Miner-Kapitulation lief (stärkste Woche September: 93). Ob die Eintritte halten, zeigt der nächste Lauf. Falls ein Tief kippt, gibt es zwei Hebel, in dieser Reihenfolge zu prüfen:
+
+1. Die Ankerpunkte von `puell` und `hash_ribbons` grosszügiger setzen, weil beide an Tiefs oft nur mittlere Werte zeigen.
+2. Die Konvergenz nicht über die Zahl der Familien definieren, sondern über das Gewicht: „Indikatoren in Zone müssen zusammen mindestens X Prozent des verfügbaren Gewichts stellen." Das ist sauberer, aber ein grösserer Eingriff.
+
+**Vorgehen für Lauf 3:** `node scripts/backtest.mjs --sensitivity`, dann den Diagnose-Abschnitt für „Hoch 2025-10-06" lesen. Die Zusammenfassung im Actions-Lauf zeigt jetzt den ganzen Bericht, und die Diagnose beginnt mit einer Übersichtstabelle aller sieben Extreme. Erst danach Parameter ändern, und nur solche, die in allen Zyklen helfen. Am Ende `config/engine.json` auf `version: "1.0"` setzen.
 
 **Offene Nebenfrage:** ob das Juni-Tief 2026 bei rund 60'000 über Gate B ausgelöst hätte. Der Phasen-Abschnitt zeigt bisher durchgehend Phase 2 seit Januar 2023, also nein. Auch das klärt die Diagnose.
 
