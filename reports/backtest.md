@@ -11,11 +11,11 @@ Konfiguration `0.9-entwurf` · 662 Wochen ab 2014-01-05 bis 2026-09-06 · Gebüh
 | Strategie | BTC am Ende | Cash | Wert | Grösster Rückgang | Transaktionen |
 |---|---|---|---|---|---|
 | Halten | 1.0000 | – | 80'339 | – | 0 |
-| Ampel | 3.3192 | 0 | 266'663 | -76.6 % | 12 |
+| Ampel | 1.3277 | 207'481 | 314'146 | -76.6 % | 15 |
 | Sparplan | 52.6063 | 0 | 4'226'337 | – | 153 |
-| Sparplan mit Faktor | 57.7938 | 2'000 | 4'645'093 | – | 153 |
+| Sparplan mit Faktor | 57.7552 | 5'000 | 4'644'991 | – | 153 |
 
-Ampel gegen Halten: ✓ 3.3192 BTC statt 1,0000 BTC (plus 0 Cash).
+Ampel gegen Halten: ✓ 1.3277 BTC statt 1,0000 BTC (plus 207'481 Cash).
 
 ## Abnahmekriterien (SPEC 10.3)
 
@@ -27,7 +27,7 @@ Ampel gegen Halten: ✓ 3.3192 BTC statt 1,0000 BTC (plus 0 Cash).
 | Hoch | 2013-12-04 | 1'150 | – | – | – | – | ≥ 0,6 × | ✗ |
 | Hoch | 2017-12-17 | 19'800 | – | -9 W | 10'831 | 0.55 × | ≥ 0,6 × | ✗ |
 | Hoch | 2021-11-10 | 69'000 | – | 5 W | 50'124 | 0.73 × | ≥ 0,6 × | ✓ |
-| Hoch | 2025-10-06 | 126'000 | – | – | – | – | ≥ 0,6 × | ✗ |
+| Hoch | 2025-10-06 | 126'000 | – | 5 W | 104'705 | 0.83 × | ≥ 0,6 × | ✓ |
 
 ## Diagnose an den bekannten Extremen
 
@@ -39,7 +39,7 @@ Ampel gegen Halten: ✓ 3.3192 BTC statt 1,0000 BTC (plus 0 Cash).
 | Hoch | 2013-12-04 | 2014-01-05 | 58 | 65.0 % | E1=✗ E2=✗ | 2014-01-05 | 58 |
 | Hoch | 2017-12-17 | 2017-12-17 | 100 | 65.0 % | E1=✓ E2=✓ | 2017-12-17 | 100 |
 | Hoch | 2021-11-10 | 2021-11-07 | 51 | 80.0 % | E1=✗ E2=✓ | 2021-11-14 | 52 |
-| Hoch | 2025-10-06 | 2025-10-05 | 36 | 80.0 % | E1=✗ E2=✗ | 2025-10-05 | 36 |
+| Hoch | 2025-10-06 | 2025-10-05 | 36 | 80.0 % | E1=✗ E2=✓ | 2025-10-05 | 36 |
 
 Für jedes Extrem: die nächstgelegene Woche und die stärkste Woche im Fenster von ±26 Wochen. `cov` ist die Abdeckung des jeweiligen Motors, `gaps` die Zahl der Wochen mit Datenlücke im Fenster.
 
@@ -101,8 +101,8 @@ Konvergenz in der nächstgelegenen Woche: 1 Indikatoren in Zone aus 1 Familien (
 
 | | Woche | Score | Abdeckung | Phase | Gates | Familien |
 |---|---|---|---|---|---|---|
-| nächstgelegen | 2025-10-05 | 36 | 80.0 % | 2 | E1=✗ E2=✗ | {"zeit_trend":63,"rel_bewertung":16,"halter":null,"euphorie":0} |
-| stärkste | 2025-10-05 | 36 | 80.0 % | | E1=✗ E2=✗ | {"zeit_trend":63,"rel_bewertung":16,"halter":null,"euphorie":0} |
+| nächstgelegen | 2025-10-05 | 36 | 80.0 % | 2 | E1=✗ E2=✓ | {"zeit_trend":63,"rel_bewertung":16,"halter":null,"euphorie":0} |
+| stärkste | 2025-10-05 | 36 | 80.0 % | | E1=✗ E2=✓ | {"zeit_trend":63,"rel_bewertung":16,"halter":null,"euphorie":0} |
 
 Konvergenz in der nächstgelegenen Woche: 1 Indikatoren in Zone aus 1 Familien (3 verfügbar). Zyklus-Uhr: 533 Tage. Wochen mit Datenlücke im Fenster: 0 von 52.
 
@@ -116,11 +116,13 @@ Konvergenz in der nächstgelegenen Woche: 1 Indikatoren in Zone aus 1 Familien (
 | 2017-08-20 | 2018-02-04 | 3 Verteilung | 25 | 4'059 | 8'191 |
 | 2018-02-11 | 2018-11-25 | 4 Abwärtstrend | 42 | 8'067 | 3'939 |
 | 2018-12-02 | 2019-04-07 | 1 Akkumulation | 19 | 4'102 | 5'191 |
-| 2019-04-14 | 2021-10-10 | 2 Aufwärtstrend | 131 | 5'163 | 54'715 |
-| 2021-10-17 | 2021-12-05 | 3 Verteilung | 8 | 61'539 | 49'463 |
+| 2019-04-14 | 2021-10-03 | 2 Aufwärtstrend | 130 | 5'163 | 48'236 |
+| 2021-10-10 | 2021-12-05 | 3 Verteilung | 9 | 54'715 | 49'463 |
 | 2021-12-12 | 2022-06-19 | 4 Abwärtstrend | 28 | 50'124 | 20'553 |
 | 2022-06-26 | 2023-01-15 | 1 Akkumulation | 30 | 21'029 | 20'885 |
-| 2023-01-22 | 2026-09-06 | 2 Aufwärtstrend | 190 | 22'717 | 80'339 |
+| 2023-01-22 | 2025-10-05 | 2 Aufwärtstrend | 142 | 22'717 | 123'519 |
+| 2025-10-12 | 2025-11-02 | 3 Verteilung | 4 | 115'090 | 110'530 |
+| 2025-11-09 | 2026-09-06 | 4 Abwärtstrend | 44 | 104'705 | 80'339 |
 
 ## Transaktionen
 
@@ -138,16 +140,19 @@ Konvergenz in der nächstgelegenen Woche: 1 Indikatoren in Zone aus 1 Familien (
 | 2022-06-26 | B1 | kauf | 21'029 | 19'311 | 0.9137 |
 | 2022-07-24 | B2 | kauf | 22'596 | 18'743 | 0.8253 |
 | 2023-01-22 | B3 | kauf | 22'717 | 18'743 | 0.8209 |
+| 2025-11-09 | S1 | verkauf | 104'705 | 70'544 | 0.6771 |
+| 2025-11-09 | S2 | verkauf | 104'705 | 68'469 | 0.6572 |
+| 2025-11-09 | S3 | verkauf | 104'705 | 68'469 | 0.6572 |
 
 ## Signale
 
 | Typ | Anzahl |
 |---|---|
-| COUNTER | 13 |
-| PHASE_CHANGE | 8 |
+| COUNTER | 18 |
+| PHASE_CHANGE | 9 |
 | TRANCHE_DUE | 12 |
-| TREND_BREAK | 2 |
-| RESERVE | 8 |
+| TREND_BREAK | 3 |
+| RESERVE | 4 |
 
 ## Datenabdeckung
 
@@ -169,4 +174,4 @@ Konvergenz in der nächstgelegenen Woche: 1 Indikatoren in Zone aus 1 Familien (
 
 ## Aktueller Stand
 
-Phase 2 Aufwärtstrend seit 2023-01-22 · Kauf-Motor 42 · Verkauf-Motor 1 · Zähler 0 von 2
+Phase 4 Abwärtstrend seit 2025-11-09 · Kauf-Motor 42 · Verkauf-Motor 1 · Zähler 0 von 2
