@@ -1,9 +1,9 @@
 {
   "schema": 1,
   "stage": "M2",
-  "config_version": "1.0-rc",
+  "config_version": "1.0",
   "mode": "weekly",
-  "generated_at": "2026-09-12T19:32:48.475Z",
+  "generated_at": "2026-09-12T21:25:23.792Z",
   "week_id": "2026-09-06",
   "price": {
     "close": 80338.98,
@@ -37,9 +37,9 @@
     "days_since_last_halving": 869,
     "next_halving": {
       "height": 1050000,
-      "blocks_left": 83291,
+      "blocks_left": 83279,
       "estimate": "2028-03-20",
-      "tip_height": 966709,
+      "tip_height": 966721,
       "as_of": "2026-09-12"
     }
   },
@@ -50,17 +50,17 @@
     "weeks": 43,
     "cycle_no": 3
   },
-  "lamp": "gelb",
+  "lamp": "aus",
   "action": {
-    "code": "PREPARE_BUY",
+    "code": "WAIT",
     "tranche": null,
-    "text": "Bereit machen. Die Kaufzone rückt näher, noch nicht kaufen."
+    "text": "Nichts tun. Die Kaufzone ist noch weit weg."
   },
   "engines": {
     "buy": {
-      "score": 42,
-      "zone": "annaeherung",
-      "coverage": 0.8,
+      "score": 37,
+      "zone": "ruhig",
+      "coverage": 1,
       "families": {
         "bewertung": {
           "label": "Bewertung",
@@ -78,11 +78,11 @@
         "halter_stimmung": {
           "label": "Halter & Stimmung",
           "weight": 20,
-          "score": null,
-          "available": false,
-          "coverage": 0.3333333333333333,
+          "score": 19,
+          "available": true,
+          "coverage": 0.6666666666666666,
           "members": {
-            "supply_loss": null,
+            "supply_loss": 38,
             "reserve_risk": null,
             "fng_fear_weeks": 0
           }
@@ -117,7 +117,7 @@
           "hash_ribbons",
           "months_since_ath"
         ],
-        "available_families": 3,
+        "available_families": 4,
         "need_indicators": 4,
         "need_families": 3,
         "ok": false,
@@ -211,7 +211,7 @@
       },
       {
         "label": "Kauf-Score",
-        "value": 42,
+        "value": 37,
         "target": 60,
         "met": false,
         "unit": ""
@@ -289,26 +289,26 @@
       "missing": false
     },
     "supply_loss": {
-      "value": null,
+      "value": 34.269999999999996,
       "pct": null,
       "pct_basis": null,
-      "score_buy": null,
+      "score_buy": 38,
       "score_sell": null,
-      "state_buy": "fehlt",
+      "state_buy": "neutral",
       "state_sell": "fehlt",
       "stale": false,
-      "missing": true
+      "missing": false
     },
     "reserve_risk": {
-      "value": null,
+      "value": 0.00917,
       "pct": null,
-      "pct_basis": "kurz",
+      "pct_basis": "zu_kurz",
       "score_buy": null,
       "score_sell": null,
       "state_buy": "fehlt",
       "state_sell": "fehlt",
       "stale": false,
-      "missing": true
+      "missing": false
     },
     "fng_fear_weeks": {
       "value": 0,
@@ -388,26 +388,26 @@
       "missing": false
     },
     "rhodl": {
-      "value": null,
+      "value": 0.0768,
       "pct": null,
-      "pct_basis": "kurz",
+      "pct_basis": "zu_kurz",
       "score_buy": null,
       "score_sell": null,
       "state_buy": "fehlt",
       "state_sell": "fehlt",
       "stale": false,
-      "missing": true
+      "missing": false
     },
     "lth_dist": {
-      "value": null,
+      "value": 89.504,
       "pct": null,
-      "pct_basis": "kurz",
+      "pct_basis": "zu_kurz",
       "score_buy": null,
       "score_sell": null,
       "state_buy": "fehlt",
       "state_sell": "fehlt",
       "stale": false,
-      "missing": true
+      "missing": false
     },
     "fng_4w": {
       "value": 56.2,
@@ -463,7 +463,27 @@
       "source": "Coin Metrics (berechnet)",
       "stale": false,
       "missing": false,
-      "note": null
+      "note": null,
+      "source_calc": {
+        "formula": "(Marktkapitalisierung − Realized Cap) ÷ σ(Marktkapitalisierung)",
+        "parts": [
+          {
+            "label": "Marktkapitalisierung",
+            "value": 1612879367591,
+            "unit": "USD"
+          },
+          {
+            "label": "Realized Cap",
+            "value": 1067781258042,
+            "unit": "USD"
+          },
+          {
+            "label": "σ (ganze Historie)",
+            "value": 611697405177,
+            "unit": "USD"
+          }
+        ]
+      }
     },
     "realized_price": {
       "value": 53174.57,
@@ -483,7 +503,22 @@
       "source": "Coin Metrics (berechnet)",
       "stale": false,
       "missing": false,
-      "note": null
+      "note": null,
+      "source_calc": {
+        "formula": "Wochenschluss ÷ Realized Price",
+        "parts": [
+          {
+            "label": "Wochenschluss",
+            "value": 80339,
+            "unit": "USD"
+          },
+          {
+            "label": "Realized Price",
+            "value": 53175,
+            "unit": "USD"
+          }
+        ]
+      }
     },
     "p_200w": {
       "value": 1.2385,
@@ -494,7 +529,22 @@
       "stale": false,
       "missing": false,
       "note": null,
-      "sma200w": 64869.08
+      "sma200w": 64869.08,
+      "source_calc": {
+        "formula": "Wochenschluss ÷ Schnitt der letzten 200 Wochenschlüsse",
+        "parts": [
+          {
+            "label": "Wochenschluss",
+            "value": 80339,
+            "unit": "USD"
+          },
+          {
+            "label": "200-Wochen-Schnitt",
+            "value": 64869,
+            "unit": "USD"
+          }
+        ]
+      }
     },
     "mayer": {
       "value": 1.1517,
@@ -505,7 +555,22 @@
       "stale": false,
       "missing": false,
       "note": null,
-      "sma200d": 69756.35
+      "sma200d": 69756.35,
+      "source_calc": {
+        "formula": "Wochenschluss ÷ Schnitt der letzten 200 Tagesschlüsse",
+        "parts": [
+          {
+            "label": "Wochenschluss",
+            "value": 80339,
+            "unit": "USD"
+          },
+          {
+            "label": "200-Tage-Schnitt",
+            "value": 69756,
+            "unit": "USD"
+          }
+        ]
+      }
     },
     "puell": {
       "value": 1.1255,
@@ -515,7 +580,22 @@
       "source": "Coin Metrics (berechnet)",
       "stale": false,
       "missing": false,
-      "note": null
+      "note": null,
+      "source_calc": {
+        "formula": "Tageserlös der Miner ÷ Schnitt der letzten 365 Tage",
+        "parts": [
+          {
+            "label": "Tageserlös",
+            "value": 41414986,
+            "unit": "USD"
+          },
+          {
+            "label": "365-Tage-Schnitt",
+            "value": 36798492,
+            "unit": "USD"
+          }
+        ]
+      }
     },
     "hash_ribbons": {
       "value": "normal",
@@ -526,7 +606,22 @@
       "stale": false,
       "missing": false,
       "note": null,
-      "last_buy_signal": "2026-08-26"
+      "last_buy_signal": "2026-08-26",
+      "source_calc": {
+        "formula": "30-Tage-Schnitt der Hashrate gegen 60-Tage-Schnitt",
+        "parts": [
+          {
+            "label": "30-Tage-Schnitt",
+            "value": 911764600,
+            "unit": "TH/s"
+          },
+          {
+            "label": "60-Tage-Schnitt",
+            "value": 906496397,
+            "unit": "TH/s"
+          }
+        ]
+      }
     },
     "drawdown": {
       "value": -35.59,
@@ -536,7 +631,22 @@
       "source": "Bitstamp",
       "stale": false,
       "missing": false,
-      "note": null
+      "note": null,
+      "source_calc": {
+        "formula": "Wochenschluss ÷ höchster Tagesschluss aller Zeiten − 1",
+        "parts": [
+          {
+            "label": "Wochenschluss",
+            "value": 80339,
+            "unit": "USD"
+          },
+          {
+            "label": "höchster Tagesschluss",
+            "value": 124728,
+            "unit": "USD"
+          }
+        ]
+      }
     },
     "months_since_ath": {
       "value": 11.01,
@@ -546,7 +656,22 @@
       "source": "Bitstamp",
       "stale": false,
       "missing": false,
-      "note": null
+      "note": null,
+      "source_calc": {
+        "formula": "Tage seit dem Allzeithoch ÷ 30,44",
+        "parts": [
+          {
+            "label": "Allzeithoch am",
+            "value": null,
+            "unit": "2025-10-06"
+          },
+          {
+            "label": "Tage seither",
+            "value": 335,
+            "unit": "Tage"
+          }
+        ]
+      }
     },
     "days_since_halving": {
       "value": 869,
@@ -556,7 +681,11 @@
       "source": "Halving-Tabelle",
       "stale": false,
       "missing": false,
-      "note": "Tage seit dem letzten Halving, unabhängig vom Zyklus"
+      "note": "Tage seit dem letzten Halving, unabhängig vom Zyklus",
+      "source_calc": {
+        "formula": "Tage seit dem letzten Halving",
+        "parts": []
+      }
     },
     "bmsb_ext": {
       "value": 1.1281,
@@ -566,7 +695,22 @@
       "source": "Bitstamp",
       "stale": false,
       "missing": false,
-      "note": null
+      "note": null,
+      "source_calc": {
+        "formula": "Wochenschluss ÷ Oberkante des Trendbands",
+        "parts": [
+          {
+            "label": "Wochenschluss",
+            "value": 80339,
+            "unit": "USD"
+          },
+          {
+            "label": "Oberkante (max aus SMA 20 W und EMA 21 W)",
+            "value": 71217,
+            "unit": "USD"
+          }
+        ]
+      }
     },
     "pi_cycle": {
       "value": 0.4183,
@@ -576,7 +720,22 @@
       "source": "Bitstamp",
       "stale": false,
       "missing": false,
-      "note": null
+      "note": null,
+      "source_calc": {
+        "formula": "111-Tage-Schnitt ÷ (2 × 350-Tage-Schnitt)",
+        "parts": [
+          {
+            "label": "111-Tage-Schnitt",
+            "value": 67408,
+            "unit": "USD"
+          },
+          {
+            "label": "350-Tage-Schnitt",
+            "value": 80579,
+            "unit": "USD"
+          }
+        ]
+      }
     },
     "fng_fear_weeks": {
       "value": 0,
@@ -586,7 +745,11 @@
       "source": "alternative.me",
       "stale": false,
       "missing": false,
-      "note": "Wochen mit Ø < 25 in den letzten 8"
+      "note": "Wochen mit Ø < 25 in den letzten 8",
+      "source_calc": {
+        "formula": "Wochen mit Fear-&-Greed-Schnitt unter 25 in den letzten 8",
+        "parts": []
+      }
     },
     "fng_4w": {
       "value": 56.2,
@@ -596,7 +759,17 @@
       "source": "alternative.me",
       "stale": false,
       "missing": false,
-      "note": null
+      "note": null,
+      "source_calc": {
+        "formula": "Schnitt des Fear-&-Greed-Index über 28 Tage",
+        "parts": [
+          {
+            "label": "Tageswert",
+            "value": 56,
+            "unit": "0–100"
+          }
+        ]
+      }
     },
     "funding_30d": {
       "value": 0.00363,
@@ -606,7 +779,11 @@
       "source": "Deribit",
       "stale": false,
       "missing": false,
-      "note": null
+      "note": null,
+      "source_calc": {
+        "formula": "Schnitt der Finanzierungsrate über 30 Tage",
+        "parts": []
+      }
     },
     "retail_attention": {
       "value": 3225,
@@ -616,47 +793,51 @@
       "source": "Wikimedia",
       "stale": false,
       "missing": false,
-      "note": "Perzentil folgt in M2"
+      "note": "Perzentil folgt in M2",
+      "source_calc": {
+        "formula": "Schnitt der Wikipedia-Aufrufe (en + de) über 28 Tage",
+        "parts": []
+      }
     },
     "supply_loss": {
-      "value": null,
-      "unit": null,
-      "as_of": null,
-      "age_days": null,
-      "source": "BGeometrics",
+      "value": 34.27,
+      "unit": "%",
+      "as_of": "2026-09-06",
+      "age_days": 0,
+      "source": "manuell",
       "stale": false,
-      "missing": true,
-      "note": "Angebot im Verlust: Quelle ausstehend (Nutzungsbedingungen, SPEC 3.4)"
+      "missing": false,
+      "note": "Manuell eingetragen."
     },
     "reserve_risk": {
-      "value": null,
-      "unit": null,
-      "as_of": null,
-      "age_days": null,
-      "source": "BGeometrics",
+      "value": 0.0092,
+      "unit": "",
+      "as_of": "2026-09-06",
+      "age_days": 0,
+      "source": "manuell",
       "stale": false,
-      "missing": true,
-      "note": "Reserve Risk: Quelle ausstehend (Nutzungsbedingungen, SPEC 3.4)"
+      "missing": false,
+      "note": "Manuell eingetragen. Für den Score fehlt noch Historie (mindestens 26 Wochen)."
     },
     "rhodl": {
-      "value": null,
-      "unit": null,
-      "as_of": null,
-      "age_days": null,
-      "source": "BGeometrics",
+      "value": 0.0768,
+      "unit": "",
+      "as_of": "2026-09-06",
+      "age_days": 0,
+      "source": "manuell",
       "stale": false,
-      "missing": true,
-      "note": "RHODL-Ratio: Quelle ausstehend (Nutzungsbedingungen, SPEC 3.4)"
+      "missing": false,
+      "note": "Manuell eingetragen. Für den Score fehlt noch Historie (mindestens 26 Wochen)."
     },
     "lth_dist": {
-      "value": null,
-      "unit": null,
-      "as_of": null,
-      "age_days": null,
-      "source": "BGeometrics",
+      "value": 89.504,
+      "unit": "BTC / 30 T",
+      "as_of": "2026-09-06",
+      "age_days": 0,
+      "source": "manuell",
       "stale": false,
-      "missing": true,
-      "note": "Abgabe der Langzeithalter: Quelle ausstehend (Nutzungsbedingungen, SPEC 3.4)"
+      "missing": false,
+      "note": "Manuell eingetragen. Für den Score fehlt noch Historie (mindestens 26 Wochen)."
     },
     "cycle_clock": {
       "value": 869,
@@ -677,70 +858,107 @@
       "as_of": "2026-09-06"
     },
     "sth_rp": {
-      "value": null,
-      "as_of": null,
-      "age_days": null,
+      "value": 53187,
+      "as_of": "2026-09-06",
+      "age_days": 0,
       "stale": false,
-      "source": null,
-      "missing": true,
-      "note": "In data/manual.json eintragen"
+      "source": "manuell (Reihe)",
+      "missing": false,
+      "note": null
     }
   },
-  "missing": [
-    "supply_loss",
-    "reserve_risk",
-    "rhodl",
-    "lth_dist"
-  ],
+  "manual": {
+    "readings": {
+      "sth_rp": 1,
+      "supply_loss": 1,
+      "reserve_risk": 1,
+      "rhodl": 1,
+      "lth_dist": 1
+    },
+    "max_age_days": 30,
+    "series": {
+      "sth_realized_price": [
+        {
+          "d": "2026-09-06",
+          "v": 53187
+        }
+      ],
+      "supply_in_profit": [
+        {
+          "d": "2026-09-06",
+          "v": 65.73
+        }
+      ],
+      "reserve_risk": [
+        {
+          "d": "2026-09-06",
+          "v": 0.00917
+        }
+      ],
+      "rhodl": [
+        {
+          "d": "2026-09-06",
+          "v": 0.0768
+        }
+      ],
+      "lth_net_position_change": [
+        {
+          "d": "2026-09-06",
+          "v": -89.504
+        }
+      ]
+    }
+  },
+  "missing": [],
   "stale": [],
   "sources": {
     "price_bitstamp": {
       "ok": true,
       "last": "2026-09-11",
       "error": null,
-      "at": "2026-09-12T19:32:46.419Z"
+      "at": "2026-09-12T21:25:20.863Z"
     },
     "price_coinbase": {
       "ok": true,
       "last": "2026-09-11",
       "error": null,
-      "at": "2026-09-12T19:32:46.547Z"
+      "at": "2026-09-12T21:25:20.926Z"
     },
     "coinmetrics": {
       "ok": true,
       "last": "2026-09-11",
       "error": null,
-      "at": "2026-09-12T19:32:46.865Z"
+      "at": "2026-09-12T21:25:21.394Z"
     },
     "fng": {
       "ok": true,
       "last": "2026-09-11",
       "error": null,
-      "at": "2026-09-12T19:32:47.202Z"
+      "at": "2026-09-12T21:25:21.721Z"
     },
     "wiki_en": {
       "ok": true,
       "last": "2026-09-11",
       "error": null,
-      "at": "2026-09-12T19:32:47.338Z"
+      "at": "2026-09-12T21:25:22.118Z"
     },
     "wiki_de": {
       "ok": true,
       "last": "2026-09-11",
       "error": null,
-      "at": "2026-09-12T19:32:47.369Z"
+      "at": "2026-09-12T21:25:22.638Z"
     },
     "funding_deribit": {
       "ok": true,
       "last": "2026-09-11",
       "error": null,
-      "at": "2026-09-12T19:32:47.926Z"
+      "at": "2026-09-12T21:25:23.191Z"
     },
     "network": {
       "ok": true,
       "last": "2026-09-12",
       "error": null,
-      "at": "2026-09-12T19:32:48.431Z"
+      "at": "2026-09-12T21:25:23.734Z"
     }
   },
   "attribution": [

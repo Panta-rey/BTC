@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "config_version": "1.0-rc",
+  "config_version": "1.0",
   "phase": 4,
   "phase_since": "2025-11-09",
   "cycle_start": "2022-06-26",
