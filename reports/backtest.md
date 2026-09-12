@@ -31,6 +31,16 @@ Ampel gegen Halten: ✓ 3.3192 BTC statt 1,0000 BTC (plus 0 Cash).
 
 ## Diagnose an den bekannten Extremen
 
+| Extrem | Datum | nächste Woche | Score | Abdeckung | Gates | stärkste Woche | Score |
+|---|---|---|---|---|---|---|---|
+| Tief | 2015-01-14 | 2015-01-11 | 79 | 80.0 % | A=✓ B=✗ | 2015-02-08 | 94 |
+| Tief | 2018-12-15 | 2018-12-16 | 95 | 80.0 % | A=✓ B=✓ | 2019-01-13 | 96 |
+| Tief | 2022-11-21 | 2022-11-20 | 87 | 80.0 % | A=✓ B=✓ | 2022-09-25 | 96 |
+| Hoch | 2013-12-04 | 2014-01-05 | 58 | 65.0 % | E1=✗ E2=✗ | 2014-01-05 | 58 |
+| Hoch | 2017-12-17 | 2017-12-17 | 100 | 65.0 % | E1=✓ E2=✓ | 2017-12-17 | 100 |
+| Hoch | 2021-11-10 | 2021-11-07 | 51 | 80.0 % | E1=✗ E2=✓ | 2021-11-14 | 52 |
+| Hoch | 2025-10-06 | 2025-10-05 | 36 | 80.0 % | E1=✗ E2=✗ | 2025-10-05 | 36 |
+
 Für jedes Extrem: die nächstgelegene Woche und die stärkste Woche im Fenster von ±26 Wochen. `cov` ist die Abdeckung des jeweiligen Motors, `gaps` die Zahl der Wochen mit Datenlücke im Fenster.
 
 ### Tief 2015-01-14 (172 USD)
@@ -49,7 +59,7 @@ Konvergenz in der nächstgelegenen Woche: 6 Indikatoren in Zone aus 3 Familien (
 | nächstgelegen | 2018-12-16 | 95 | 80.0 % | 1 | A=✓ B=✓ | {"bewertung":97,"halter_stimmung":null,"miner":80,"zeit":100} |
 | stärkste | 2019-01-13 | 96 | 80.0 % | | A=✓ B=✗ | {"bewertung":94,"halter_stimmung":null,"miner":97,"zeit":100} |
 
-Konvergenz in der nächstgelegenen Woche: 8 Indikatoren in Zone aus 4 Familien (3 verfügbar). Zyklus-Uhr: – Tage. Wochen mit Datenlücke im Fenster: 0 von 52.
+Konvergenz in der nächstgelegenen Woche: 7 Indikatoren in Zone aus 3 Familien (3 verfügbar). Zyklus-Uhr: – Tage. Wochen mit Datenlücke im Fenster: 0 von 52.
 
 ### Tief 2022-11-21 (15'500 USD)
 
@@ -58,7 +68,7 @@ Konvergenz in der nächstgelegenen Woche: 8 Indikatoren in Zone aus 4 Familien (
 | nächstgelegen | 2022-11-20 | 87 | 80.0 % | 1 | A=✓ B=✓ | {"bewertung":97,"halter_stimmung":null,"miner":41,"zeit":100} |
 | stärkste | 2022-09-25 | 96 | 80.0 % | | A=✓ B=✓ | {"bewertung":98,"halter_stimmung":null,"miner":93,"zeit":94} |
 
-Konvergenz in der nächstgelegenen Woche: 8 Indikatoren in Zone aus 4 Familien (3 verfügbar). Zyklus-Uhr: – Tage. Wochen mit Datenlücke im Fenster: 0 von 52.
+Konvergenz in der nächstgelegenen Woche: 7 Indikatoren in Zone aus 3 Familien (3 verfügbar). Zyklus-Uhr: – Tage. Wochen mit Datenlücke im Fenster: 0 von 52.
 
 ### Hoch 2013-12-04 (1'150 USD)
 
@@ -76,7 +86,7 @@ Konvergenz in der nächstgelegenen Woche: 4 Indikatoren in Zone aus 2 Familien (
 | nächstgelegen | 2017-12-17 | 100 | 65.0 % | 3 | E1=✓ E2=✓ | {"zeit_trend":100,"rel_bewertung":100,"halter":null,"euphorie":null} |
 | stärkste | 2017-12-17 | 100 | 65.0 % | | E1=✓ E2=✓ | {"zeit_trend":100,"rel_bewertung":100,"halter":null,"euphorie":null} |
 
-Konvergenz in der nächstgelegenen Woche: 6 Indikatoren in Zone aus 3 Familien (2 verfügbar). Zyklus-Uhr: 526 Tage. Wochen mit Datenlücke im Fenster: 0 von 53.
+Konvergenz in der nächstgelegenen Woche: 5 Indikatoren in Zone aus 2 Familien (2 verfügbar). Zyklus-Uhr: 526 Tage. Wochen mit Datenlücke im Fenster: 0 von 53.
 
 ### Hoch 2021-11-10 (69'000 USD)
 
