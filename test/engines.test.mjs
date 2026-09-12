@@ -1,0 +1,229 @@
+import { test } from "node:test";
+import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import { anchorScore, percentile, score } from "../engine/normalize.mjs";
+import { scoreIndicators, engineScore, confluenceOk, gates } from "../engine/engines.mjs";
+import { replay } from "../engine/phases.mjs";
+import { toRows } from "../engine/rows.mjs";
+import { addDays } from "../engine/dates.mjs";
+
+const cfg = JSON.parse(readFileSync(new URL("../config/engine.json", import.meta.url)));
+
+// ---------------------------------------------------------------- Normierung
+
+test("anchorScore interpoliert linear und begrenzt an den Rändern", () => {
+  const a = [[2.0, 0], [1.0, 40], [0.0, 90], [-0.5, 100]];
+  assert.equal(anchorScore(a, 1.0), 40);
+  assert.equal(anchorScore(a, 0.5), 65); // Mitte zwischen 40 und 90
+  assert.equal(anchorScore(a, 5), 0); // über dem obersten Anker
+  assert.equal(anchorScore(a, -9), 100); // unter dem untersten
+  assert.equal(anchorScore(a, null), null);
+});
+
+test("anchorScore beherrscht Kurven mit Hochpunkt (Zyklus-Uhr)", () => {
+  const a = cfg.anchors.sell.cycle_clock.abs;
+  assert.equal(anchorScore(a, 0), 0);
+  assert.equal(anchorScore(a, 540), 100); // Plateau zwischen 520 und 560
+  assert.equal(anchorScore(a, 900), 0); // weit danach wieder 0
+  assert.ok(anchorScore(a, 480) === 70);
+});
+
+test("percentile zählt Werte kleiner oder gleich", () => {
+  assert.equal(percentile([1, 2, 3, 4], 4), 100);
+  assert.equal(percentile([1, 2, 3, 4], 2), 50);
+  assert.equal(percentile([], 3), null);
+});
+
+test("Hybrid nimmt den höheren der beiden Wege", () => {
+  const set = { abs: [[2, 0], [0, 100]], pct: [[100, 0], [0, 100]] };
+  assert.equal(score(set, 2, 0), 100); // absolut 0, relativ 100
+  assert.equal(score(set, 0, 100), 100); // umgekehrt
+  assert.equal(score({ abs: [[0, 10], [1, 20]] }, 0.5, null), 15); // nur absolut
+});
+
+// ---------------------------------------------------------------- Zeilenbau für Tests
+
+const BASE = {
+  close: 50000, ath: 100000, ath_date: "2025-01-05", drawdown: -50, months_since_ath: 8,
+  sma200w: 50000, p_200w: 1.0, sma200d: 50000, mayer: 1.0,
+  bmsb_lo: 48000, bmsb_hi: 52000, bmsb_ext: 0.96, pi_cycle: 0.5,
+  onchain_as_of: null, mvrv: 1.2, realized_price: 42000, p_rp: 1.2, mvrv_z: 1.0, puell: 1.0,
+  hash_state: "normal", hash_buy_date: null,
+  fng_w: 50, fng_4w: 50, fng_fear_weeks: 0, funding_30d: 0.01, wiki_4w: 3000,
+  halving_last: null, days_since_halving: null,
+  supply_loss: null, reserve_risk: null, rhodl: null, lth_dist: null,
+  sth_rp: null, dd_52w: -10, _stale: [],
+};
+const row = (w, o = {}) => ({ ...BASE, w, ...o });
+
+// Tiefe Bärenmarktwerte: löst Gate A und einen hohen Kauf-Score aus
+const BEAR = { mvrv_z: -0.2, p_rp: 0.95, p_200w: 0.95, mayer: 0.7, puell: 0.45, hash_state: "kapitulation",
+               drawdown: -70, months_since_ath: 12, fng_w: 15, fng_4w: 18, fng_fear_weeks: 6, close: 20000,
+               bmsb_lo: 26000, bmsb_hi: 28000 };
+// Überhitzung: hoher Verkauf-Score
+const TOP = { mvrv_z: 3.2, p_rp: 2.4, p_200w: 2.2, mayer: 2.5, bmsb_ext: 1.55, pi_cycle: 0.99,
+              fng_4w: 85, funding_30d: 0.05, wiki_4w: 20000, close: 120000, bmsb_lo: 90000, bmsb_hi: 95000,
+              drawdown: 0, months_since_ath: 0 };
+
+// ---------------------------------------------------------------- Motoren
+
+test("Eine Familie zählt erst ab 50 Prozent Innengewicht", () => {
+  const r = row("2026-01-04", BEAR);
+  const s = scoreIndicators(r, [], cfg);
+  const buy = engineScore(s, cfg.engines.buy, "buy");
+  assert.equal(buy.families.halter_stimmung.available, false, "nur 1 von 3 Mitgliedern vorhanden");
+  assert.equal(buy.families.bewertung.available, true);
+  assert.equal(Math.round(buy.coverage * 100), 80, "20 Prozent Gewicht fällt weg");
+  assert.ok(buy.score >= 60, `Kauf-Score zu niedrig: ${buy.score}`);
+});
+
+test("Ein als alt markierter Wert zählt nicht in den Score", () => {
+  const r = row("2026-01-04", { ...BEAR, _stale: ["mvrv_z", "p_rp", "p_200w", "mayer"] });
+  const buy = engineScore(scoreIndicators(r, [], cfg), cfg.engines.buy, "buy");
+  assert.equal(buy.families.bewertung.available, false);
+  assert.ok(buy.coverage < cfg.zone_min_coverage, "unter der Mindestabdeckung");
+});
+
+test("Die Zyklus-Uhr steht auf 0, wenn das relevante Halving noch aussteht", () => {
+  const r = row("2026-01-04");
+  const s = scoreIndicators(r, [], cfg);
+  assert.equal(s.cycle_clock.score_sell, 0);
+  const sell = engineScore(s, cfg.engines.sell, "sell");
+  assert.equal(sell.families.zeit_trend.available, true, "Familie darf nicht ausfallen");
+});
+
+test("Konvergenz senkt die Familienanforderung, wenn Familien fehlen", () => {
+  const r = row("2026-01-04", BEAR);
+  const buy = engineScore(scoreIndicators(r, [], cfg), cfg.engines.buy, "buy");
+  const c = confluenceOk(buy, cfg.engines.buy.confluence);
+  assert.equal(c.need_families, 3, "drei Familien verfügbar, also auch drei gefordert");
+  assert.equal(c.ok, true);
+
+  // Nur zwei Familien verfügbar: Anforderung sinkt auf zwei
+  const r2 = row("2026-01-04", { ...BEAR, puell: null, hash_state: null });
+  const buy2 = engineScore(scoreIndicators(r2, [], cfg), cfg.engines.buy, "buy");
+  const c2 = confluenceOk(buy2, cfg.engines.buy.confluence);
+  assert.equal(c2.need_families, 2);
+  assert.equal(c2.reduced, true);
+});
+
+test("Gate A greift über MVRV-Z oder über den Realized Price", () => {
+  const mk = (o) => {
+    const r = row("2026-01-04", { ...BEAR, ...o });
+    const s = scoreIndicators(r, [], cfg);
+    return gates(r, s, cfg, engineScore(s, cfg.engines.buy, "buy"), engineScore(s, cfg.engines.sell, "sell"), null);
+  };
+  assert.equal(mk({}).A, true);
+  assert.equal(mk({ mvrv_z: 0.5, p_rp: 0.98 }).A, true, "unter Realized Price genügt");
+  assert.equal(mk({ mvrv_z: 0.5, p_rp: 1.3 }).A, false);
+});
+
+test("Gate B erkennt ein flaches Tief ohne Angebot-im-Verlust", () => {
+  const flat = { mvrv_z: 0.4, p_rp: 1.12, p_200w: 1.0, mayer: 0.95, drawdown: -52, months_since_ath: 8 };
+  const hist = Array.from({ length: 150 }, (_, i) => row(addDays("2023-01-01", i * 7), { mvrv_z: 2 + i / 100 }));
+  const r = row("2026-01-04", flat);
+  const s = scoreIndicators(r, hist, cfg);
+  assert.ok(s.mvrv_z.pct <= 15, `MVRV-Perzentil zu hoch: ${s.mvrv_z.pct}`);
+  const g = gates(r, s, cfg, engineScore(s, cfg.engines.buy, "buy"), engineScore(s, cfg.engines.sell, "sell"), null);
+  assert.equal(g.A, false, "klassisches Gate greift hier nicht");
+  assert.equal(g.B, true, "flaches Tief wird erkannt");
+});
+
+// ---------------------------------------------------------------- Phasenmaschine
+
+// Baut eine Wochenfolge: [[anzahl, überschreibungen], ...] ab startWeek
+function scenario(startWeek, blocks) {
+  const rows = [];
+  let w = startWeek;
+  for (const [n, o] of blocks) {
+    for (let i = 0; i < n; i++) { rows.push(row(w, typeof o === "function" ? o(i) : o)); w = addDays(w, 7); }
+  }
+  return rows;
+}
+
+test("Phasenwechsel braucht zwei Wochenschlüsse in Folge", () => {
+  const rows = scenario("2019-01-06", [[1, BEAR], [1, {}], [2, BEAR], [2, {}]]);
+  const r = replay(rows, { ...cfg, bootstrap: { start_week: "2019-01-06", start_phase: 4 } });
+  const ph = r.weeks.map((x) => x.phase);
+  assert.deepEqual(ph, [4, 4, 4, 1, 1, 1], "erst die zweite Bestätigung wechselt");
+  assert.equal(r.weeks[1].counter, 0, "Zähler fällt nach einer verfehlten Woche zurück");
+});
+
+test("Voller Zyklus: Akkumulation, Aufwärtstrend, Verteilung, Abwärtstrend", () => {
+  const mid = { close: 60000, bmsb_lo: 50000, bmsb_hi: 55000, mvrv_z: 1.5, p_rp: 1.4, p_200w: 1.3,
+                mayer: 1.2, drawdown: -20, months_since_ath: 20, puell: 1.2, hash_state: "normal" };
+  const rows = scenario("2018-11-04", [
+    [4, BEAR],                                   // Kaufzone → Phase 1
+    [10, { ...BEAR, close: 22000 }],             // Akkumulation, B2 per Zeitstaffelung
+    [4, mid],                                    // Tief bestätigt → Phase 2
+    [130, mid],                                  // Aufwärtstrend bis ins Zeitfenster
+    [10, TOP],                                   // Top-Zone → Phase 3, Verkaufstranchen
+    [6, { ...TOP, close: 70000, bmsb_lo: 90000, bmsb_hi: 95000 }], // Trendbruch → Phase 4
+  ]);
+  const r = replay(rows, { ...cfg, bootstrap: { start_week: "2018-11-04", start_phase: 4 } });
+  // Aufeinanderfolgende Wiederholungen zusammenfassen (Set würde die zweite 4 schlucken)
+  const seen = r.weeks.map((x) => x.phase).filter((p, i, a) => i === 0 || p !== a[i - 1]);
+  assert.deepEqual(seen, [4, 1, 2, 3, 4], "alle vier Phasen in der richtigen Reihenfolge");
+
+  const types = r.events.filter((e) => e.type === "TRANCHE_DUE").map((e) => e.tranche);
+  assert.ok(types.includes("B1") && types.includes("B2") && types.includes("B3"), `Kauftranchen fehlen: ${types}`);
+  assert.ok(r.events.some((e) => e.type === "TREND_BREAK"), "Trendbruch fehlt");
+  assert.equal(r.state.phase, 4);
+  assert.ok(["S1", "S2", "S3"].every((t) => r.state.tranches[t]), "alle Verkaufstranchen ausgelöst");
+});
+
+test("B2 kommt frühestens nach 4 und spätestens nach 12 Wochen", () => {
+  // Nach B1 nur schwache Wochen: die Zeitstaffelung muss greifen
+  const weak = { ...BEAR, mvrv_z: 0.9, p_rp: 1.3, p_200w: 1.2, mayer: 1.05, puell: 0.9, hash_state: "normal" };
+  const rows = scenario("2019-01-06", [[2, BEAR], [20, weak]]);
+  const r = replay(rows, { ...cfg, bootstrap: { start_week: "2019-01-06", start_phase: 4 } });
+  const b1 = r.events.find((e) => e.tranche === "B1"), b2 = r.events.find((e) => e.tranche === "B2");
+  assert.ok(b1 && b2, "beide Tranchen müssen ausgelöst haben");
+  const wks = Math.round((Date.parse(b2.week_id) - Date.parse(b1.week_id)) / (7 * 86400000));
+  assert.equal(wks, cfg.tranches.b2_max_weeks, "genau nach der Höchstfrist");
+  assert.ok(b2.text.includes("Zeitstaffelung"));
+});
+
+test("Datenlücke hält die Zähler an, statt sie zurückzusetzen", () => {
+  const blind = { mvrv_z: null, p_rp: null, p_200w: null, mayer: null, puell: null, hash_state: null,
+                  drawdown: null, months_since_ath: null, fng_fear_weeks: null };
+  const rows = scenario("2019-01-06", [[1, BEAR], [2, blind], [1, BEAR]]);
+  const r = replay(rows, { ...cfg, bootstrap: { start_week: "2019-01-06", start_phase: 4 } });
+  assert.equal(r.weeks[1].flags.data_gap, true);
+  assert.equal(r.weeks[1].counter, 1, "Zähler bleibt während der Lücke stehen");
+  assert.equal(r.weeks[3].phase, 1, "die nächste gute Woche bestätigt den Wechsel");
+  assert.ok(r.events.some((e) => e.type === "DATA_GAP"));
+});
+
+test("Phasen laufen nur vorwärts: ein neues Hoch in Phase 4 ändert nichts", () => {
+  const rows = scenario("2019-01-06", [[3, BEAR], [6, { ...TOP, close: 200000 }]]);
+  const r = replay(rows, { ...cfg, bootstrap: { start_week: "2019-01-06", start_phase: 4 } });
+  const phases = r.weeks.map((x) => x.phase);
+  for (let i = 1; i < phases.length; i++) {
+    const ok = phases[i] === phases[i - 1] || phases[i] === (phases[i - 1] % 4) + 1;
+    assert.ok(ok, `unerlaubter Sprung ${phases[i - 1]} → ${phases[i]}`);
+  }
+});
+
+test("Kein Blick in die Zukunft: abgeschnittene Historie ergibt dieselbe Woche", () => {
+  const rows = scenario("2019-01-06", [[60, (i) => ({ mvrv_z: 2 - i * 0.05, p_rp: 1.6 - i * 0.02, close: 50000 - i * 500 })]]);
+  const opts = { ...cfg, bootstrap: { start_week: "2019-01-06", start_phase: 4 } };
+  const full = replay(rows, opts);
+  const cut = replay(rows.slice(0, 40), opts);
+  const w = cut.weeks.at(-1).w;
+  const same = full.weeks.find((x) => x.w === w);
+  assert.equal(same.buy, cut.weeks.at(-1).buy);
+  assert.equal(same.phase, cut.weeks.at(-1).phase);
+  assert.deepEqual(same.scores.mvrv_z, cut.weeks.at(-1).scores.mvrv_z);
+});
+
+test("toRows ergänzt den 52-Wochen-Rückgang und kennzeichnet fehlende Quellen", () => {
+  const weekly = {
+    columns: ["w", "close", "mvrv_z"],
+    rows: [["2025-01-05", 100000, 2], ["2025-01-12", 90000, 1.8], ["2025-01-19", 50000, 1]],
+  };
+  const rs = toRows(weekly);
+  assert.equal(rs[2].dd_52w, -50);
+  assert.equal(rs[0].supply_loss, null);
+  assert.deepEqual(rs[0]._stale, []);
+});

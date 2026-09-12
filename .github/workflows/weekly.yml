@@ -32,11 +32,24 @@ jobs:
         env:
           MODE: weekly
         run: node scripts/build.mjs
+      - name: Backtest aktualisieren
+        run: node scripts/backtest.mjs
+      - name: Zusammenfassung
+        run: |
+          node -e "
+            const j=require('./data/latest.json');
+            const l=['## '+j.phase.name+' · Ampel '+j.lamp,'','**'+j.action.text+'**','',
+              '| | Score | Zone | Abdeckung |','|---|---|---|---|',
+              '| Kauf | '+j.engines.buy.score+' | '+j.engines.buy.zone+' | '+Math.round(j.engines.buy.coverage*100)+' % |',
+              '| Verkauf | '+j.engines.sell.score+' | '+j.engines.sell.zone+' | '+Math.round(j.engines.sell.coverage*100)+' % |','',
+              'Wochenschluss '+j.week_id+': '+Math.round(j.price.close).toLocaleString('de-CH')+' USD'].join('\n');
+            require('fs').appendFileSync(process.env.GITHUB_STEP_SUMMARY, l);
+          "
       - name: Committen
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/
+          git add data/ reports/
           if git diff --cached --quiet; then
             echo "Keine Änderungen."
           else

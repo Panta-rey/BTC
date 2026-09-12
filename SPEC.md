@@ -92,11 +92,12 @@ Panta-Rey-BTC-Ampel/
 │   ├── seed/btc_daily_2010_2011.csv   einmaliger Preis-Seed (vor Bitstamp)
 │   ├── manual.json            manuelle Notwerte (optional)
 │   ├── fixtures/              Testzustände für ?fixture=
-│   ├── state.json             Zustand der Phasenmaschine
+│   ├── state.json             Zustand der Phasenmaschine (Ausgabe, nicht Eingabe)
+│   ├── phases.json            Phase und Scores je Woche (für den Verlauf)
 │   ├── latest.json
 │   ├── weekly.json
 │   └── events.json
-├── reports/                   backtest.md, sources-check.md (automatisch)
+├── reports/                   backtest.md, backtest.json, sources-check.md (automatisch)
 ├── test/                      node:test, Fixtures
 ├── .github/workflows/
 │   ├── check-sources.yml      Quellen-Check (M0), manuell
@@ -147,17 +148,17 @@ Jede Signalbedingung wird ausschliesslich auf Wochenschlüssen geprüft. **Jeder
 
 | Kennzahl | Primärquelle | Fallback | Historie ab | Max. Alter |
 |---|---|---|---|---|
-| BTC-Tagesschluss | Bitstamp OHLC (`/api/v2/ohlc/btcusd/`, `step=86400`, `limit=1000`, keyless) | Coinbase Exchange Candles (max. 300 pro Abruf) | 2011 (Bitstamp) | 2 Tage |
+| BTC-Tagesschluss | Bitstamp OHLC (`/api/v2/ohlc/btcusd/`, `step=86400`, `limit=1000`, keyless) | Coinbase Exchange Candles (max. 300 pro Abruf), dann Coin Metrics `PriceUSD` vor 2011 | 2010 (mit Seed) | 2 Tage |
 | Preis-Seed vor 2011 | einmalig aus BGeometrics-Preisreihe oder Coin Metrics Community `PriceUSD` → `data/seed/` | – | 2010 | – |
-| MVRV-Z-Score | selbst berechnet aus Coin Metrics Community (`CapMrktCurUSD`, `CapMVRVCur`) | BGeometrics (nach Lizenzklärung) | 2010 | 10 Tage |
-| Realized Price | abgeleitet: Coin Metrics `PriceUSD` ÷ `CapMVRVCur` | BGeometrics (nach Lizenzklärung) | 2010 | 10 Tage |
+| MVRV-Z-Score | selbst berechnet aus Coin Metrics Community (`CapMrktCurUSD`, `CapMVRVCur`) | BGeometrics (nach Lizenzklärung) | 2010 | 3 Tage |
+| Realized Price | abgeleitet: Coin Metrics `PriceUSD` ÷ `CapMVRVCur` | BGeometrics (nach Lizenzklärung) | 2010 | 3 Tage |
 | STH-Realized-Price | BGeometrics | `data/manual.json` | 2011 | 10 Tage (manuell: 30) |
 | Angebot im Gewinn/Verlust | BGeometrics (Supply in Profit) | – | 2011 | 10 Tage |
 | Reserve Risk | BGeometrics | – | 2011 | 10 Tage |
 | RHODL-Ratio | BGeometrics | – | 2011 | 10 Tage |
 | LTH-Positionsänderung 30T | BGeometrics | – | 2012 | 10 Tage |
-| Puell Multiple | selbst: Coin Metrics `IssTotUSD` ÷ 365-Tage-Schnitt | Blockchain.com `miners-revenue` (Näherung inkl. Gebühren) | 2010 | 10 Tage |
-| Hashrate / Hash Ribbons | selbst aus Coin Metrics `HashRate` | mempool.space `/api/v1/mining/hashrate/all` | 2010 | 10 Tage |
+| Puell Multiple | selbst: Coin Metrics `IssTotUSD` ÷ 365-Tage-Schnitt | Blockchain.com `miners-revenue` (Näherung inkl. Gebühren) | 2010 | 3 Tage |
+| Hashrate / Hash Ribbons | selbst aus Coin Metrics `HashRate` | mempool.space `/api/v1/mining/hashrate/all` | 2010 | 3 Tage |
 | Fear & Greed | alternative.me (`/fng/?limit=0&format=json`) | – | Feb. 2018 | 3 Tage |
 | Funding 30T | Deribit `public/get_funding_rate_history` (BTC-PERPETUAL) | OKX (nur ~3 Monate Historie) | 2019 | 3 Tage |
 | Wikipedia-Aufrufe „Bitcoin" | Wikimedia REST API (`/metrics/pageviews/per-article/…/daily/…`, en + de, Header `User-Agent` Pflicht) | – | Juli 2015 | 7 Tage |
@@ -171,9 +172,9 @@ Jede Signalbedingung wird ausschliesslich auf Wochenschlüssen geprüft. **Jeder
 | Regel | Begründung |
 |---|---|
 | Eine Reihe stammt immer aus **einer** Quelle. Beim Wechsel auf den Fallback wird die ganze Historie aus dem Fallback neu gerechnet, nie zusammengestückelt. | Anbieter rechnen z. B. den MVRV-Z-Score mit unterschiedlicher Standardabweichung. Ein Bruch in der Reihe verfälscht jedes Perzentil. |
-| Der Wochenwert einer Tageskennzahl ist der Wert vom Sonntag. Fehlt er, gilt der letzte Wert der drei Tage davor, sonst „fehlt". | Einheitlicher Stichtag. |
+| Der Wochenwert einer Tageskennzahl ist der Wert vom Sonntag. Fehlt er, wird bis zu 10 Tage zurückgegriffen, danach gilt er als „fehlt". Ab 4 Tagen Alter wird er zusätzlich als „alt" gekennzeichnet. | Einheitlicher Stichtag, aber Toleranz für Anbieter, die ein paar Tage nachhinken. |
 | Fehlende Werte werden für Signale nie interpoliert. | Lieber eine Lücke zeigen als eine erfundene Zahl. |
-| Überschreitet ein Wert sein Höchstalter, gilt er als „alt": Er wird angezeigt, zählt aber nicht in den Score. | Wie beim Cockpit mit `ANCHOR_MAX_AGE_DAYS`. |
+| Überschreitet ein Wert sein Höchstalter, gilt er als „alt": Er wird angezeigt, zählt ab M2 aber nicht in den Score. | Wie beim Cockpit mit `ANCHOR_MAX_AGE_DAYS`. |
 | Rohdaten bleiben in `data/raw/` erhalten. | Jede Auswertung ist reproduzierbar. |
 
 `data/manual.json` dient als Notnagel und lässt sich über die GitHub-Weboberfläche oder die GitHub-App bearbeiten:
@@ -230,7 +231,7 @@ Der Name ist das, was die Oberfläche zeigt. Die Leitfrage steht klein darunter 
 | `hash_ribbons` | Hash Ribbons | Ist die Miner-Kapitulation vorbei? | 30-Tage- vs. 60-Tage-Schnitt der Hashrate | Kauf → Miner |
 | `drawdown` | Abstand vom Allzeithoch | Wie tief ist der Fall? | Wochenschluss ÷ höchster Tagesschluss bisher − 1 | Kauf → Zeit |
 | `months_since_ath` | Monate seit dem Hoch | Passt das Timing zu einem Zyklustief? | Tage seit Allzeithoch ÷ 30,44 | Kauf → Zeit |
-| `cycle_clock` | Zyklus-Uhr | Wie weit ist der Zyklus fortgeschritten? | Tage seit dem **relevanten Halving** (6.2) | Verkauf → Zeit & Trend |
+| `cycle_clock` | Zyklus-Uhr | Wie weit ist der Zyklus fortgeschritten? | Tage seit dem **relevanten Halving** (6.2); steht dieses noch aus, zählt der Wert als 0, nicht als „fehlt" | Verkauf → Zeit & Trend |
 | `bmsb_ext` | Überdehnung über dem Trendband | Rennt der Preis dem Trend davon? | Wochenschluss ÷ Oberkante Bull Market Support Band | Verkauf → Zeit & Trend |
 | `pi_cycle` | Pi-Cycle-Nähe | Nähern sich die beiden Top-Linien? | SMA 111 Tage ÷ (2 × SMA 350 Tage) | Verkauf → Relative Bewertung |
 | `rhodl` | RHODL-Ratio | Übernehmen neue Käufer von alten Haltern? | Quelle, bewertet als Perzentil | Verkauf → Halterverhalten |
@@ -280,7 +281,7 @@ Jeder Indikator erhält **zwei** Teilscores: `score_buy` (100 = maximal kaufwür
 
 | ID | Methode | Ankerpunkte (Wert → Score) |
 |---|---|---|
-| `cycle_clock` | absolut (Tage) | vor dem relevanten Halving → 0 · 300 → 0 · 420 → 30 · 480 → 70 · 520 bis 560 → 100 · 620 → 70 · 720 → 20 · 800 → 0 |
+| `cycle_clock` | absolut (Tage) | vor dem relevanten Halving zählt 0 · 300 → 0 · 420 → 30 · 480 → 70 · 520 bis 560 → 100 · 620 → 70 · 720 → 20 · 800 → 0 |
 | `bmsb_ext` | absolut | 1,1 → 0 · 1,3 → 40 · 1,5 → 75 · 1,7 → 100 |
 | `mvrv_z` | Perzentil | 70 → 0 · 85 → 50 · 93 → 80 · 98 → 100 |
 | `mayer` | Hybrid | absolut: 1,5 → 0 · 2,0 → 50 · 2,4 → 90 · 2,8 → 100 · Perzentil: 70 → 0 · 85 → 50 · 95 → 90 · 99 → 100 |
@@ -323,6 +324,7 @@ Die Asymmetrie ist gewollt: Tiefs erkennt man an der Bewertung, Hochs eher an Ze
 2. **Motorscore** = gewichteter Durchschnitt der verfügbaren Familienscores, auf ganze Zahlen gerundet. Fehlende Familien werden herausgerechnet, nicht als 0 gezählt.
 3. **Abdeckung** = Summe der verfügbaren Familiengewichte ÷ 100. Liegt sie beim aktiven Motor unter 70 %, gilt die Woche als Datenlücke (6.6).
 4. **Konvergenz** = Anzahl der Indikatoren „in Zone" und Anzahl der Familien, aus denen sie stammen. Anzeige: „5 von 11 in Zone · 3 Familien".
+5. **Anpassung bei fehlenden Quellen.** Die geforderte Familienzahl ist `min(Sollwert, verfügbare Familien)`, mindestens aber 2. Fällt eine Familie dauerhaft aus, weil eine Quelle fehlt (3.4), darf daran kein Signal scheitern. Die Oberfläche zeigt in diesem Fall einen Hinweis, dass die Anforderung gesenkt wurde.
 
 ### 5.3 Zonen des Motorscores
 
@@ -408,7 +410,7 @@ Tranchen innerhalb einer Phase brauchen nur **einen** Wochenschluss, weil die Ph
 | S1 | ③ | Verkauf-Score ≥ 70 |
 | S2 | ③ | Verkauf-Score ≥ 80, frühestens 4 Wochen nach S1 |
 | S3 | ③ | Verkauf-Score ≥ 90, frühestens 4 Wochen nach S2 |
-| S-Rest | ③ → ④ | Trendbruch: alle noch offenen S-Tranchen in einer Transaktion |
+| S-Rest | ③ → ④ | Trendbruch: alle noch offenen S-Tranchen in einer Transaktion. Die Meldung erfolgt auch dann, wenn keine mehr offen ist. |
 
 So erwischt Pfad A (Überhitzung) mehrere Hochs einer Top-Zone mit je einer Tranche. Pfad B (Trendbruch) räumt auf, was übrig ist. In einem Zyklus wie 2025 verkauft nur Pfad B.
 
@@ -656,7 +658,7 @@ Die Oberfläche verwendet durchgehend dieselben Wörter: Kaufzone, Top-Zone, Tra
 | `COUNTER` | erste von zwei nötigen Wochen erfüllt | „Kaufzone diese Woche erreicht. Bestätigt sie sich am nächsten Wochenschluss, ist Tranche 1 fällig." |
 | `PHASE_CHANGE` | Phasenwechsel | „Phase ① Akkumulation hat begonnen. Kauftranche 1 von 3 fällig." |
 | `TRANCHE_DUE` | Tranche innerhalb einer Phase fällig | „Verkaufstranche 2 von 3 fällig (Verkauf-Score 82)." |
-| `TREND_BREAK` | Übergang ③ → ④ | „Trendbruch bestätigt. Alle offenen Verkaufstranchen fällig. Kernposition behalten." |
+| `TREND_BREAK` | Übergang ③ → ④, immer (auch ohne offene Tranchen) | „Trendbruch bestätigt. Alle offenen Verkaufstranchen fällig. Kernposition behalten." |
 | `RESERVE` | Nachkauf-Chance oder ausserordentliche Kaufgelegenheit | „Nachkauf-Chance im Aufwärtstrend: halbe Reserve einsetzen möglich." |
 | `ALERT` | Überhitzung in der Bärenphase | „Verkauf-Score 81 in Phase ④. Keine Aktion, zur Information." |
 | `DATA_GAP` | zwei Wochen Datenlücke | „Seit zwei Wochen unvollständige Daten. Quellen prüfen." |
@@ -949,7 +951,8 @@ Tage vom Tief zum nächsten Hoch: 1'068, 1'061, 1'050. MVRV-Z-Score am Hoch unge
     "sell_E2": { "halving_days_min": 480, "score_min": 40 }
   },
   "tranches": { "b2_min_weeks": 4, "b2_max_weeks": 12, "s_min_gap_weeks": 4 },
-  "freshness_days": { "price": 2, "onchain": 10, "fng": 3, "funding": 3, "wiki": 7, "manual": 30 }
+  "freshness_days": { "price": 2, "onchain": 3, "fng": 3, "funding": 3, "wiki": 7, "manual": 30 },
+  "onchain_lookback_days": 10
 }
 ```
 
