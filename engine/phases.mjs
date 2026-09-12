@@ -34,7 +34,7 @@ function transitionConditions(phase, ctx) {
     return [
       f("Weg E1 (Überhitzung)", g.E1 ? "erfüllt" : "offen", "erfüllt", g.E1),
       f("Weg E2 (Zeitfenster)", g.E2 ? "erfüllt" : "offen", "erfüllt", g.E2),
-      f("Verkauf-Score", sell.score, cfg.gates.sell_E2.score_min, sell.score != null && sell.score >= cfg.gates.sell_E2.score_min),
+      f("Verkauf-Score", sell.score, g.e2_min ?? cfg.gates.sell_E2.score_min, sell.score != null && sell.score >= (g.e2_min ?? cfg.gates.sell_E2.score_min)),
     ];
   }
   return [

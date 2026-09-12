@@ -249,3 +249,24 @@ test("Nur wertende Familien zählen zur Konvergenz", () => {
   assert.ok(buy.confluence.families <= buy.confluence.available_families,
     `mehr Zonen-Familien (${buy.confluence.families}) als verfügbare (${buy.confluence.available_families})`);
 });
+
+test("Weg E2 koppelt seine Schwelle an die Abdeckung", () => {
+  // Stilles Hoch: Zeitfenster erfüllt, aber keine Euphorie und keine Halter-Daten
+  const quiet = { ...TOP, mvrv_z: 1.9, mayer: 1.2, pi_cycle: 0.6, bmsb_ext: 1.12,
+                  fng_4w: 52, funding_30d: 0.008, wiki_4w: 3000 };
+  const r = row("2025-10-05", quiet);
+  const s = scoreIndicators(r, [], cfg);
+  r.cycle_days = 533;
+  const s2 = scoreIndicators(r, [], cfg);
+  const sell = engineScore(s2, cfg.engines.sell, "sell");
+  const g = gates(r, s2, cfg, engineScore(s2, cfg.engines.buy, "buy"), sell, 533);
+  assert.equal(Math.round(sell.coverage * 100), 80, "Familie Halterverhalten fehlt");
+  assert.equal(g.e2_min, 32, "40 × 0,80");
+  assert.ok(sell.score >= g.e2_min, `Score ${sell.score} muss die gekoppelte Schwelle erreichen`);
+  assert.equal(g.E2, true);
+
+  // Ohne Kopplung wäre dieselbe Lage knapp gescheitert
+  const fixed = { ...cfg, gates: { ...cfg.gates, sell_E2: { ...cfg.gates.sell_E2, scale_by_coverage: false } } };
+  const gFixed = gates(r, s2, fixed, engineScore(s2, fixed.engines.buy, "buy"), sell, 533);
+  assert.equal(gFixed.e2_min, 40);
+});

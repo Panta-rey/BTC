@@ -178,8 +178,14 @@ export function gates(row, scores, cfg, buyEng, sellEng, cycleDays) {
               (mvrvPct != null && mvrvPct >= g.sell_E1.mvrv_z_pct_min)) &&
              sellEng.score != null && sellEng.score >= g.sell_E1.score_min &&
              confluenceOk(sellEng, cfg.engines.sell.confluence).ok;
+  // Weg E2 ist der Pfad für das stille Hoch. Seine Schwelle wird an die Abdeckung gekoppelt:
+  // Fehlt dauerhaft eine Familie (SPEC 3.4), sind deren Gewichtspunkte gar nicht erreichbar,
+  // und eine feste Schwelle wäre entsprechend zu streng. Kommt die Quelle zurück, steigt sie
+  // von selbst wieder auf den vollen Wert. Weg E1 bleibt bewusst ungekoppelt: der Pfad der
+  // Überhitzung soll anspruchsvoll bleiben.
+  const e2Min = g.sell_E2.scale_by_coverage ? g.sell_E2.score_min * sellEng.coverage : g.sell_E2.score_min;
   const E2 = cycleDays != null && cycleDays >= g.sell_E2.halving_days_min &&
-             sellEng.score != null && sellEng.score >= g.sell_E2.score_min;
+             sellEng.score != null && sellEng.score >= e2Min;
 
-  return { A: !!A, B: !!B, E1: !!E1, E2: !!E2 };
+  return { A: !!A, B: !!B, E1: !!E1, E2: !!E2, e2_min: Math.round(e2Min) };
 }

@@ -65,7 +65,7 @@
     "buy_A": { "mvrv_z_max": 0, "p_rp_max": 1.0 },
     "buy_B": { "months_since_ath_min": 6, "drawdown_max": -40, "p_200w_max": 1.05, "supply_loss_min": 45, "mvrv_z_pct_max": 15 },
     "sell_E1": { "halving_days_min": 450, "mvrv_z_pct_min": 90, "score_min": 60 },
-    "sell_E2": { "halving_days_min": 480, "score_min": 40 }
+    "sell_E2": { "halving_days_min": 480, "score_min": 40, "scale_by_coverage": true }
   },
 
   "alerts": { "buy_in_uptrend": 70, "sell_in_bear": 80, "unclear_min": 50, "unclear_gap": 15 },

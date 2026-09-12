@@ -2,7 +2,7 @@
 
 Kurzer Zustandsbericht des Projekts. Wer hier einsteigt, liest zuerst dieses Dokument, dann `SPEC.md`.
 
-**Stand:** 12. September 2026 · Konfiguration `0.9-entwurf` · Node 22, keine Abhängigkeiten · **39 Tests grün**
+**Stand:** 12. September 2026 · Konfiguration `0.9-entwurf` · Node 22, keine Abhängigkeiten · **40 Tests grün**
 
 ---
 
@@ -32,7 +32,7 @@ Keine Anlageberatung. Das Modell beruht auf vier Zyklen und kann falsch liegen.
 | M6 | Verlauf und Zyklus-Uhr als Grafik | ⬜ |
 | M7 | Härtung, Barrierefreiheit | ⬜ |
 
-**39 Tests, alle grün** (`node --test "test/**/*.test.mjs"`).
+**40 Tests, alle grün** (`node --test "test/**/*.test.mjs"`).
 
 ---
 
@@ -114,6 +114,7 @@ Beim Bauen zeigten sich vier Stellen, an denen die Spezifikation nachgezogen wur
 | Trendbruch-Meldung | nur bei offenen Tranchen | immer beim Übergang ③ → ④ | Der Trendbruch ist auch dann eine wichtige Information, wenn nichts mehr zu verkaufen ist. |
 | Mindestabdeckung | 70 % | 60 % | Ohne Fear & Greed (ab Feb. 2018) und Funding (ab 2019) erreicht der Verkaufs-Motor nur 65 %. Mit 70 % war er bis 2018 dauerhaft blind und verpasste das Hoch 2017. |
 | Konvergenz-Zählung | alle Familien mit einem Indikator in Zone | nur Familien, die auch in den Score eingehen | Sonst war die Konvergenzbedingung leichter zu erfüllen als der Score. |
+| Schwelle von Weg E2 | fest 40 | 40 × Abdeckung | Mit einer dauerhaft fehlenden Familie sind 20 Gewichtspunkte unerreichbar. Deshalb wurde das Hoch 2025 um vier Punkte verfehlt. |
 
 ---
 
@@ -142,6 +143,37 @@ Behebung: `zone_min_coverage` von 0,70 auf 0,60. Die beiden tragenden Verkaufs-F
 
 Dafür schreibt der Backtest jetzt einen **Diagnose-Abschnitt**: für jedes bekannte Extrem die nächstgelegene und die stärkste Woche im Fenster von ±26 Wochen, mit Score, Abdeckung, Gates und allen Familienwerten. Damit lässt sich der Hebel gezielt bestimmen, statt zu raten.
 
+### Lauf 3 (echte Daten, Abdeckungsschwelle 60 %, Konvergenz korrigiert)
+
+| Strategie | BTC am Ende | Wert | Transaktionen |
+|---|---|---|---|
+| Halten | 1,0000 | 80'339 | 0 |
+| **Ampel** | **3,3192** | **266'663** | 12 |
+| Sparplan | 52,61 | 4'226'337 | 153 |
+| Sparplan mit Faktor | 57,79 | 4'645'093 | 153 |
+
+| Extrem | nächste Woche | Score | Abdeckung | Gates | Ergebnis |
+|---|---|---|---|---|---|
+| Tief 2015 | 2015-01-11 | 79 | 80 % | A ✓ | Phaseneintritt exakt am Tief |
+| Tief 2018 | 2018-12-16 | 95 | 80 % | A ✓ B ✓ | 1,36 × ✓ |
+| Tief 2022 | 2022-11-20 | 87 | 80 % | A ✓ B ✓ | 1,43 × ✓ |
+| Hoch 2013 | 2014-01-05 | 58 | 65 % | – | ausserhalb des Datenbereichs |
+| Hoch 2017 | 2017-12-17 | 100 | 65 % | E1 ✓ E2 ✓ | 0,55 ×, knapp unter dem Ziel |
+| Hoch 2021 | 2021-11-07 | 51 | 80 % | E2 ✓ | 0,73 × ✓ |
+| Hoch 2025 | 2025-10-05 | 36 | 80 % | keines | **verpasst** |
+
+Die Senkung der Abdeckungsschwelle hat gewirkt: 2017 erreichte in der Hochwoche einen Score von 100, und die Datenlücken vor 2018 sind verschwunden. Der Ertrag stieg von 2,68 auf 3,32 BTC.
+
+**Ursache für 2025 gefunden.** Der Score lag bei 36, gefordert waren 40. Die Aufschlüsselung: Zeit & Trend 63 (die Zyklus-Uhr stand mit 533 Tagen perfekt), relative Bewertung 16, Euphorie 0. Das bildet die Realität korrekt ab, 2025 hatte weder Euphorie noch Retail-Aufmerksamkeit noch hohes Funding.
+
+Der Fehler lag in der Schwelle selbst. Die 40 wurden für vier Familien gesetzt. Da „Halterverhalten" wegen BGeometrics fehlt, sind 20 Gewichtspunkte gar nicht erreichbar, der Motor kann strukturell nur 80 % liefern. **Behebung: Die Schwelle von E2 wird an die Abdeckung gekoppelt**, also 40 × 0,80 = 32. Kommt BGeometrics zurück, steigt sie von selbst auf 40. Weg E1 bleibt ungekoppelt, damit der Pfad der Überhitzung in einer Parabel nicht zu früh öffnet.
+
+Geprüft: 2021 (Score 51) und 2017 (Score 100) lagen ohnehin darüber, die Änderung betrifft nur 2025.
+
+**Was 2025 mit der Änderung passieren müsste:** Phase 3 ab etwa August 2025, dann keine S-Tranchen (Score bleibt unter 70), sondern Verkauf beim Trendbruch. Genau so lief 2021, mit 0,73 × als Ergebnis. Wichtig: Danach folgt Phase 4, und das Juni-Tief 2026 bei rund 60'000 könnte Phase 1 auslösen. **Das würde die heutige Empfehlung von „halten" auf „akkumulieren" ändern.** Der nächste Lauf zeigt es.
+
+**2017 bleibt bei 0,55 × und wird so hingenommen.** Phase 3 begann im August 2017 bei 4'059 über Weg E1, S1 verkaufte im Oktober bei 5'680. Das Hoch lag im Dezember bei 19'800, wobei sich der Kurs in den letzten sechs Wochen verdreifachte. Gegen eine solche Parabel hilft keine Schwellenverschiebung, die nicht gleichzeitig 2021 und 2025 verschlechtert. Dazu kam die Abdeckung von nur 65 %. SPEC 10.5 warnt ausdrücklich davor, für einen einzelnen Zyklus zu optimieren.
+
 **Diagnose Lauf 2 (Kaufseite, echte Daten):** Alle drei Tiefs sauber erkannt, keine einzige Datenlücke im Fenster von ±26 Wochen.
 
 | Tief | nächste Woche | Kauf-Score | Gates | Familien (Bewertung / Miner / Zeit) |
@@ -157,7 +189,7 @@ Dafür schreibt der Backtest jetzt einen **Diagnose-Abschnitt**: für jedes beka
 1. Die Ankerpunkte von `puell` und `hash_ribbons` grosszügiger setzen, weil beide an Tiefs oft nur mittlere Werte zeigen.
 2. Die Konvergenz nicht über die Zahl der Familien definieren, sondern über das Gewicht: „Indikatoren in Zone müssen zusammen mindestens X Prozent des verfügbaren Gewichts stellen." Das ist sauberer, aber ein grösserer Eingriff.
 
-**Vorgehen für Lauf 3:** `node scripts/backtest.mjs --sensitivity`, dann den Diagnose-Abschnitt für „Hoch 2025-10-06" lesen. Die Zusammenfassung im Actions-Lauf zeigt jetzt den ganzen Bericht, und die Diagnose beginnt mit einer Übersichtstabelle aller sieben Extreme. Erst danach Parameter ändern, und nur solche, die in allen Zyklen helfen. Am Ende `config/engine.json` auf `version: "1.0"` setzen.
+**Vorgehen für Lauf 4:** `node scripts/backtest.mjs --sensitivity`, dann den Diagnose-Abschnitt für „Hoch 2025-10-06" lesen. Die Zusammenfassung im Actions-Lauf zeigt jetzt den ganzen Bericht, und die Diagnose beginnt mit einer Übersichtstabelle aller sieben Extreme. Erst danach Parameter ändern, und nur solche, die in allen Zyklen helfen. Am Ende `config/engine.json` auf `version: "1.0"` setzen.
 
 **Offene Nebenfrage:** ob das Juni-Tief 2026 bei rund 60'000 über Gate B ausgelöst hätte. Der Phasen-Abschnitt zeigt bisher durchgehend Phase 2 seit Januar 2023, also nein. Auch das klärt die Diagnose.
 

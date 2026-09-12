@@ -351,7 +351,9 @@ Ein hoher Durchschnitt allein löst nie etwas aus. Zusätzlich muss ein Gate erf
 | Weg | Name | Bedingung |
 |---|---|---|
 | E1 | Überhitzung | (Tage seit relevantem Halving ≥ 450 **oder** `pct4y(mvrv_z)` ≥ 90) **und** Verkauf-Score ≥ 60 **und** mindestens 3 Indikatoren in Zone aus mindestens 2 Familien |
-| E2 | Zeitfenster | Tage seit relevantem Halving ≥ 480 **und** Verkauf-Score ≥ 40 |
+| E2 | Zeitfenster | Tage seit relevantem Halving ≥ 480 **und** Verkauf-Score ≥ 40 × Abdeckung |
+
+**Warum die Schwelle von E2 an die Abdeckung gekoppelt ist.** Fehlt dauerhaft eine Familie, weil eine Quelle nicht lizenziert ist (3.4), sind deren Gewichtspunkte gar nicht erreichbar. Eine feste Schwelle wäre dann strenger als beabsichtigt. Bei 80 % Abdeckung gilt also 32 statt 40. Kommt die Quelle zurück, steigt die Schwelle von selbst wieder. Weg E1 bleibt bewusst ungekoppelt: Der Pfad der Überhitzung soll anspruchsvoll bleiben, sonst öffnet er in einer Parabel zu früh.
 
 E2 ist die Lehre aus 2025: Das Hoch kam im Zeitfenster, aber die Überhitzungsindikatoren blieben lau. Eine grobe Überschlagsrechnung ergibt für Oktober 2025 einen Verkauf-Score um 45–50, also unter 60. Ohne E2 wäre die Top-Zone nie aktiv geworden, und der Trendbruch hätte nichts ausgelöst.
 
