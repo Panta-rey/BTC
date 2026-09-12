@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "config_version": "0.9-entwurf",
-  "generated_at": "2026-09-12T06:55:26.267Z",
+  "config_version": "1.0-rc",
+  "generated_at": "2026-09-12T07:38:02.541Z",
   "trades": [
     {
       "w": "2017-10-15",

@@ -1,6 +1,6 @@
 # Backtest
 
-Konfiguration `0.9-entwurf` · 662 Wochen ab 2014-01-05 bis 2026-09-06 · Gebühr 0.5 % pro Transaktion · Kernposition 40 %
+Konfiguration `1.0-rc` · 662 Wochen ab 2014-01-05 bis 2026-09-06 · Gebühr 0.5 % pro Transaktion · Kernposition 40 %
 
 > Startkapital: 1 BTC, kein Cash. Kauftranchen vor dem ersten Verkauf sind deshalb nicht finanzierbar – das betrifft das Tief 2015. Für Tiefs zählt daher vor allem der Zeitpunkt des Phaseneintritts.
 
@@ -171,6 +171,24 @@ Konvergenz in der nächstgelegenen Woche: 1 Indikatoren in Zone aus 1 Familien (
 | 2024 | 80.0 % | 80.0 % | 0 |
 | 2025 | 80.0 % | 80.0 % | 0 |
 | 2026 | 80.0 % | 80.0 % | 0 |
+
+## Laufender Abschnitt
+
+Phase 4 Abwärtstrend seit 2025-11-09 (44 Wochen). Aktiver Motor: Kauf.
+
+| | Woche | Kurs | Score | Gates | Familien |
+|---|---|---|---|---|---|
+| stärkste Woche | 2026-06-28 | 59'473 | 78 | A=✗ B=✗ | {"bewertung":81,"halter_stimmung":null,"miner":84,"zeit":62} |
+| jetzt | 2026-09-06 | 80'339 | 42 | A=✗ B=✗ | {"bewertung":34,"halter_stimmung":null,"miner":50,"zeit":58} |
+
+Bedingungen für den nächsten Schritt:
+
+| Bedingung | aktuell | Ziel | |
+|---|---|---|---|
+| Gate A oder B erfüllt | keines | A oder B | ✗ |
+| Kauf-Score | 42 | 60 | ✗ |
+| Indikatoren in Zone | 2 | 4 | ✗ |
+| davon Familien | 2 | 3 | ✗ |
 
 ## Aktueller Stand
 
