@@ -172,6 +172,21 @@ Konvergenz in der nächstgelegenen Woche: 1 Indikatoren in Zone aus 1 Familien (
 | 2025 | 80.0 % | 80.0 % | 0 |
 | 2026 | 80.0 % | 80.0 % | 0 |
 
+## Empfindlichkeit (±15 %)
+
+| Schwelle | Faktor | BTC am Ende | Transaktionen | Kriterien erfüllt |
+|---|---|---|---|---|
+| `engines.buy.zone_min_score` | 0.85 | 1.3277 | 15 | 4 von 7 |
+| `engines.buy.zone_min_score` | 1.15 | 1.3277 | 15 | 4 von 7 |
+| `engines.sell.zone_min_score` | 0.85 | 1.3277 | 15 | 4 von 7 |
+| `engines.sell.zone_min_score` | 1.15 | 1.3277 | 15 | 4 von 7 |
+| `gates.buy_B.drawdown_max` | 0.85 | 1.3277 | 15 | 4 von 7 |
+| `gates.buy_B.drawdown_max` | 1.15 | 1.3277 | 15 | 4 von 7 |
+| `gates.sell_E2.halving_days_min` | 0.85 | 1.3277 | 15 | 4 von 7 |
+| `gates.sell_E2.halving_days_min` | 1.15 | 3.3192 | 12 | 3 von 7 |
+| `gates.sell_E2.score_min` | 0.85 | 1.3277 | 15 | 4 von 7 |
+| `gates.sell_E2.score_min` | 1.15 | 3.3192 | 12 | 3 von 7 |
+
 ## Laufender Abschnitt
 
 Phase 4 Abwärtstrend seit 2025-11-09 (44 Wochen). Aktiver Motor: Kauf.
