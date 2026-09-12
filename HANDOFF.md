@@ -2,7 +2,7 @@
 
 Zustandsbericht des Projekts. Wer hier einsteigt, liest zuerst dieses Dokument, dann `SPEC.md`.
 
-**Stand:** 12. September 2026 · Konfiguration `1.0-rc` · Node 22, keine Abhängigkeiten · 49 Tests grün
+**Stand:** 12. September 2026 · Konfiguration `1.0` (eingefroren) · Node 22, keine Abhängigkeiten · 49 Tests grün
 **Seite:** https://panta-rey.github.io/Panta-Rey-BTC-Ampel/ · **Repo:** https://github.com/Panta-rey/Panta-Rey-BTC-Ampel
 
 ---
@@ -27,7 +27,7 @@ Keine Anlageberatung. Das Modell beruht auf vier Zyklen und kann falsch liegen.
 |---|---|---|
 | M0 | Quellen-Check aus dem GitHub-Runner | ✅ `reports/sources-check.md` |
 | M1 | Datenpipeline: Abruf, Wochenreihe, 17 Indikatorwerte | ✅ läuft wöchentlich |
-| M2 | Normierung, zwei Motoren, Gates, Phasenmaschine, Backtest | ✅ kalibriert, `1.0-rc` |
+| M2 | Normierung, zwei Motoren, Gates, Phasenmaschine, Backtest | ✅ kalibriert und eingefroren, `1.0` |
 | M2b | Manuelle Werte aus Checkonchain, Herkunftsanzeige | ✅ |
 | M3 | Oberfläche: Ampel, Phasenleiste, Motoren, Checkliste, Kacheln | ✅ `index.html` |
 | M4 | Position und Journal im Browser | ✅ in `index.html` |
@@ -160,9 +160,22 @@ Fünf von sieben Kriterien erfüllt. Beide Ausnahmen sind erklärt: 2015 fehlte 
 
 **2017 wird bewusst nicht nachjustiert.** Jede Schwellenverschiebung, die 2017 verbessert, verschlechtert 2021 oder 2025. SPEC 10.5 verbietet die Optimierung auf einen einzelnen Zyklus, und vier Zyklen sind eine sehr dünne Datenbasis.
 
-### Noch offen vor dem Einfrieren auf 1.0
+### Empfindlichkeitsprüfung: bestanden, Konfiguration eingefroren
 
-Die Empfindlichkeitsprüfung: im Backtest-Workflow das Häkchen setzen oder lokal `node scripts/backtest.mjs --sensitivity`. Kriterium aus SPEC 10.3: Wird eine einzelne Schwelle um ±15 % verschoben, darf höchstens einer von drei Zyklen durchfallen. Besteht sie, wird `config/engine.json` auf `version: "1.0"` gesetzt und bis zum Ende des laufenden Zyklus nicht mehr angefasst.
+Jede der fünf wichtigsten Schwellen wurde einmal um 15 % nach oben und einmal nach unten verschoben.
+
+| Ergebnis | Anzahl |
+|---|---|
+| unverändert, 4 von 7 Kriterien | 8 von 10 |
+| ein Kriterium verloren (Hoch 2025), 3 von 7 | 2 von 10 |
+
+Die beiden Ausreisser sind `gates.sell_E2.halving_days_min` ×1,15 (480 → 552 Tage, das Hoch lag bei 533) und `gates.sell_E2.score_min` ×1,15 (40 → 46). Beide machen Weg E2 strenger und verlieren dasselbe Signal. Kriterium aus SPEC 10.3 erfüllt: keine Verschiebung kostet mehr als ein Kriterium.
+
+**Zur Lesart der Tabelle.** Die erste Fassung zeigte nur BTC am Ende, was in die Irre führte: 1,3277 BTC sahen schlechter aus als 3,3192. Tatsächlich sind 1,3277 genau 40 % von 3,3192, also die Kernposition. Die Läufe mit weniger BTC haben 2025 verkauft und halten Cash. Nachgerechnet: 1,9915 BTC zu 104'705 ergeben 207'479 USD, das Gesamtvermögen steigt von 266'661 auf 314'144 USD, also **18 % mehr**. Der Bericht zeigt deshalb jetzt das Gesamtvermögen und die konkret verlorenen Kriterien.
+
+**Bekannte Schwachstelle: das Signal von 2025 ist der wackeligste Teil des Systems.** Verkauf-Score 36 bei einer wirksamen Schwelle von 32. Das ist knapp. Wird E2 auch nur etwas strenger, oder fällt die Abdeckung des Verkaufs-Motors (dann steigt die gekoppelte Schwelle), verschwindet das Signal. Das ist kein Fehler, sondern spiegelt, dass 2025 ein wirklich leises Hoch war. Es ist bewusst nicht wegoptimiert, aber beim nächsten Zyklus im Auge zu behalten.
+
+**Konfiguration `1.0` ist eingefroren** und wird erst nach dem Ende des laufenden Zyklus neu bewertet (SPEC 10.5). Eine Ausnahme: Kommen die BGeometrics-Kennzahlen dazu, ändern sich Abdeckung und die gekoppelte E2-Schwelle, dann muss der Backtest neu bewertet werden.
 
 ---
 
@@ -252,8 +265,7 @@ Die Seite zeigt die Herkunft jetzt selbst: Jede Kachel trägt eine Rechenzeile m
 
 ## 10. Nächste Schritte
 
-1. **Empfindlichkeitsprüfung** laufen lassen, dann `config/engine.json` auf `version: "1.0"` einfrieren.
-2. **Benachrichtigungen prüfen.** `node scripts/notify.mjs --test` im Wochenlauf-Workflow oder lokal erzeugt eine Testmeldung. Im Repo unter „Watch" → „Custom" → „Issues" anhaken, damit E-Mails kommen. Optional ein Secret `NTFY_TOPIC` mit einem zufälligen Namen für Push ohne GitHub-App.
-3. **M7, Härtung.** Barrierefreiheit prüfen, Grenzfälle der Oberfläche, Ladezeit.
-4. **STH-Realized-Price** monatlich in `data/manual.json` eintragen, solange BGeometrics offen ist. Zum Ablesen: checkonchain.com oder charts.bgeometrics.com im Browser.
-5. **Nach der Antwort von BGeometrics** die fünf Kennzahlen anbinden und den Backtest neu bewerten.
+1. **Benachrichtigungen prüfen.** Unter Actions → Wochenlauf → „Run workflow" das Häkchen bei „Zusätzlich eine Testmeldung verschicken" setzen. Es entsteht ein Issue mit dem Label `signal`, das als E-Mail und über die GitHub-App als Push ankommt. Optional ein Secret `NTFY_TOPIC` mit einem zufälligen Namen für Push ohne GitHub-App.
+2. **M7, Härtung.** Barrierefreiheit prüfen, Grenzfälle der Oberfläche, Ladezeit. Sinnvoll erst, wenn die Datenlage geklärt ist: Kommen die fehlenden Kennzahlen dazu, ändern sich Abdeckung, Konvergenz und Schwellen, und dieselben Grenzfälle wären erneut zu prüfen.
+3. **STH-Realized-Price und Angebot im Gewinn** monatlich über den Speichern-Knopf nachtragen, solange BGeometrics offen ist. Beide wirken sofort und heben die Abdeckung des Kauf-Motors von 80 auf 100 %.
+4. **Nach der Antwort von BGeometrics** die fünf Kennzahlen anbinden und den Backtest neu bewerten. Solange warten, bevor an der Konfiguration etwas geändert wird.

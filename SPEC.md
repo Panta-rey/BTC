@@ -750,7 +750,7 @@ Datenverfügbarkeit vor 2018: Fear & Greed fehlt (ab Februar 2018), Funding fehl
 
 Verglichen werden jeweils Halten mit Ampel und Sparplan mit Sparplan mit Faktor.
 
-**Kennzahlen:** Endbestand in BTC, Endwert in USD, grösster Rückgang des Depotwerts, Anzahl Transaktionen, durchschnittlicher Verkaufspreis ÷ Zyklushoch, durchschnittlicher Kaufpreis ÷ Zyklustief, Wochen je Phase.
+**Kennzahlen:** Endbestand in BTC, Endwert in USD (bei Strategien mit Verkäufen ist nur der Endwert vergleichbar, nicht der BTC-Bestand allein), grösster Rückgang des Depotwerts, Anzahl Transaktionen, durchschnittlicher Verkaufspreis ÷ Zyklushoch, durchschnittlicher Kaufpreis ÷ Zyklustief, Wochen je Phase.
 
 ### 10.3 Abnahmekriterien für Konfiguration v1.0
 
@@ -788,7 +788,7 @@ Zu 2021: Die Maschine verkauft im Frühling und verpasst das zweite Hoch im Nove
 
 ### 10.5 Schutz vor Überanpassung
 
-Vier Zyklen sind wenig. Deshalb gilt: Schwellen werden **vor** dem ersten Backtest aus diesem Dokument übernommen, nicht nach dem Ergebnis gesucht. Zusätzlich eine „Einen-Zyklus-auslassen"-Prüfung: Kalibrierung auf zwei Zyklen, Test auf dem dritten, reihum. Der Report enthält eine Empfindlichkeitstabelle (jede Schwelle ±15 %). Nach der Abnahme wird die Konfiguration als `v1.0` eingefroren und erst nach dem Ende des laufenden Zyklus überprüft, nie mittendrin.
+Vier Zyklen sind wenig. Deshalb gilt: Schwellen werden **vor** dem ersten Backtest aus diesem Dokument übernommen, nicht nach dem Ergebnis gesucht. Zusätzlich eine „Einen-Zyklus-auslassen"-Prüfung: Kalibrierung auf zwei Zyklen, Test auf dem dritten, reihum. Der Report enthält eine Empfindlichkeitstabelle (jede Schwelle ±15 %). Nach der Abnahme wird die Konfiguration als `v1.0` eingefroren und erst nach dem Ende des laufenden Zyklus überprüft, nie mittendrin. Das ist am 12. September 2026 geschehen: Von zehn Verschiebungen liessen acht das Ergebnis unverändert, zwei verloren genau ein Kriterium (beide betrafen Weg E2 und damit das Hoch 2025).
 
 ### 10.6 Report
 

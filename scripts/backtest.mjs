@@ -263,10 +263,22 @@ function report(run, sim, trades, dcaPlain, dcaFactor, checks, sens, rows, cfg) 
   L.push("");
 
   if (sens) {
+    const base = { passed: checks.filter((c) => c.ok).length, value: sim.btc * price + sim.cash };
     L.push("## Empfindlichkeit (±15 %)", "");
-    L.push("| Schwelle | Faktor | BTC am Ende | Transaktionen | Kriterien erfüllt |", "|---|---|---|---|---|");
-    for (const s of sens) L.push(`| \`${s.path}\` | ${s.factor} | ${fmtBTC(s.btc)} | ${s.trades} | ${s.passed} von ${s.total} |`);
-    L.push("");
+    L.push(`Vergleichswert ohne Verschiebung: **${fmtUSD(base.value)} USD**, ${base.passed} von ${checks.length} Kriterien.`, "");
+    L.push("Entscheidend ist die Spalte Gesamtvermögen, nicht BTC allein: Wer verkauft hat, hält am Ende weniger BTC, dafür Cash.", "");
+    L.push("| Schwelle | Faktor | Gesamtvermögen | gegen Basis | BTC | Cash | Trans. | Kriterien | verloren |",
+           "|---|---|---|---|---|---|---|---|---|");
+    for (const s of sens) {
+      const val = s.btc * price + s.cash;
+      const d = base.value ? (val / base.value - 1) * 100 : 0;
+      const flag = s.passed < base.passed ? " ⚠" : "";
+      L.push(`| \`${s.path}\` | ${s.factor} | ${fmtUSD(val)} | ${d >= 0 ? "+" : ""}${d.toFixed(1)} % | ${fmtBTC(s.btc)} | ${fmtUSD(s.cash)} | ${s.trades} | ${s.passed} von ${s.total}${flag} | ${s.lost.join(", ") || "–"} |`);
+    }
+    const worst = Math.min(...sens.map((x) => x.passed));
+    L.push("", worst >= base.passed - 1
+      ? `**Bestanden.** Keine einzelne Verschiebung kostet mehr als ein Kriterium (schlechtester Fall: ${worst} von ${checks.length}).`
+      : `**Nicht bestanden.** Im schlechtesten Fall bleiben nur ${worst} von ${checks.length} Kriterien.`, "");
   }
 
   // Laufender Zyklus: Wie nah war die Maschine seit dem letzten Phasenwechsel am nächsten Schritt?
@@ -318,7 +330,9 @@ if (process.argv.includes("--sensitivity")) {
       for (const e of r.events) { if (e.tranche) (bw[e.week_id] ??= new Set()).add(e.tranche); if (e.tranches) for (const t of e.tranches) (bw[e.week_id] ??= new Set()).add(t); }
       const s2 = simulate(r.weeks, bw);
       const ch = assess(r, s2.trades);
-      sens.push({ path, factor, btc: s2.btc, trades: s2.trades.length, passed: ch.filter((x) => x.ok).length, total: ch.length });
+      sens.push({ path, factor, btc: s2.btc, cash: s2.cash, trades: s2.trades.length,
+        passed: ch.filter((x) => x.ok).length, total: ch.length,
+        lost: ch.filter((x) => !x.ok).map((x) => `${x.kind} ${x.date.slice(0, 4)}`) });
     }
   }
 }
