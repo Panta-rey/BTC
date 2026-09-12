@@ -2,8 +2,8 @@
   "schema": 1,
   "stage": "M2",
   "config_version": "1.0-rc",
-  "mode": "weekly",
-  "generated_at": "2026-09-12T07:45:49.802Z",
+  "mode": "daily",
+  "generated_at": "2026-09-12T10:41:10.466Z",
   "week_id": "2026-09-06",
   "price": {
     "close": 80338.98,
@@ -37,9 +37,9 @@
     "days_since_last_halving": 869,
     "next_halving": {
       "height": 1050000,
-      "blocks_left": 83359,
-      "estimate": "2028-03-17",
-      "tip_height": 966641,
+      "blocks_left": 83339,
+      "estimate": "2028-03-16",
+      "tip_height": 966661,
       "as_of": "2026-09-12"
     }
   },
@@ -698,49 +698,49 @@
       "ok": true,
       "last": "2026-09-11",
       "error": null,
-      "at": "2026-09-12T07:45:46.923Z"
+      "at": "2026-09-12T10:41:08.458Z"
     },
     "price_coinbase": {
       "ok": true,
       "last": "2026-09-11",
       "error": null,
-      "at": "2026-09-12T07:45:47.015Z"
+      "at": "2026-09-12T10:41:08.507Z"
     },
     "coinmetrics": {
       "ok": true,
       "last": "2026-09-11",
       "error": null,
-      "at": "2026-09-12T07:45:47.325Z"
+      "at": "2026-09-12T10:41:08.615Z"
     },
     "fng": {
       "ok": true,
       "last": "2026-09-11",
       "error": null,
-      "at": "2026-09-12T07:45:47.666Z"
+      "at": "2026-09-12T10:41:08.833Z"
     },
     "wiki_en": {
       "ok": true,
       "last": "2026-09-11",
       "error": null,
-      "at": "2026-09-12T07:45:48.194Z"
+      "at": "2026-09-12T10:41:09.075Z"
     },
     "wiki_de": {
       "ok": true,
       "last": "2026-09-11",
       "error": null,
-      "at": "2026-09-12T07:45:48.702Z"
+      "at": "2026-09-12T10:41:09.230Z"
     },
     "funding_deribit": {
       "ok": true,
       "last": "2026-09-11",
       "error": null,
-      "at": "2026-09-12T07:45:49.261Z"
+      "at": "2026-09-12T10:41:09.721Z"
     },
     "network": {
       "ok": true,
       "last": "2026-09-12",
       "error": null,
-      "at": "2026-09-12T07:45:49.754Z"
+      "at": "2026-09-12T10:41:10.407Z"
     }
   },
   "attribution": [
