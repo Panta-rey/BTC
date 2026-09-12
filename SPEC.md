@@ -322,7 +322,7 @@ Die Asymmetrie ist gewollt: Tiefs erkennt man an der Bewertung, Hochs eher an Ze
 
 1. **Familienscore** = gewichteter Durchschnitt der verfügbaren Indikatoren der Familie. Eine Familie zählt nur, wenn mindestens 50 % ihres Innengewichts verfügbar sind.
 2. **Motorscore** = gewichteter Durchschnitt der verfügbaren Familienscores, auf ganze Zahlen gerundet. Fehlende Familien werden herausgerechnet, nicht als 0 gezählt.
-3. **Abdeckung** = Summe der verfügbaren Familiengewichte ÷ 100. Liegt sie beim aktiven Motor unter 70 %, gilt die Woche als Datenlücke (6.6).
+3. **Abdeckung** = Summe der verfügbaren Familiengewichte ÷ 100. Liegt sie beim aktiven Motor unter 60 %, gilt die Woche als Datenlücke (6.6).
 4. **Konvergenz** = Anzahl der Indikatoren „in Zone" und Anzahl der Familien, aus denen sie stammen. Anzeige: „5 von 11 in Zone · 3 Familien".
 5. **Anpassung bei fehlenden Quellen.** Die geforderte Familienzahl ist `min(Sollwert, verfügbare Familien)`, mindestens aber 2. Fällt eine Familie dauerhaft aus, weil eine Quelle fehlt (3.4), darf daran kein Signal scheitern. Die Oberfläche zeigt in diesem Fall einen Hinweis, dass die Anforderung gesenkt wurde.
 
@@ -427,7 +427,9 @@ So erwischt Pfad A (Überhitzung) mehrere Hochs einer Top-Zone mit je einer Tran
 
 ### 6.6 Datenlücke
 
-Ist die Abdeckung des aktiven Motors < 70 % oder sind alle On-Chain-Werte älter als 10 Tage, wird die Woche **nicht** ausgewertet. Die Zähler bleiben stehen (weder erhöht noch zurückgesetzt), die Seite zeigt ein gelbes Banner. Nach zwei Wochen Lücke geht eine Benachrichtigung raus.
+Ist die Abdeckung des aktiven Motors < 60 % oder sind alle On-Chain-Werte älter als 10 Tage, wird die Woche **nicht** ausgewertet.
+
+Die Schwelle liegt bei 60 % und nicht höher, weil die beiden tragenden Verkaufs-Familien (Zeit & Trend mit 40, Relative Bewertung mit 25) zusammen 65 % ergeben. Mit 70 % wäre die Maschine in jedem Zeitraum ohne Stimmungsdaten blind gewesen: Fear & Greed gibt es erst ab Februar 2018, Funding ab 2019. Genau daran ist im ersten Backtest das Hoch von Dezember 2017 vorbeigelaufen. Die Zähler bleiben stehen (weder erhöht noch zurückgesetzt), die Seite zeigt ein gelbes Banner. Nach zwei Wochen Lücke geht eine Benachrichtigung raus.
 
 ### 6.7 Ablauf eines Wochenlaufs
 

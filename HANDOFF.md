@@ -2,7 +2,7 @@
 
 Kurzer Zustandsbericht des Projekts. Wer hier einsteigt, liest zuerst dieses Dokument, dann `SPEC.md`.
 
-**Stand:** 12. September 2026 · Konfiguration `0.9-entwurf` · Node 22, keine Abhängigkeiten
+**Stand:** 12. September 2026 · Konfiguration `0.9-entwurf` · Node 22, keine Abhängigkeiten · **38 Tests grün**
 
 ---
 
@@ -25,14 +25,14 @@ Keine Anlageberatung. Das Modell beruht auf vier Zyklen und kann falsch liegen.
 |---|---|---|
 | M0 | Quellen-Check aus dem GitHub-Runner | ✅ gelaufen, `reports/sources-check.md` |
 | M1 | Datenpipeline: Abruf, Wochenreihe, 16 Indikatorwerte | ✅ läuft im Runner |
-| M2 | Normierung, zwei Motoren, Gates, Phasenmaschine, Backtest | ✅ Code fertig, **Kalibrierung offen** |
+| M2 | Normierung, zwei Motoren, Gates, Phasenmaschine, Backtest | ✅ Code fertig, erster Backtest gelaufen, **Kalibrierung offen** (siehe 6.1) |
 | M3 | Oberfläche: Ampel, Phasenleiste, Motoren, Checkliste, Kacheln | ⬜ nächster Schritt |
 | M4 | Position und Journal im Browser (`localStorage`) | ⬜ |
 | M5 | Benachrichtigungen (GitHub Issues, optional ntfy) | ⬜ |
 | M6 | Verlauf und Zyklus-Uhr als Grafik | ⬜ |
 | M7 | Härtung, Barrierefreiheit | ⬜ |
 
-**47 Tests, alle grün** (`node --test "test/**/*.test.mjs"`).
+**38 Tests, alle grün** (`node --test "test/**/*.test.mjs"`).
 
 ---
 
@@ -119,13 +119,30 @@ Beim Bauen zeigten sich vier Stellen, an denen die Spezifikation nachgezogen wur
 
 ### 6.1 Kalibrierung (blockiert M3 nicht, aber v1.0)
 
-Der Backtest läuft technisch, wurde aber noch nicht mit echten Daten bewertet. Zu prüfen sind die Abnahmekriterien aus SPEC 10.3 und die Fixpunkte aus 10.4.
+**Erster Backtest mit echten Daten, Lauf 1 (Konfiguration 0.9, Abdeckungsschwelle noch 70 %):**
 
-**Konkreter Verdacht, der zuerst zu prüfen ist:** Im Kauf-Motor sind nur drei Familien verfügbar (Bewertung, Miner, Zeit). Die Konvergenz verlangt Indikatoren aus allen dreien, also auch aus der Miner-Familie. Puell und Hash Ribbons stehen an Tiefs aber oft nur bei mittleren Werten. Falls die Tiefe 2015, 2018 und 2022 daran scheitern, ist die Miner-Familie der richtige Hebel, nicht die Bewertungsschwellen.
+| Strategie | BTC am Ende | Wert | Transaktionen |
+|---|---|---|---|
+| Halten | 1,0000 | 80'339 | 0 |
+| Ampel | 2,6800 | 215'309 | 12 |
+| Sparplan | 52,61 | 4'226'337 | 153 |
+| Sparplan mit Faktor | 58,15 | 4'671'917 | 153 |
 
-Zweite offene Frage: ob das Juni-Tief 2026 bei rund 60'000 über Gate B ausgelöst hätte. Damals passten Drawdown (−52 %), der Abstand zum 200-Wochen-Schnitt und das Zeitfenster.
+Die Kaufseite arbeitet gut. Die Phaseneintritte lagen bei den Tiefs 2015 (0 Wochen Abstand), 2018 (−2 Wochen) und 2022 (−21 Wochen). Durchschnittliche Kaufpreise: 1,36 × und 1,43 × des Tiefs, beide unter dem Ziel von 1,6 ×. Für 2015 gab es keinen Kauf, weil die Simulation mit 1 BTC und ohne Cash startet.
 
-Vorgehen: `node scripts/backtest.mjs --sensitivity`, dann `reports/backtest.md` lesen. Parameter nur ändern, wenn die Änderung in allen Zyklen hilft, nie für einen einzelnen. Danach `config/engine.json` auf `version: "1.0"` setzen und einfrieren.
+Die Verkaufsseite traf 2021 (0,73 × des Hochs, Ziel 0,6 ×), verpasste aber 2017 und 2025.
+
+**Ursache für 2017 gefunden und behoben.** Der Verkaufs-Motor war strukturell blind: Fear & Greed beginnt erst im Februar 2018, Funding 2019, und die Familie „Halterverhalten" fehlt wegen BGeometrics. Damit blieben nur „Zeit & Trend" (40) und „Relative Bewertung" (25), zusammen 65 % Abdeckung, also unter der damaligen Mindestschwelle von 70 %. Jede Woche galt als Datenlücke, die Zähler standen still. Die Maschine lief durch das Hoch von Dezember 2017 hindurch und wachte erst im März 2018 auf, nach dem Absturz. Verkauft wurde dann beim Trendbruch zu 8'188, also 0,41 × des Hochs.
+
+Behebung: `zone_min_coverage` von 0,70 auf 0,60. Die beiden tragenden Verkaufs-Familien ergeben 65 % und tragen die Logik von E1 und E2 allein. Ein Test sichert das ab.
+
+**Ursache für 2025 noch offen.** Phase 2 lief von Januar 2023 bis heute durch, ohne je in die Verteilung zu wechseln. Die Abdeckung war hier vollständig, es liegt also nicht an fehlenden Daten. Vermutlich blieb der Verkauf-Score knapp unter der Schwelle von 40 für Weg E2. Denkbare Gründe: geringe Überdehnung über dem Trendband (2025 lief der Kurs kaum davon), ein Pi-Cycle-Verhältnis weit unter 1 und niedrige Retail-Aufmerksamkeit.
+
+Dafür schreibt der Backtest jetzt einen **Diagnose-Abschnitt**: für jedes bekannte Extrem die nächstgelegene und die stärkste Woche im Fenster von ±26 Wochen, mit Score, Abdeckung, Gates und allen Familienwerten. Damit lässt sich der Hebel gezielt bestimmen, statt zu raten.
+
+**Vorgehen für Lauf 2:** `node scripts/backtest.mjs --sensitivity`, dann den Diagnose-Abschnitt für „Hoch 2025-10-06" lesen. Erst danach Parameter ändern, und nur solche, die in allen Zyklen helfen. Am Ende `config/engine.json` auf `version: "1.0"` setzen.
+
+**Offene Nebenfrage:** ob das Juni-Tief 2026 bei rund 60'000 über Gate B ausgelöst hätte. Der Phasen-Abschnitt zeigt bisher durchgehend Phase 2 seit Januar 2023, also nein. Auch das klärt die Diagnose.
 
 ### 6.2 M3, die Oberfläche
 
@@ -147,6 +164,8 @@ Für die Entwicklung soll `index.html?fixture=2022-06-19` eine Datei aus `data/f
 | Öffentliches Repo | Bestände, Kaufpreise und Beträge gehören nie ins Repo. Die Pipeline erzeugt nur allgemeine Signale, die Position lebt im Browser. |
 | GitHub-Inaktivität | Nach 60 Tagen ohne Aktivität deaktiviert GitHub geplante Workflows. Die wöchentlichen Commits sollten das verhindern. |
 | Überanpassung | Vier Zyklen sind wenig. Schwellen vorab festlegen, nicht nachträglich suchen. |
+| Abdeckung vor 2018 | Ohne Fear & Greed (ab Feb. 2018) und Funding (ab 2019) erreicht der Verkaufs-Motor nur 65 %. Die Schwelle von 60 % ist deshalb bewusst gewählt und darf nicht ohne Not angehoben werden. |
+| Startkapital im Backtest | 1 BTC, kein Cash. Käufe vor dem ersten Verkauf sind nicht finanzierbar. Für Tiefs zählt daher der Zeitpunkt des Phaseneintritts, nicht der Kaufpreis. |
 
 ---
 

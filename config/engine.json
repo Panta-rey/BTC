@@ -5,7 +5,7 @@
   "bootstrap": { "start_week": "2014-01-05", "start_phase": 4 },
   "phase_override": null,
   "halvings": ["2012-11-28", "2016-07-09", "2020-05-11", "2024-04-20"],
-  "zone_min_coverage": 0.7,
+  "zone_min_coverage": 0.6,
   "in_zone_score": 70,
   "near_zone_score": 50,
 

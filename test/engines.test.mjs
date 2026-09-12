@@ -84,6 +84,17 @@ test("Ein als alt markierter Wert zählt nicht in den Score", () => {
   assert.ok(buy.coverage < cfg.zone_min_coverage, "unter der Mindestabdeckung");
 });
 
+test("Ohne Stimmungsdaten bleibt der Verkaufs-Motor entscheidungsfähig", () => {
+  // Lage vor Februar 2018: kein Fear & Greed, kein Funding, dazu die fehlenden BGeometrics-Daten
+  const r = row("2017-12-17", { ...TOP, fng_4w: null, funding_30d: null, wiki_4w: null });
+  const sell = engineScore(scoreIndicators(r, [], cfg), cfg.engines.sell, "sell");
+  assert.equal(sell.families.euphorie.available, false);
+  assert.equal(sell.families.halter.available, false);
+  assert.equal(Math.round(sell.coverage * 100), 65);
+  assert.ok(sell.coverage >= cfg.zone_min_coverage, "65 Prozent müssen für eine Entscheidung genügen");
+  assert.ok(sell.score >= cfg.gates.sell_E2.score_min, `Verkauf-Score zu niedrig: ${sell.score}`);
+});
+
 test("Die Zyklus-Uhr steht auf 0, wenn das relevante Halving noch aussteht", () => {
   const r = row("2026-01-04");
   const s = scoreIndicators(r, [], cfg);

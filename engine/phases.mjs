@@ -100,6 +100,9 @@ export function replay(rows, cfg, opts = {}) {
     const active = activeSide === "buy" ? buy : sell;
 
     // Datenlücke (SPEC 6.6): Zähler bleiben stehen, keine Auswertung.
+    // Die Schwelle liegt bei 60 %, weil die beiden tragenden Verkaufs-Familien
+    // (Zeit & Trend 40, Relative Bewertung 25) zusammen 65 % ergeben. Sonst wäre
+    // die Maschine in jedem Zeitraum ohne Stimmungsdaten blind (z. B. vor Februar 2018).
     const dataGap = active.score == null || active.coverage < cfg.zone_min_coverage;
     if (dataGap) {
       if (lastGoodWeek && weeksBetween(lastGoodWeek, row.w) === 2) add(row.w, "DATA_GAP", "Seit zwei Wochen unvollständige Daten. Quellen prüfen.");

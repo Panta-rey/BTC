@@ -128,6 +128,44 @@ function assess(run, trades) {
   return out;
 }
 
+// ---------------------------------------------------------------- Diagnose
+
+// Warum hat die Maschine an einem bekannten Extrem (nicht) reagiert?
+// Zeigt die Woche selbst und die beste Woche im Fenster von ±26 Wochen.
+function diagnose(run, side, date) {
+  const near = run.weeks.filter((w) => Math.abs(daysBetween(w.w, date)) <= 182);
+  if (!near.length) return null;
+  const key = side === "buy" ? "buy" : "sell";
+  const at = near.reduce((b, w) => (Math.abs(daysBetween(w.w, date)) < Math.abs(daysBetween(b.w, date)) ? w : b));
+  const best = near.reduce((b, w) => ((w[key] ?? -1) > (b[key] ?? -1) ? w : b));
+  const fam = (w) => Object.fromEntries(Object.entries(w.engines[key].families).map(([k, v]) => [k, v.available ? v.score : null]));
+  return {
+    at: { w: at.w, score: at[key], cov: at[key + "_cov"], phase: at.phase, gaps: at.flags.data_gap, gates: at.gates,
+          conf: at.engines[key].confluence, fam: fam(at), cycle_days: at.cycle_days },
+    best: { w: best.w, score: best[key], cov: best[key + "_cov"], gaps: best.flags.data_gap, gates: best.gates, fam: fam(best) },
+    gapWeeks: near.filter((w) => w.flags.data_gap).length,
+    n: near.length,
+  };
+}
+
+function diagnosticsSection(run) {
+  const L = ["## Diagnose an den bekannten Extremen", "",
+    "Für jedes Extrem: die nächstgelegene Woche und die stärkste Woche im Fenster von ±26 Wochen. `cov` ist die Abdeckung des jeweiligen Motors, `gaps` die Zahl der Wochen mit Datenlücke im Fenster.", ""];
+  for (const [kind, list, side] of [["Tief", LOWS, "buy"], ["Hoch", HIGHS, "sell"]]) {
+    for (const [date, price] of list) {
+      const d = diagnose(run, side, date);
+      L.push(`### ${kind} ${date} (${fmtUSD(price)} USD)`, "");
+      if (!d) { L.push("Keine Daten im Fenster.", ""); continue; }
+      L.push(`| | Woche | Score | Abdeckung | Phase | Gates | Familien |`, "|---|---|---|---|---|---|---|");
+      const g = (x) => Object.entries(x).filter(([k]) => (side === "buy" ? "AB" : "E").includes(k[0])).map(([k, v]) => `${k}=${v ? "✓" : "✗"}`).join(" ");
+      L.push(`| nächstgelegen | ${d.at.w} | ${d.at.score ?? "–"} | ${pct(d.at.cov)} | ${d.at.phase} | ${g(d.at.gates)} | ${JSON.stringify(d.at.fam)} |`);
+      L.push(`| stärkste | ${d.best.w} | ${d.best.score ?? "–"} | ${pct(d.best.cov)} | | ${g(d.best.gates)} | ${JSON.stringify(d.best.fam)} |`);
+      L.push("", `Konvergenz in der nächstgelegenen Woche: ${d.at.conf.in_zone} Indikatoren in Zone aus ${d.at.conf.families} Familien (${d.at.conf.available_families} verfügbar). Zyklus-Uhr: ${d.at.cycle_days ?? "–"} Tage. Wochen mit Datenlücke im Fenster: ${d.gapWeeks} von ${d.n}.`, "");
+    }
+  }
+  return L;
+}
+
 // ---------------------------------------------------------------- Empfindlichkeit
 
 function shift(cfg, path, factor) {
@@ -152,6 +190,7 @@ function report(run, sim, trades, dcaPlain, dcaFactor, checks, sens, rows, cfg) 
   const L = [];
   L.push("# Backtest", "");
   L.push(`Konfiguration \`${cfg.version}\` · ${run.weeks.length} Wochen ab ${run.weeks[0].w} bis ${last.w} · Gebühr ${(FEE * 100).toFixed(1)} % pro Transaktion · Kernposition ${Math.round(CORE * 100)} %`, "");
+  L.push("> Startkapital: 1 BTC, kein Cash. Kauftranchen vor dem ersten Verkauf sind deshalb nicht finanzierbar – das betrifft das Tief 2015. Für Tiefs zählt daher vor allem der Zeitpunkt des Phaseneintritts.", "");
   L.push("> Ohne Steuern. Ausführung zum Wochenschluss der Signalwoche. Die BGeometrics-Kennzahlen fehlen (SPEC 3.4), der STH-Realized-Price war historisch nicht verfügbar, deshalb arbeitet der Trendfilter nur mit dem Bull Market Support Band.", "");
 
   L.push("## Ergebnis", "");
@@ -168,6 +207,8 @@ function report(run, sim, trades, dcaPlain, dcaFactor, checks, sens, rows, cfg) 
     L.push(`| ${c.kind} | ${c.date} | ${fmtUSD(c.price)} | ${c.phase_week ?? "–"} | ${c.offset_weeks == null ? "–" : c.offset_weeks + " W"} | ${fmtUSD(c.avg)} | ${c.ratio ? c.ratio.toFixed(2) + " ×" : "–"} | ${c.target} | ${c.ok ? "✓" : "✗"} |`);
   }
   L.push("");
+
+  L.push(...diagnosticsSection(run));
 
   L.push("## Phasen", "");
   L.push("| Von | Bis | Phase | Wochen | Kurs Anfang | Kurs Ende |", "|---|---|---|---|---|---|");
