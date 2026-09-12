@@ -40,6 +40,7 @@ test/                  node:test
 | Wochenlauf | Mo 03:10 | Tests, Daten holen, auswerten, Backtest, committen |
 | Tageslauf | täglich 06:15 | Tageswerte aktualisieren, löst nie Signale aus |
 | Backtest | manuell + bei Änderung der Konfiguration | Report neu rechnen |
+| Manuelle Werte | bei einem Issue `manual: …` | prüft und schreibt `data/manual.json` |
 | Quellen-Check | manuell | prüft alle Datenquellen aus dem Runner |
 
 ## Lokal ausführen
@@ -69,7 +70,7 @@ Fünf On-Chain-Kennzahlen haben derzeit keine freie Quelle. Sie sind auf [charts
 }
 ```
 
-Die Einstellungen der Seite haben Eingabefelder mit Links zu den Charts und erzeugen den fertigen Block. Eine Lesung gilt 30 Tage. STH-Realized-Price und Angebot im Gewinn wirken sofort; Reserve Risk, RHODL und LTH-Positionsänderung werden relativ bewertet und brauchen rund 26 Wochen Historie.
+In den Einstellungen der Seite gibt es je Kennzahl ein Eingabefeld und einen Knopf zum Chart. Der Knopf „✓ Speichern" öffnet ein vorbereitetes GitHub-Issue; ein Workflow prüft die Werte und trägt sie automatisch ein. Eine Lesung gilt 30 Tage. STH-Realized-Price und Angebot im Gewinn wirken sofort; Reserve Risk, RHODL und LTH-Positionsänderung werden relativ bewertet und brauchen rund 26 Wochen Historie.
 
 ## Datenquellen
 

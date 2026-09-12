@@ -1,0 +1,82 @@
+name: Manuelle Werte
+
+# Nimmt Kennzahlen entgegen, die über den Speichern-Knopf der Seite als Issue
+# eingereicht werden, prüft sie und schreibt sie nach data/manual.json.
+#
+# Sicherheit: Es werden ausschliesslich Issues der Repo-Eigentümerin oder des
+# Eigentümers verarbeitet. Alles andere wird kommentarlos übergangen, damit
+# Fremde über ein Issue nichts ins Repo schreiben können.
+
+on:
+  issues:
+    types: [opened, edited]
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: data
+  cancel-in-progress: false
+
+jobs:
+  apply:
+    if: >
+      github.event.issue.user.login == github.repository_owner &&
+      startsWith(github.event.issue.title, 'manual:')
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+
+      - name: Werte prüfen und übernehmen
+        id: apply
+        env:
+          ISSUE_BODY: ${{ github.event.issue.body }}
+        run: |
+          set +e
+          OUT=$(node scripts/apply-manual.mjs 2>&1)
+          CODE=$?
+          set -e
+          echo "code=$CODE" >> $GITHUB_OUTPUT
+          {
+            echo 'text<<ENDOFTEXT'
+            echo "$OUT"
+            echo 'ENDOFTEXT'
+          } >> $GITHUB_OUTPUT
+          echo "$OUT"
+          exit 0
+
+      - name: Committen
+        if: steps.apply.outputs.code == '0'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/manual.json
+          if git diff --cached --quiet; then
+            echo "Keine Änderung."
+          else
+            git commit -m "manual: Werte aus Issue #${{ github.event.issue.number }}"
+            git push
+          fi
+
+      - name: Rückmeldung ans Issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const ok = '${{ steps.apply.outputs.code }}' === '0';
+            const text = `${{ toJSON(steps.apply.outputs.text) }}`;
+            await github.rest.issues.createComment({
+              owner: context.repo.owner, repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: ok ? text : `Die Werte wurden **nicht** übernommen.\n\n${text}\n\nBitte den Block im Issue korrigieren und speichern, dann läuft die Prüfung erneut.`,
+            });
+            if (ok) {
+              await github.rest.issues.update({
+                owner: context.repo.owner, repo: context.repo.repo,
+                issue_number: context.issue.number, state: 'closed',
+              });
+            }

@@ -208,9 +208,24 @@ Format:
 }
 ```
 
-Der erzeugte Block enthält immer **alle fünf Reihen**, auch die leeren, und übernimmt die bisherigen Lesungen. So lässt er sich gefahrlos über die ganze Datei einfügen, ohne dass Historie verloren geht. Eine Lesung für dieselbe Woche wird ersetzt, nicht doppelt angelegt.
+Der erzeugte Block enthält immer **alle fünf Reihen**, auch die leeren, und übernimmt die bisherigen Lesungen. Eine Lesung für dieselbe Woche wird ersetzt, nicht doppelt angelegt.
 
-Die Werte werden nicht vom Browser aus gespeichert: Die Auswertung läuft in der Pipeline, also muss der Block ins Repo. Dafür gibt es einen Knopf, der direkt die GitHub-Bearbeitungsansicht von `data/manual.json` öffnet.
+### Speichern über ein Issue
+
+Eine GitHub Page ist statisch und läuft im Browser. Sie kann nicht ins Repo schreiben, und die Auswertung findet ohnehin in der Pipeline statt. Der Knopf **„✓ Speichern"** löst deshalb diesen Ablauf aus:
+
+1. Die Seite öffnet GitHub mit einem vorbereiteten Issue. Titel `manual: <Woche>`, im Text der JSON-Block.
+2. Ein Klick auf „Create" reicht es ein.
+3. Der Workflow `manual-values.yml` prüft die Werte, schreibt `data/manual.json`, committet, kommentiert das Ergebnis und schliesst das Issue.
+4. Der nächste Wochenlauf rechnet damit.
+
+Zwei Klicks statt Kopieren und Einfügen, und die Anmeldung übernimmt GitHub selbst. Es liegt kein Zugangsschlüssel im Browser.
+
+**Sicherheit.** Der Workflow verarbeitet ausschliesslich Issues, deren Titel mit `manual:` beginnt **und** die von der Repo-Eigentümerin oder dem Eigentümer stammen. Alles andere wird übergangen. Das ist wichtig, weil jeder in einem öffentlichen Repo Issues eröffnen kann. Zusätzlich prüft `scripts/lib/manual.mjs` streng: nur die fünf bekannten Schlüssel, Datumsangaben im Format `YYYY-MM-DD` und nicht in der Zukunft, Werte innerhalb plausibler Grenzen (etwa 0 bis 100 % beim Angebot im Gewinn), höchstens 400 Lesungen je Kennzahl. Schlägt die Prüfung fehl, bleibt die Datei unverändert und der Fehler erscheint als Kommentar am Issue.
+
+**Warum kein Zugangsschlüssel im Browser.** Technisch liesse sich die Datei mit einem persönlichen GitHub-Token direkt aus der Seite schreiben. Ein Token mit Schreibrecht auf das Repo erlaubt aber auch, den Code zu ändern, den die Workflows ausführen. Dieser Weg wurde deshalb verworfen.
+
+Als Rückfallebene bleiben der Knopf „Block kopieren" und ein Link direkt in die Bearbeitungsansicht von `data/manual.json`.
 
 ### 3.3 Abrufbudget BGeometrics (frei: 8 pro Stunde, 15 pro Tag; nur relevant nach Lizenzklärung, siehe 3.4)
 

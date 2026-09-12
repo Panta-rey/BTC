@@ -2,7 +2,7 @@
 
 Zustandsbericht des Projekts. Wer hier einsteigt, liest zuerst dieses Dokument, dann `SPEC.md`.
 
-**Stand:** 12. September 2026 · Konfiguration `1.0-rc` · Node 22, keine Abhängigkeiten · 46 Tests grün
+**Stand:** 12. September 2026 · Konfiguration `1.0-rc` · Node 22, keine Abhängigkeiten · 49 Tests grün
 **Seite:** https://panta-rey.github.io/Panta-Rey-BTC-Ampel/ · **Repo:** https://github.com/Panta-rey/Panta-Rey-BTC-Ampel
 
 ---
@@ -46,6 +46,8 @@ index.html             die Seite, eine Datei, ohne Abhängigkeiten
 scripts/fetch.mjs      Quellen  → data/raw/          (Netzwerk, fehlertolerant)
 scripts/build.mjs      data/raw → data/*.json        (Wochenauswertung + Wiedergabe)
 scripts/backtest.mjs   weekly   → reports/backtest.md
+scripts/notify.mjs     Benachrichtigungen (Issues, optional ntfy)
+scripts/apply-manual.mjs   manuelle Werte aus einem Issue übernehmen
 scripts/check-sources.mjs  Quellen-Check (M0)
 engine/                reine Logik, kein Netzwerk, deterministisch
   dates.mjs      Datumshelfer, Wochendefinition
@@ -80,6 +82,7 @@ test/                  node:test, 40 Tests
 | Wochenlauf | Mo 03:10 | Tests, Daten, Auswertung, Backtest, Commit |
 | Tageslauf | täglich 06:15 | Tageswerte, löst nie Signale aus |
 | Backtest | manuell + bei Änderung in `config/` oder `engine/` | Report neu rechnen |
+| Manuelle Werte | bei einem Issue `manual: …` vom Eigentümer | prüft und schreibt `data/manual.json` |
 | Quellen-Check | manuell | prüft alle Quellen aus dem Runner |
 
 ---
@@ -98,7 +101,13 @@ Die Gratis-Stufe von BGeometrics verbietet genau unseren Aufbau: Abrufe von frem
 
 ### Manuelle Werte aus Checkonchain (Zwischenlösung)
 
-Alle fünf Kennzahlen sind auf `charts.checkonchain.com` ablesbar und lassen sich in `data/manual.json` nachtragen. Die Einstellungen der Seite haben dafür Eingabefelder mit Links zu den Charts; sie erzeugen den fertigen JSON-Block und verlinken auf die GitHub-Bearbeitungsansicht. Der nächste Wochenlauf rechnet damit.
+Alle fünf Kennzahlen sind auf `charts.checkonchain.com` ablesbar. In den Einstellungen der Seite gibt es je Kennzahl ein Eingabefeld, einen Knopf „↗ Chart öffnen" und den Hinweis, welche Linie abzulesen ist.
+
+**Speichern läuft über ein Issue.** Der Knopf „✓ Speichern" öffnet GitHub mit einem vorbereiteten Issue (Titel `manual: <Woche>`, im Text der JSON-Block). Ein Klick auf „Create", und der Workflow `manual-values.yml` prüft die Werte, schreibt `data/manual.json`, kommentiert das Ergebnis und schliesst das Issue. Der nächste Wochenlauf rechnet damit.
+
+Die Seite kann die Datei nicht selbst schreiben: Sie ist statisch und liegt im Browser, die Auswertung läuft in der Pipeline. Ein persönlicher GitHub-Token im Browser wäre technisch möglich, würde aber auch Schreibrecht auf den Code geben, den die Workflows ausführen. Dieser Weg wurde verworfen.
+
+**Sicherheit des Workflows:** Er verarbeitet nur Issues, die mit `manual:` beginnen **und** vom Repo-Eigentümer stammen. `scripts/lib/manual.mjs` prüft zusätzlich Schlüssel, Datumsformat, Zukunftsdaten, Wertebereiche und Anzahl. Bei einem Fehler bleibt die Datei unverändert und der Grund erscheint als Kommentar.
 
 | Kennzahl | Chart-Pfad unter `charts.checkonchain.com/` | Wirkung |
 |---|---|---|

@@ -898,14 +898,24 @@ function manualPanel(){
 
   const out = el("pre","calc"); out.style.whiteSpace="pre-wrap"; out.style.fontSize="11.5px";
   box.appendChild(out);
+  // Speichern läuft über ein vorbereitetes GitHub-Issue. Ein Workflow prüft die
+  // Werte und schreibt sie nach data/manual.json. Die Seite selbst kann das nicht:
+  // sie ist statisch und liegt im Browser, die Auswertung läuft in der Pipeline.
   const row = el("div","btnrow");
+  const save = el("a","btn","✓ Speichern");
+  save.target="_blank"; save.rel="noopener"; save.style.textDecoration="none";
   const cp = el("button","btn ghost","Block kopieren");
   cp.onclick = async ()=>{ try{ await navigator.clipboard.writeText(out.textContent); cp.textContent="Kopiert"; setTimeout(()=>cp.textContent="Block kopieren",1600); }
     catch{ cp.textContent="Kopieren nicht erlaubt"; } };
-  const ed = el("a","btn ghost","data/manual.json bearbeiten");
+  const ed = el("a","btn ghost","Datei von Hand bearbeiten");
   ed.href="https://github.com/Panta-rey/Panta-Rey-BTC-Ampel/edit/main/data/manual.json";
   ed.target="_blank"; ed.rel="noopener"; ed.style.textDecoration="none";
-  row.append(cp,ed); box.appendChild(row);
+  row.append(save,cp,ed); box.appendChild(row);
+  box.appendChild(el("div","why",
+    `Speichern öffnet GitHub mit einem fertig ausgefüllten Eintrag. Dort nur noch auf
+     „Create“ tippen, dann trägt ein Workflow die Werte innerhalb einer Minute in
+     <code>data/manual.json</code> ein und meldet sich zurück. Die Seite kann die Datei
+     nicht selbst ändern: Sie ist statisch, die Auswertung läuft in der Pipeline.`));
 
   function snippet(){
     const week = D.week_id;
@@ -922,6 +932,12 @@ function manualPanel(){
     }
     out.textContent = `{\n  "_hinweis": "Werte aus charts.checkonchain.com. Eine Lesung gilt 30 Tage. Siehe SPEC.md 3.5.",\n${lines.join(",\n")}\n}`;
     cp.textContent = neu ? `Block kopieren (${neu} neu)` : "Block kopieren";
+    save.textContent = neu ? `✓ Speichern (${neu})` : "✓ Speichern";
+    save.style.opacity = neu ? "1" : ".45";
+    save.style.pointerEvents = neu ? "auto" : "none";
+    const issueBody = `Manuelle Kennzahlen, abgelesen bei Checkonchain.\n\n\`\`\`json\n${out.textContent}\n\`\`\`\n`;
+    save.href = "https://github.com/Panta-rey/Panta-Rey-BTC-Ampel/issues/new?"
+      + new URLSearchParams({ title: `manual: ${week}`, body: issueBody, labels: "manual" }).toString();
   }
   snippet();
 

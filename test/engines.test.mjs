@@ -345,3 +345,50 @@ test("Der Jahres-Review kommt einmal pro Jahr in der ersten Januarwoche", async 
   assert.equal(yearlyReview([first], { now: jan }), null, "nicht zweimal");
   assert.equal(yearlyReview([], { now: Date.parse("2027-03-01T00:00:00Z") }), null, "nur im Januar");
 });
+
+// ---------------------------------------------------------------- Manuelle Werte einreichen
+
+test("Der Issue-Block wird gelesen, geprüft und zusammengeführt", async () => {
+  const { parseSubmission, mergeReadings } = await import("../scripts/lib/manual.mjs");
+  const body = "Werte vom 6. September.\n\n```json\n" +
+    '{"sth_realized_price":[{"d":"2026-09-06","v":80100}],"supply_in_profit":[{"d":"2026-09-06","v":52.3}]}' +
+    "\n```";
+  const r = parseSubmission(body, { today: "2026-09-12" });
+  assert.equal(r.ok, true);
+  assert.deepEqual(r.values.sth_realized_price, [{ d: "2026-09-06", v: 80100 }]);
+
+  const cur = { _hinweis: "x", sth_realized_price: [{ d: "2026-08-02", v: 79000 }], rhodl: [{ d: "2026-08-02", v: 2000 }] };
+  const m = mergeReadings(cur, r.values);
+  assert.equal(m.added, 2);
+  assert.equal(m.next.sth_realized_price.length, 2, "alte Lesung bleibt");
+  assert.deepEqual(m.next.rhodl, [{ d: "2026-08-02", v: 2000 }], "andere Kennzahlen unberührt");
+  assert.equal(m.next._hinweis, "x", "Kommentarfelder bleiben");
+});
+
+test("Dieselbe Woche wird ersetzt statt verdoppelt", async () => {
+  const { mergeReadings } = await import("../scripts/lib/manual.mjs");
+  const cur = { rhodl: [{ d: "2026-09-06", v: 2000 }] };
+  const m = mergeReadings(cur, { rhodl: [{ d: "2026-09-06", v: 2100 }] });
+  assert.equal(m.next.rhodl.length, 1);
+  assert.equal(m.next.rhodl[0].v, 2100);
+  assert.equal(m.replaced, 1);
+  assert.equal(m.added, 0);
+});
+
+test("Unplausible Einreichungen werden abgewiesen", async () => {
+  const { parseSubmission } = await import("../scripts/lib/manual.mjs");
+  const j = (o) => "```json\n" + JSON.stringify(o) + "\n```";
+  const bad = [
+    [j({ supply_in_profit: [{ d: "2026-09-06", v: 152 }] }), "ausserhalb"],
+    [j({ unbekannt: [{ d: "2026-09-06", v: 1 }] }), "Unbekannter Schlüssel"],
+    [j({ rhodl: [{ d: "2099-01-01", v: 1 }] }), "Zukunft"],
+    [j({ rhodl: [{ d: "06.09.2026", v: 1 }] }), "ungültiges Datum"],
+    [j({ rhodl: "keine Liste" }), "erwartet wird eine Liste"],
+    ["kein json", "nicht lesbar"],
+  ];
+  for (const [body, teil] of bad) {
+    const r = parseSubmission(body, { today: "2026-09-12" });
+    assert.equal(r.ok, false, `hätte abgewiesen werden müssen: ${body.slice(0, 40)}`);
+    assert.ok(r.error.includes(teil), `Fehlermeldung passt nicht: ${r.error}`);
+  }
+});
