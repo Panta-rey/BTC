@@ -22,6 +22,14 @@ html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans)
   -webkit-font-smoothing:antialiased;font-size:15px;line-height:1.5}
 body{padding:0 16px calc(40px + env(safe-area-inset-bottom))}
 .wrap{max-width:var(--maxw);margin:0 auto}
+/* Ab 960 px zwei Spalten: links "Was tun?", rechts "Warum?". */
+@media(min-width:960px){
+  .wrap{max-width:1120px}
+  #app{display:grid;grid-template-columns:400px minmax(0,1fr);gap:20px;align-items:start}
+  header,.stamp,#banners,footer{max-width:none}
+}
+/* Die linke Spalte bleibt beim Scrollen stehen, aber nur wenn sie ganz hineinpasst. */
+@media(min-width:960px) and (min-height:920px){ #colL{position:sticky;top:18px} }
 .num{font-family:var(--num);font-variant-numeric:tabular-nums}
 h1,h2,h3{margin:0;font-family:var(--num);font-weight:600}
 button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
@@ -132,7 +140,7 @@ header{display:flex;align-items:center;gap:10px;padding:18px 0 14px}
 .famhead b{font-family:var(--num);color:var(--ink);font-size:13.5px;font-weight:600}
 .famhead .fs{margin-left:auto;font-family:var(--num)}
 .tiles{display:grid;gap:9px}
-@media(min-width:720px){.tiles{grid-template-columns:1fr 1fr}}
+@media(min-width:960px){.tiles{grid-template-columns:1fr 1fr}}
 .tile{background:#0E1520;border:1px solid var(--line);border-radius:11px;padding:11px 12px;
   text-align:left;width:100%;display:block}
 .tile:hover{border-color:#2E3B4D}
@@ -174,6 +182,7 @@ details.group[open]>summary::after{transform:rotate(90deg)}
 /* ---------- Verlauf ---------- */
 .chartBox{position:relative}
 svg.chart{width:100%;height:190px;display:block}
+@media(min-width:960px){svg.chart{height:250px}}
 .legend{display:flex;gap:12px;flex-wrap:wrap;margin-top:8px;font-size:11.5px;color:var(--mut)}
 .legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
 
@@ -184,7 +193,7 @@ svg.chart{width:100%;height:190px;display:block}
 .sheetIn{background:var(--card);border:1px solid var(--line);border-bottom:0;
   border-radius:18px 18px 0 0;padding:18px 18px calc(26px + env(safe-area-inset-bottom));
   width:100%;max-width:var(--maxw);max-height:86vh;overflow:auto}
-@media(min-width:720px){.sheet{align-items:center}.sheetIn{border-radius:18px;border-bottom:1px solid var(--line);max-height:80vh}}
+@media(min-width:720px){.sheet{align-items:center}.sheetIn{border-radius:18px;border-bottom:1px solid var(--line);max-height:80vh;max-width:520px}}
 .sheetIn h3{font-size:17px;margin-bottom:4px}
 .sheetIn .sub{color:var(--mut);font-size:12.5px;margin-bottom:14px}
 .sheetIn section{margin-bottom:14px}
@@ -212,7 +221,7 @@ footer p{margin:0 0 6px}
   </header>
   <div class="stamp" id="stamp">Lade Wochenstand …</div>
   <div id="banners"></div>
-  <main id="app" class="skeleton">Einen Moment.</main>
+  <main id="app" class="skeleton"><div id="colL"></div><div id="colR"></div></main>
   <footer id="foot"></footer>
 </div>
 
@@ -319,6 +328,7 @@ let D=null, PH=null;
     D = await res.json();
   }catch(e){
     $("#stamp").textContent = "";
+    $("#app").className=""; $("#app").style.display="block";
     $("#app").innerHTML = `<div class="card"><h2>Kein Wochenstand</h2>
       <p style="font-size:13.5px">Die Datei <code>${esc(SRC)}</code> konnte nicht geladen werden.
       Läuft GitHub Pages für dieses Repo, und war der Wochenlauf schon erfolgreich?</p></div>`;
@@ -328,7 +338,7 @@ let D=null, PH=null;
   // Phase noch Motoren. Lieber klar sagen, was zu tun ist, als leer bleiben.
   if(!D.phase || !D.engines || !D.action){
     $("#stamp").innerHTML = `Wochenschluss ${esc(dateDE(D.week_id))} · <span class="num">${usd(D.price?.close)} USD</span>`;
-    $("#app").className=""; $("#app").innerHTML =
+    $("#app").className=""; $("#app").style.display="block"; $("#app").innerHTML =
       `<div class="banner warn">Der Wochenstand ist älter als die Auswertung.</div>
        <div class="card"><h2>Auswertung fehlt</h2>
        <p style="font-size:13.5px">Die Datei <code>data/latest.json</code> stammt aus Stufe
@@ -338,7 +348,7 @@ let D=null, PH=null;
   }
   try{ render(); }
   catch(e){
-    $("#app").className=""; $("#app").innerHTML =
+    $("#app").className=""; $("#app").style.display="block"; $("#app").innerHTML =
       `<div class="card"><h2>Anzeige fehlgeschlagen</h2>
        <p style="font-size:13.5px">${esc(e.message)}</p>
        <p style="font-size:13.5px" class="why">Der Wochenstand liess sich laden, aber nicht darstellen.
@@ -355,7 +365,9 @@ async function loadHistory(){
 
 // ============================================================ Aufbau
 function render(){
-  const app = $("#app"); app.className=""; app.innerHTML="";
+  const app = $("#app"); app.className="";
+  app.innerHTML = '<div id="colL"></div><div id="colR"></div>';
+  const L = $("#colL"), R = $("#colR");
   const ageDays = Math.round((Date.now()-Date.parse(D.week_id+"T00:00:00Z"))/86400000);
 
   $("#stamp").innerHTML = `Wochenschluss ${esc(dateDE(D.week_id))} · <span class="num">${usd(D.price?.close)} USD</span>` +
@@ -373,15 +385,9 @@ function render(){
   if(D.filters?.sth_rp?.missing) b.appendChild(el("div","banner warn",
     `Der STH-Einstand fehlt, der Trendfilter arbeitet vereinfacht nur mit dem Trendband. Wert in <code>data/manual.json</code> eintragen.`));
 
-  app.appendChild(hero());
-  app.appendChild(phaseBar());
-  app.appendChild(engines());
-  app.appendChild(checklist());
-  app.appendChild(clock());
-  app.appendChild(position());
-  app.appendChild(tiles());
-  app.appendChild(history());
-  app.appendChild(journalCard());
+  // Links die Entscheidung, rechts die Begründung. Auf dem Handy stapelt sich beides.
+  L.append(hero(), phaseBar(), engines(), checklist());
+  R.append(clock(), position(), tiles(), history(), journalCard());
   foot();
 }
 
