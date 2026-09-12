@@ -1,0 +1,20 @@
+{
+  "schema": 1,
+  "config_version": "1.0-rc",
+  "phase": 4,
+  "phase_since": "2025-11-09",
+  "cycle_start": "2022-06-26",
+  "relevant_halving": "2024-04-20",
+  "counter": 0,
+  "tranches": {
+    "B1": "2022-06-26",
+    "B2": "2022-07-24",
+    "B3": "2023-01-22",
+    "S1": "2025-11-09",
+    "S2": "2025-11-09",
+    "S3": "2025-11-09"
+  },
+  "reserve_cooldown_until": null,
+  "last_week_id": "2026-09-06",
+  "cycle_no": 3
+}

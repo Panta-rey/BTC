@@ -1,0 +1,468 @@
+{
+  "schema": 1,
+  "generated_at": "2026-09-12T07:45:49.802Z",
+  "config_version": "1.0-rc",
+  "events": [
+    {
+      "id": "2014-10-05:COUNTER",
+      "week_id": "2014-10-05",
+      "type": "COUNTER",
+      "text": "Kaufzone diese Woche erreicht. Bestätigt sie sich am nächsten Wochenschluss, wechselt die Phase.",
+      "phase": 4,
+      "config_version": "1.0-rc",
+      "notified_at": null
+    },
+    {
+      "id": "2014-11-02:COUNTER",
+      "week_id": "2014-11-02",
+      "type": "COUNTER",
+      "text": "Kaufzone diese Woche erreicht. Bestätigt sie sich am nächsten Wochenschluss, wechselt die Phase.",
+      "phase": 4,
+      "config_version": "1.0-rc",
+      "notified_at": null
+    },
+    {
+      "id": "2014-12-21:COUNTER",
+      "week_id": "2014-12-21",
+      "type": "COUNTER",
+      "text": "Kaufzone diese Woche erreicht. Bestätigt sie sich am nächsten Wochenschluss, wechselt die Phase.",
+      "phase": 4,
+      "config_version": "1.0-rc",
+      "notified_at": null
+    },
+    {
+      "id": "2015-01-04:COUNTER",
+      "week_id": "2015-01-04",
+      "type": "COUNTER",
+      "text": "Kaufzone diese Woche erreicht. Bestätigt sie sich am nächsten Wochenschluss, wechselt die Phase.",
+      "phase": 4,
+      "config_version": "1.0-rc",
+      "notified_at": null
+    },
+    {
+      "id": "2015-01-11:PHASE_CHANGE",
+      "week_id": "2015-01-11",
+      "type": "PHASE_CHANGE",
+      "text": "Phase 1 Akkumulation hat begonnen.",
+      "phase": 1,
+      "config_version": "1.0-rc",
+      "from": 4,
+      "to": 1,
+      "notified_at": null
+    },
+    {
+      "id": "2015-01-11:TRANCHE_DUE:B1",
+      "week_id": "2015-01-11",
+      "type": "TRANCHE_DUE",
+      "text": "Kauftranche 1 von 3 fällig.",
+      "phase": 1,
+      "config_version": "1.0-rc",
+      "tranche": "B1",
+      "notified_at": null
+    },
+    {
+      "id": "2015-02-08:TRANCHE_DUE:B2",
+      "week_id": "2015-02-08",
+      "type": "TRANCHE_DUE",
+      "text": "Kauftranche 2 von 3 fällig.",
+      "phase": 1,
+      "config_version": "1.0-rc",
+      "tranche": "B2",
+      "notified_at": null
+    },
+    {
+      "id": "2015-07-05:COUNTER",
+      "week_id": "2015-07-05",
+      "type": "COUNTER",
+      "text": "Tief bestätigt diese Woche erreicht. Bestätigt sie sich am nächsten Wochenschluss, wechselt die Phase.",
+      "phase": 1,
+      "config_version": "1.0-rc",
+      "notified_at": null
+    },
+    {
+      "id": "2015-07-12:PHASE_CHANGE",
+      "week_id": "2015-07-12",
+      "type": "PHASE_CHANGE",
+      "text": "Phase 2 Aufwärtstrend hat begonnen.",
+      "phase": 2,
+      "config_version": "1.0-rc",
+      "from": 1,
+      "to": 2,
+      "notified_at": null
+    },
+    {
+      "id": "2015-07-12:TRANCHE_DUE:B3",
+      "week_id": "2015-07-12",
+      "type": "TRANCHE_DUE",
+      "text": "Kauftranche 3 von 3 fällig. Tief bestätigt.",
+      "phase": 2,
+      "config_version": "1.0-rc",
+      "tranche": "B3",
+      "notified_at": null
+    },
+    {
+      "id": "2017-08-13:COUNTER",
+      "week_id": "2017-08-13",
+      "type": "COUNTER",
+      "text": "Top-Zone diese Woche erreicht. Bestätigt sie sich am nächsten Wochenschluss, wechselt die Phase.",
+      "phase": 2,
+      "config_version": "1.0-rc",
+      "notified_at": null
+    },
+    {
+      "id": "2017-08-20:PHASE_CHANGE",
+      "week_id": "2017-08-20",
+      "type": "PHASE_CHANGE",
+      "text": "Phase 3 Verteilung hat begonnen.",
+      "phase": 3,
+      "config_version": "1.0-rc",
+      "from": 2,
+      "to": 3,
+      "notified_at": null
+    },
+    {
+      "id": "2017-10-15:TRANCHE_DUE:S1",
+      "week_id": "2017-10-15",
+      "type": "TRANCHE_DUE",
+      "text": "Verkaufstranche 1 von 3 fällig (Verkauf-Score 71).",
+      "phase": 3,
+      "config_version": "1.0-rc",
+      "tranche": "S1",
+      "notified_at": null
+    },
+    {
+      "id": "2017-11-19:TRANCHE_DUE:S2",
+      "week_id": "2017-11-19",
+      "type": "TRANCHE_DUE",
+      "text": "Verkaufstranche 2 von 3 fällig (Verkauf-Score 87).",
+      "phase": 3,
+      "config_version": "1.0-rc",
+      "tranche": "S2",
+      "notified_at": null
+    },
+    {
+      "id": "2017-12-17:TRANCHE_DUE:S3",
+      "week_id": "2017-12-17",
+      "type": "TRANCHE_DUE",
+      "text": "Verkaufstranche 3 von 3 fällig (Verkauf-Score 100).",
+      "phase": 3,
+      "config_version": "1.0-rc",
+      "tranche": "S3",
+      "notified_at": null
+    },
+    {
+      "id": "2018-02-04:COUNTER",
+      "week_id": "2018-02-04",
+      "type": "COUNTER",
+      "text": "Trendbruch diese Woche erreicht. Bestätigt sie sich am nächsten Wochenschluss, wechselt die Phase.",
+      "phase": 3,
+      "config_version": "1.0-rc",
+      "notified_at": null
+    },
+    {
+      "id": "2018-02-11:TREND_BREAK",
+      "week_id": "2018-02-11",
+      "type": "TREND_BREAK",
+      "text": "Trendbruch bestätigt. Alle Verkaufstranchen waren bereits ausgelöst. Kernposition behalten.",
+      "phase": 4,
+      "config_version": "1.0-rc",
+      "from": 3,
+      "to": 4,
+      "tranches": [],
+      "notified_at": null
+    },
+    {
+      "id": "2018-11-25:COUNTER",
+      "week_id": "2018-11-25",
+      "type": "COUNTER",
+      "text": "Kaufzone diese Woche erreicht. Bestätigt sie sich am nächsten Wochenschluss, wechselt die Phase.",
+      "phase": 4,
+      "config_version": "1.0-rc",
+      "notified_at": null
+    },
+    {
+      "id": "2018-12-02:PHASE_CHANGE",
+      "week_id": "2018-12-02",
+      "type": "PHASE_CHANGE",
+      "text": "Phase 1 Akkumulation hat begonnen.",
+      "phase": 1,
+      "config_version": "1.0-rc",
+      "from": 4,
+      "to": 1,
+      "notified_at": null
+    },
+    {
+      "id": "2018-12-02:TRANCHE_DUE:B1",
+      "week_id": "2018-12-02",
+      "type": "TRANCHE_DUE",
+      "text": "Kauftranche 1 von 3 fällig.",
+      "phase": 1,
+      "config_version": "1.0-rc",
+      "tranche": "B1",
+      "notified_at": null
+    },
+    {
+      "id": "2018-12-30:TRANCHE_DUE:B2",
+      "week_id": "2018-12-30",
+      "type": "TRANCHE_DUE",
+      "text": "Kauftranche 2 von 3 fällig.",
+      "phase": 1,
+      "config_version": "1.0-rc",
+      "tranche": "B2",
+      "notified_at": null
+    },
+    {
+      "id": "2019-04-07:COUNTER",
+      "week_id": "2019-04-07",
+      "type": "COUNTER",
+      "text": "Tief bestätigt diese Woche erreicht. Bestätigt sie sich am nächsten Wochenschluss, wechselt die Phase.",
+      "phase": 1,
+      "config_version": "1.0-rc",
+      "notified_at": null
+    },
+    {
+      "id": "2019-04-14:PHASE_CHANGE",
+      "week_id": "2019-04-14",
+      "type": "PHASE_CHANGE",
+      "text": "Phase 2 Aufwärtstrend hat begonnen.",
+      "phase": 2,
+      "config_version": "1.0-rc",
+      "from": 1,
+      "to": 2,
+      "notified_at": null
+    },
+    {
+      "id": "2019-04-14:TRANCHE_DUE:B3",
+      "week_id": "2019-04-14",
+      "type": "TRANCHE_DUE",
+      "text": "Kauftranche 3 von 3 fällig. Tief bestätigt.",
+      "phase": 2,
+      "config_version": "1.0-rc",
+      "tranche": "B3",
+      "notified_at": null
+    },
+    {
+      "id": "2020-03-15:RESERVE",
+      "week_id": "2020-03-15",
+      "type": "RESERVE",
+      "text": "Ausserordentliche Kaufgelegenheit: Kauf-Score 76 im Aufwärtstrend. Reserve einsetzbar.",
+      "phase": 2,
+      "config_version": "1.0-rc",
+      "notified_at": null
+    },
+    {
+      "id": "2020-03-22:RESERVE",
+      "week_id": "2020-03-22",
+      "type": "RESERVE",
+      "text": "Ausserordentliche Kaufgelegenheit: Kauf-Score 74 im Aufwärtstrend. Reserve einsetzbar.",
+      "phase": 2,
+      "config_version": "1.0-rc",
+      "notified_at": null
+    },
+    {
+      "id": "2020-03-29:RESERVE",
+      "week_id": "2020-03-29",
+      "type": "RESERVE",
+      "text": "Ausserordentliche Kaufgelegenheit: Kauf-Score 71 im Aufwärtstrend. Reserve einsetzbar.",
+      "phase": 2,
+      "config_version": "1.0-rc",
+      "notified_at": null
+    },
+    {
+      "id": "2021-09-05:COUNTER",
+      "week_id": "2021-09-05",
+      "type": "COUNTER",
+      "text": "Top-Zone diese Woche erreicht. Bestätigt sie sich am nächsten Wochenschluss, wechselt die Phase.",
+      "phase": 2,
+      "config_version": "1.0-rc",
+      "notified_at": null
+    },
+    {
+      "id": "2021-10-03:COUNTER",
+      "week_id": "2021-10-03",
+      "type": "COUNTER",
+      "text": "Top-Zone diese Woche erreicht. Bestätigt sie sich am nächsten Wochenschluss, wechselt die Phase.",
+      "phase": 2,
+      "config_version": "1.0-rc",
+      "notified_at": null
+    },
+    {
+      "id": "2021-10-10:PHASE_CHANGE",
+      "week_id": "2021-10-10",
+      "type": "PHASE_CHANGE",
+      "text": "Phase 3 Verteilung hat begonnen.",
+      "phase": 3,
+      "config_version": "1.0-rc",
+      "from": 2,
+      "to": 3,
+      "notified_at": null
+    },
+    {
+      "id": "2021-12-05:COUNTER",
+      "week_id": "2021-12-05",
+      "type": "COUNTER",
+      "text": "Trendbruch diese Woche erreicht. Bestätigt sie sich am nächsten Wochenschluss, wechselt die Phase.",
+      "phase": 3,
+      "config_version": "1.0-rc",
+      "notified_at": null
+    },
+    {
+      "id": "2021-12-12:TREND_BREAK",
+      "week_id": "2021-12-12",
+      "type": "TREND_BREAK",
+      "text": "Trendbruch bestätigt. 3 offene Verkaufstranche(n) fällig. Kernposition behalten.",
+      "phase": 4,
+      "config_version": "1.0-rc",
+      "from": 3,
+      "to": 4,
+      "tranches": [
+        "S1",
+        "S2",
+        "S3"
+      ],
+      "notified_at": null
+    },
+    {
+      "id": "2022-06-19:COUNTER",
+      "week_id": "2022-06-19",
+      "type": "COUNTER",
+      "text": "Kaufzone diese Woche erreicht. Bestätigt sie sich am nächsten Wochenschluss, wechselt die Phase.",
+      "phase": 4,
+      "config_version": "1.0-rc",
+      "notified_at": null
+    },
+    {
+      "id": "2022-06-26:PHASE_CHANGE",
+      "week_id": "2022-06-26",
+      "type": "PHASE_CHANGE",
+      "text": "Phase 1 Akkumulation hat begonnen.",
+      "phase": 1,
+      "config_version": "1.0-rc",
+      "from": 4,
+      "to": 1,
+      "notified_at": null
+    },
+    {
+      "id": "2022-06-26:TRANCHE_DUE:B1",
+      "week_id": "2022-06-26",
+      "type": "TRANCHE_DUE",
+      "text": "Kauftranche 1 von 3 fällig.",
+      "phase": 1,
+      "config_version": "1.0-rc",
+      "tranche": "B1",
+      "notified_at": null
+    },
+    {
+      "id": "2022-07-24:TRANCHE_DUE:B2",
+      "week_id": "2022-07-24",
+      "type": "TRANCHE_DUE",
+      "text": "Kauftranche 2 von 3 fällig.",
+      "phase": 1,
+      "config_version": "1.0-rc",
+      "tranche": "B2",
+      "notified_at": null
+    },
+    {
+      "id": "2023-01-15:COUNTER",
+      "week_id": "2023-01-15",
+      "type": "COUNTER",
+      "text": "Tief bestätigt diese Woche erreicht. Bestätigt sie sich am nächsten Wochenschluss, wechselt die Phase.",
+      "phase": 1,
+      "config_version": "1.0-rc",
+      "notified_at": null
+    },
+    {
+      "id": "2023-01-22:PHASE_CHANGE",
+      "week_id": "2023-01-22",
+      "type": "PHASE_CHANGE",
+      "text": "Phase 2 Aufwärtstrend hat begonnen.",
+      "phase": 2,
+      "config_version": "1.0-rc",
+      "from": 1,
+      "to": 2,
+      "notified_at": null
+    },
+    {
+      "id": "2023-01-22:TRANCHE_DUE:B3",
+      "week_id": "2023-01-22",
+      "type": "TRANCHE_DUE",
+      "text": "Kauftranche 3 von 3 fällig. Tief bestätigt.",
+      "phase": 2,
+      "config_version": "1.0-rc",
+      "tranche": "B3",
+      "notified_at": null
+    },
+    {
+      "id": "2023-02-12:RESERVE",
+      "week_id": "2023-02-12",
+      "type": "RESERVE",
+      "text": "Ausserordentliche Kaufgelegenheit: Kauf-Score 70 im Aufwärtstrend. Reserve einsetzbar.",
+      "phase": 2,
+      "config_version": "1.0-rc",
+      "notified_at": null
+    },
+    {
+      "id": "2025-09-21:COUNTER",
+      "week_id": "2025-09-21",
+      "type": "COUNTER",
+      "text": "Top-Zone diese Woche erreicht. Bestätigt sie sich am nächsten Wochenschluss, wechselt die Phase.",
+      "phase": 2,
+      "config_version": "1.0-rc",
+      "notified_at": null
+    },
+    {
+      "id": "2025-10-05:COUNTER",
+      "week_id": "2025-10-05",
+      "type": "COUNTER",
+      "text": "Top-Zone diese Woche erreicht. Bestätigt sie sich am nächsten Wochenschluss, wechselt die Phase.",
+      "phase": 2,
+      "config_version": "1.0-rc",
+      "notified_at": null
+    },
+    {
+      "id": "2025-10-12:PHASE_CHANGE",
+      "week_id": "2025-10-12",
+      "type": "PHASE_CHANGE",
+      "text": "Phase 3 Verteilung hat begonnen.",
+      "phase": 3,
+      "config_version": "1.0-rc",
+      "from": 2,
+      "to": 3,
+      "notified_at": null
+    },
+    {
+      "id": "2025-10-19:COUNTER",
+      "week_id": "2025-10-19",
+      "type": "COUNTER",
+      "text": "Trendbruch diese Woche erreicht. Bestätigt sie sich am nächsten Wochenschluss, wechselt die Phase.",
+      "phase": 3,
+      "config_version": "1.0-rc",
+      "notified_at": null
+    },
+    {
+      "id": "2025-11-02:COUNTER",
+      "week_id": "2025-11-02",
+      "type": "COUNTER",
+      "text": "Trendbruch diese Woche erreicht. Bestätigt sie sich am nächsten Wochenschluss, wechselt die Phase.",
+      "phase": 3,
+      "config_version": "1.0-rc",
+      "notified_at": null
+    },
+    {
+      "id": "2025-11-09:TREND_BREAK",
+      "week_id": "2025-11-09",
+      "type": "TREND_BREAK",
+      "text": "Trendbruch bestätigt. 3 offene Verkaufstranche(n) fällig. Kernposition behalten.",
+      "phase": 4,
+      "config_version": "1.0-rc",
+      "from": 3,
+      "to": 4,
+      "tranches": [
+        "S1",
+        "S2",
+        "S3"
+      ],
+      "notified_at": null
+    }
+  ]
+}
