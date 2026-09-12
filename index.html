@@ -324,7 +324,28 @@ let D=null, PH=null;
       Läuft GitHub Pages für dieses Repo, und war der Wochenlauf schon erfolgreich?</p></div>`;
     return;
   }
-  render();
+  // Die Seite erwartet einen Wochenstand aus M2. Ältere Dateien (M1) haben weder
+  // Phase noch Motoren. Lieber klar sagen, was zu tun ist, als leer bleiben.
+  if(!D.phase || !D.engines || !D.action){
+    $("#stamp").innerHTML = `Wochenschluss ${esc(dateDE(D.week_id))} · <span class="num">${usd(D.price?.close)} USD</span>`;
+    $("#app").className=""; $("#app").innerHTML =
+      `<div class="banner warn">Der Wochenstand ist älter als die Auswertung.</div>
+       <div class="card"><h2>Auswertung fehlt</h2>
+       <p style="font-size:13.5px">Die Datei <code>data/latest.json</code> stammt aus Stufe
+       <b>${esc(D.stage||"unbekannt")}</b> und enthält noch keine Phase und keine Motoren.
+       Starte im Repo unter <b>Actions</b> einmal den Workflow <b>Wochenlauf</b>, dann ist sie vollständig.</p></div>`;
+    return;
+  }
+  try{ render(); }
+  catch(e){
+    $("#app").className=""; $("#app").innerHTML =
+      `<div class="card"><h2>Anzeige fehlgeschlagen</h2>
+       <p style="font-size:13.5px">${esc(e.message)}</p>
+       <p style="font-size:13.5px" class="why">Der Wochenstand liess sich laden, aber nicht darstellen.
+       Meist hilft ein neuer Lauf des Workflows <b>Wochenlauf</b>.</p></div>`;
+    console.error(e);
+    return;
+  }
   loadHistory();
 })();
 
@@ -567,7 +588,7 @@ function trancheAmount(t){
   const qty=tradable*share;
   return `≈ ${nf(qty,4)} BTC · ${usd(qty*D.price.close)} USD · Kernposition ${nf(POS.btc*core,4)} BTC bleibt`;
 }
-function refreshAmounts(){ render(); }
+function refreshAmounts(){ try{ render(); }catch(e){ console.error(e); } }
 const key=(t)=>`${D.phase.cycle_no||0}:${t}`;
 
 function markTranche(t,state){
@@ -702,6 +723,7 @@ function drawChart(){
     const up=t[0]==="B";
     return `<path d="M${xs(i).toFixed(1)},${(ys(rows[i][1])+(up?7:-7)).toFixed(1)} l-4,${up?5:-5} l8,0 z" fill="${up?"var(--buy)":"var(--sell)"}"/>`;
   }).join("");
+  try{
   box.innerHTML = `<svg class="chart" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img"
       aria-label="Bitcoin-Kurs seit ${rows[0][0]} mit den Zyklusphasen als Hintergrund">
       ${bands}<path d="${path}" fill="none" stroke="var(--ink)" stroke-width="1.1" vector-effect="non-scaling-stroke"/>${marks}</svg>
@@ -712,6 +734,7 @@ function drawChart(){
       <span>▲ Kauf ▼ Verkauf</span>
     </div>
     <div class="why">Logarithmisch, ${rows.length} Wochen ab ${esc(dateDE(rows[0][0]))}.</div>`;
+  }catch(e){ box.innerHTML = '<div class="why">Der Verlauf konnte nicht gezeichnet werden.</div>'; console.error(e); }
 }
 
 // ---------------------------------------------------------- Journal
