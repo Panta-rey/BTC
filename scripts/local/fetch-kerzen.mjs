@@ -81,10 +81,16 @@ while (start < jetzt && seiten < 500) {
   }
   seiten++;
   const letzte = +rows.at(-1).timestamp;
-  if (seiten % 5 === 0 || rows.length < 1000) {
-    process.stdout.write(`\r${seiten} Seiten · ${kerzen.size.toLocaleString("de-CH")} Kerzen · bis ${new Date(letzte * 1000).toISOString().slice(0, 10)}   `);
+  process.stdout.write(`\r${seiten} Seiten · ${kerzen.size.toLocaleString("de-CH")} Kerzen · bis ${new Date(letzte * 1000).toISOString().slice(0, 10)}   `);
+
+  // Nicht an der Zeilenzahl abbrechen: In den frühen Jahren fehlen einzelne Kerzen,
+  // weil im Zeitfenster nicht gehandelt wurde. Eine volle Seite hat dann 997 statt
+  // 1000 Zeilen und wäre fälschlich als letzte Seite gewertet worden.
+  if (letzte + STEP <= start) {                 // kein Fortschritt, sonst Endlosschleife
+    console.log(`\nKein Fortschritt bei ${new Date(letzte * 1000).toISOString().slice(0, 10)}, Abbruch.`);
+    break;
   }
-  if (rows.length < 1000) break;
+  if (letzte >= jetzt - STEP) break;            // Gegenwart erreicht
   start = letzte + STEP;
   await sleep(500);            // höflich bleiben, die Schnittstelle ist frei
 }

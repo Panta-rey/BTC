@@ -52,8 +52,10 @@ scripts/backtest.mjs   weekly   → reports/backtest.md
 scripts/notify.mjs     Benachrichtigungen (Issues, optional ntfy)
 scripts/lib/sim.mjs        Simulation und Bewertung, von Backtest und Vergleich genutzt
 scripts/local/             läuft NUR lokal, nie im Runner
-  fetch-bgeometrics.mjs  einmaliger Datenabzug → data/private/ (gitignored)
+  fetch-bgeometrics.mjs  Datenabzug BGeometrics → data/private/ (gitignored)
   compare.mjs            Vergleich → reports/bgeometrics-vergleich.md
+  anker-check.mjs        Ankerpunkte und Handeingabe prüfen → reports/anker-check.md
+  fetch-kerzen.mjs       Kerzenarchiv von Bitstamp → data/private/ (kein Abo nötig)
 scripts/apply-manual.mjs   manuelle Werte aus einem Issue übernehmen
 scripts/check-sources.mjs  Quellen-Check (M0)
 engine/                reine Logik, kein Netzwerk, deterministisch
@@ -81,6 +83,7 @@ test/                  node:test, 40 Tests
 | `events.json` | alle Signale, mit `notified_at` | `build.mjs` |
 | `state.json` | Zustand der Phasenmaschine (Transparenz) | `build.mjs` |
 | `fixtures/*.json` | Testzustände für `?fixture=` | von Hand, statisch |
+| `private/*` | BGeometrics-Abzug und Kerzenarchiv, **nie im Repo** | `scripts/local/` |
 
 ### Workflows
 
@@ -178,7 +181,9 @@ Dazu kommt ein zweiter, unabhängiger Befund aus der Ankerprüfung: **Beide Kenn
 
 **Die Perzentilfalle entfällt damit.** Teil B der Ankerprüfung zeigt, dass eine monatlich eingetragene Kennzahl mit Perzentilanteil nach sechs Lesungen falsche Signale erzeugen kann: 26 belegte Wochen entsprechen nur rund sechs echten Messpunkten, und über das Maximum kann ein daraus errechnetes Perzentil einen korrekten absoluten Score von 0 überschreiben. Betroffen wären Reserve Risk (2,5 % der Wochen), RHODL (19,4 %) und die LTH-Positionsänderung (9,3 %). Alle drei sind jetzt zurückgestellt, und das Angebot im Gewinn wird rein absolut bewertet. Die Falle kann also nicht zuschnappen. Sie bleibt ein Thema für den Tag, an dem eine der drei zurückkommt: dann `floor_weeks` von 26 auf 104 heben oder die Untergrenze an der Zahl der Messpunkte statt der Wochen festmachen.
 
-**Erinnerung.** `monthlyManual()` in `scripts/lib/events.mjs` erzeugt in den ersten fünf Tagen jedes Monats ein Issue vom Typ `MONTHLY_MANUAL`, sofern für den laufenden Monat noch keine Lesung in `data/manual.json` steht. Es nennt nur die noch offenen der beiden empfohlenen Kennzahlen. Kein eigener Workflow nötig, der Tageslauf ruft `notify.mjs` ohnehin auf.
+**Erinnerung.** `monthlyManual()` in `scripts/lib/events.mjs` erzeugt in den ersten fünf Tagen jedes Monats ein Issue vom Typ `MONTHLY_MANUAL`, sofern für den laufenden Monat noch keine Lesung in `data/manual.json` steht. Es nennt nur die noch offenen der beiden empfohlenen Kennzahlen. Kein eigener Workflow, der Tageslauf ruft `notify.mjs` ohnehin auf.
+
+**Die Ablesung ist geprüft (13.09.2026).** `fetch-bgeometrics.mjs --check` zeigt die Werte der API, daneben wurde vom Chart abgelesen. Angebot im Gewinn: 66,07 % gegen 65,70 % abgelesen. STH-Einstand: 71'217 gegen 71'093, also 0,17 %. Das ist Ablesegenauigkeit, keine Skalenfrage, und damit ist der wahrscheinlichste Fehler ausgeschlossen: die Verwechslung zweier ähnlicher Linien im selben Diagramm. Zur Einordnung, wie genau es sein muss: Beim Angebot im Verlust bewegen sich drei Scorepunkte je Prozentpunkt, ein halbes Prozent Ableseungenauigkeit ist also ein Scorepunkt von hundert. Gegenprobe der Skala ohne Chart: Angebot im Gewinn plus Angebot im Verlust muss die Umlaufmenge ergeben, 13'268'598 + 6'814'734 = 20'083'332. Kein eigener Workflow nötig, der Tageslauf ruft `notify.mjs` ohnehin auf.
 
 ---
 
@@ -357,7 +362,9 @@ Am 13. September 2026 wurde ein Monatsabo Advanced gelöst (18 Dollar, sofort ge
 
 **Der Abzug.** 68 Reihen, fast alle mit voller Historie zurück bis 2009 oder 2010. Der Advanced-Tarif hebt die Vier-Jahres-Grenze tatsächlich auf. `scripts/local/fetch-bgeometrics.mjs` kennt dafür vier Modi: `--list` zeigt den Katalog ohne Netz, `--probe` sucht Server und Pfade über `/last`, der Normallauf zieht über `/csv` ab, `--repair` setzt offline die richtige Spalte als Hauptwert und rechnet Ableitungen aus.
 
-**Stolperstein, der Zeit gekostet hat.** Viele Endpunkte antworten mehrspaltig, und die erste Spalte ist fast immer `priceUsd`. Der Abzug speichert deshalb jetzt **alle** Spalten, nicht nur eine geratene. Ausserdem liefert BGeometrics das Angebot im Gewinn als Menge in Bitcoin, nicht in Prozent; `supply_in_profit_pct` wird daraus lokal gerechnet (Gewinn ÷ (Gewinn + Verlust) × 100).
+**Zwei Stolpersteine nebenbei.** `--probe` schrieb die Pfadliste anfangs komplett neu, statt sie zu ergänzen; ein Lauf mit `--only=…` löschte damit alle übrigen Pfade. Behoben, die Probe führt jetzt zusammen und meldet beim Start, wie viele Pfade sie kennt. Und `fetch-kerzen.mjs` brach ab, sobald eine Seite weniger als 1000 Zeilen lieferte; in den frühen Jahren fehlen einzelne Kerzen, eine volle Seite hat dann 997 Zeilen. Es läuft jetzt bis zur Gegenwart und bricht nur ab, wenn der Zeitstempel nicht mehr vorwärts geht.
+
+**Stolperstein bei den Spalten.** Viele Endpunkte antworten mehrspaltig, und die erste Spalte ist fast immer `priceUsd`. Der Abzug speichert deshalb jetzt **alle** Spalten, nicht nur eine geratene. Ausserdem liefert BGeometrics das Angebot im Gewinn als Menge in Bitcoin, nicht in Prozent; `supply_in_profit_pct` wird daraus lokal gerechnet (Gewinn ÷ (Gewinn + Verlust) × 100).
 
 ### Die drei Ergebnisse
 
@@ -385,6 +392,19 @@ Der Bericht misst für 38 zusätzliche Reihen, wo sie an den bekannten Zyklustie
 - **Wirklich neu sind zwei:** SOPR LTH (+58,8) und Illiquid Supply (−46,6). Beide sprechen über Halterverhalten, also über die Familie, die ohne Abo fehlt. Beide gibt es nur bei BGeometrics. Damit beisst sich die Katze in den Schwanz.
 
 Nichts davon rechtfertigt eine Änderung an `1.0`. Es sind Notizen für die Bewertung nach dem Zyklusende.
+
+### Kerzenarchiv, unabhängig vom Abo
+
+BGeometrics kennt keinen Endpunkt für 4-Stunden-Kerzen, und seine tägliche OHLC-Reihe beginnt erst am 31.12.2014. `scripts/local/fetch-kerzen.mjs` holt sie deshalb bei Bitstamp, also aus derselben Schnittstelle, aus der die Pipeline ihre Tagesschlüsse zieht. **Kein Abo, kein Schlüssel, jederzeit wiederholbar**, das Script schreibt fort statt neu zu holen.
+
+| Datei in `data/private/` | Inhalt | Beginn |
+|---|---|---|
+| `kerzen_btcusd_4h.json` | O, H, L, C, Volumen | 18.08.2011, 33'032 Kerzen |
+| `kerzen_btcusd_1d.json` | O, H, L, C, Volumen | 18.08.2011, 5'506 Kerzen |
+
+Der 18. August 2011 ist die Wand: Davor gab es Bitstamp nicht. Für die Zeit von Juli 2010 bis dahin existieren nur Schlusskurse (BGeometrics-Preisreihe, Seed der Pipeline), keine belastbaren Kerzen; die einzige Quelle wäre Mt.Gox, und deren Archivdateien haben keine überprüfbare Herkunft. Andere Schritte holt `--step=3600` und so weiter, andere Paare `--paar=ethusd`.
+
+**Das ist Archiv, kein Eingang.** Die Ampel prüft ausschliesslich Wochenschlüsse und benutzt auch für das Allzeithoch einen Tagesschluss (SPEC 2.3). High, Low und Volumen fliessen nirgends ein. Zudem verbietet die Ein-Quellen-Regel (SPEC 3.2), eine zweite Preisreihe in die bestehende zu mischen. Weil `data/private/` von `.gitignore` ausgeschlossen ist, überlebt das Archiv kein Zurückspielen des Repos: eine Kopie ausserhalb lohnt sich, es sind gut zwei Megabyte.
 
 ### Sauberkeit
 
