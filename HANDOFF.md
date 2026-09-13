@@ -34,7 +34,7 @@ Keine Anlageberatung. Das Modell beruht auf vier Zyklen und kann falsch liegen.
 | M4 | Position und Journal im Browser | ✅ in `index.html` |
 | M5 | Benachrichtigungen (GitHub Issues, optional ntfy) | ✅ `scripts/notify.mjs`, im Ernstfall getestet |
 | M6 | Verlauf und Zyklus-Uhr als Grafik | ✅ eigenes SVG, ohne Bibliothek |
-| M7 | Härtung, Barrierefreiheit, Grenzfälle | ⬜ kann beginnen, Datenlage seit 13.09.2026 geklärt |
+| M7 | Härtung, Barrierefreiheit, Grenzfälle | 🔶 Prüfliste 8.5 abgearbeitet, Rest offen |
 
 **Aktueller Marktstand laut Ampel:** Phase 4 Abwärtstrend seit 9. November 2025. Kauf-Motor 42, Verkaufs-Motor 1, Ampel gelb, „Bereit machen. Die Kaufzone rückt näher, noch nicht kaufen." Es fehlen 18 Punkte zur Kaufzone, kein Tor ist offen, 2 von 4 Indikatoren in Zone aus 2 von 3 Familien.
 
@@ -265,7 +265,20 @@ Position, erledigte Tranchen und Journal liegen ausschliesslich im Browser (`loc
 
 **Tranchen-Chips.** Vier Zustände: offen, in dieser Woche fällig (amber), erledigt, übersprungen. Eine früher ausgelöste Tranche zeigt neutral ihr Datum. Ein gesetztes Datum heisst nicht „fällig": Die Liste trägt die Werte des laufenden Zyklus bis zum nächsten Eintritt in Phase ① mit, sonst stünden in Phase ④ alle sechs Chips fälschlich auf fällig.
 
-**Noch offen:** Antippen des Verlaufs für Details zu einer Woche, Systemsignale aus `events.json` im Journal, Prüfung der Barrierefreiheit (M7).
+**Barrierefreiheit, geprüft am 13.09.2026 gegen SPEC 8.5.** Vieles war schon richtig: Die Ampel trägt `role="img"` mit sprechendem `aria-label`, die einzelnen Lampen sind `aria-hidden`, der Handlungssatz liegt in einem Bereich mit `aria-live="polite"`, die Indikator-Kacheln sind echte `<button>` und damit mit der Tastatur erreichbar, `:focus-visible` ist sichtbar gesetzt, Escape schliesst das Sheet, `prefers-reduced-motion` ist berücksichtigt. Alle Textkontraste liegen über 4,5:1, der schwächste ist `--mut` auf Karte mit 4,94:1.
+
+Vier Lücken wurden geschlossen:
+
+| Lücke | Befund | Behebung |
+|---|---|---|
+| Fokus im Sheet | Tab lief hinter das Overlay, nach dem Schliessen war die Stelle in der Seite verloren | Fokusfalle im Sheet, Rückgabe an das auslösende Element (WCAG 2.1.2, 2.4.3) |
+| Tippflächen | `.btn` kam auf rund 38 px, der Chart-Knopf ähnlich | `min-height:44px` |
+| Rahmenkontrast | `--line` erreicht gegen die Karte nur 1,23:1, WCAG 1.4.11 verlangt 3:1 für bedienbare Elemente | neue Variable `--edge` mit 3,01:1, nur für Knöpfe und Eingaben; `--line` bleibt für dekorative Trenner |
+| Ladezeit | `phases.json` und `events.json` wurden sofort beim Laden geholt | `IntersectionObserver` mit 400 px Vorlauf, Rückfall auf sofortiges Laden, wenn er fehlt |
+
+Beim Verzögern des Verlaufs entstand kurz ein Rückschritt: Die Sperre gegen doppeltes Laden machte den Aktualisieren-Knopf wirkungslos. `loadHistory(true)` umgeht sie, der Knopf holt also weiterhin frische Daten.
+
+**Noch offen aus M7:** Antippen des Verlaufs für Details zu einer Woche, Systemsignale aus `events.json` im Journal, Prüfung mit einem echten Screenreader, Messung der ersten Anzeige auf einem Handy.
 
 ---
 

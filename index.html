@@ -13,6 +13,9 @@
 :root{
   --bg:#0A0E16; --card:#141C28; --line:#222D3C; --ink:#E8EDF2; --mut:#7E8B9C;
   --buy:#2DD4A7; --ready:#F0B429; --sell:#F0656A; --info:#5B9DF0; --lamp-off:#111925;
+  /* Rahmen bedienbarer Elemente. --line ist mit 1.23:1 dekorativ und genügt
+     WCAG 1.4.11 nicht; --edge erreicht 3.01:1 auf Karte und 3.21:1 auf Kachel. */
+  --edge:#5A6878;
   --r:14px; --gap:14px; --maxw:440px;
   --num:"Space Grotesk",system-ui,sans-serif;
   --sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
@@ -75,9 +78,10 @@ header{display:flex;align-items:center;gap:10px;padding:18px 0 14px}
 .amount.sell{color:var(--sell)}
 .why{color:var(--mut);font-size:13px}
 .btnrow{display:flex;gap:10px;align-items:center;margin-top:14px;flex-wrap:wrap}
-.btn{background:var(--buy);color:#042118;font-weight:600;padding:9px 16px;border-radius:10px;font-size:14px}
+.btn{background:var(--buy);color:#042118;font-weight:600;padding:9px 16px;border-radius:10px;font-size:14px;
+  min-height:44px}
 .btn.sell{background:var(--sell);color:#2A0A0C}
-.btn.ghost{background:none;border:1px solid var(--line);color:var(--mut);font-weight:500}
+.btn.ghost{background:none;border:1px solid var(--edge);color:var(--mut);font-weight:500}
 .btn.ghost:hover{color:var(--ink)}
 
 /* ---------- Phasenleiste ---------- */
@@ -217,7 +221,8 @@ svg.chart{width:100%;height:190px;display:block}
 .mrow.later{opacity:.72;background:#0C1018}
 .mrow .warn{margin-top:7px;font-size:11.5px;color:var(--ready);line-height:1.45}
 .mtop .sp{flex:1}
-.chartbtn{display:inline-flex;align-items:center;gap:5px;border:1px solid var(--line);border-radius:8px;
+.chartbtn{display:inline-flex;align-items:center;justify-content:center;gap:5px;min-height:44px;
+  border:1px solid var(--edge);border-radius:8px;
   padding:5px 10px;font-size:12px;color:var(--info);text-decoration:none;white-space:nowrap}
 .chartbtn:hover{border-color:var(--info)}
 .mrow input{width:100%;margin-top:8px;background:#0A111A;border:1px solid var(--line);color:var(--ink);
@@ -362,7 +367,7 @@ $("#btnReload").onclick = async ()=>{
   const b = $("#btnReload"); b.classList.add("busy");
   try{
     D = await loadData(true);
-    PH = null; render(); await loadHistory();
+    PH = null; render(); await loadHistory(true);
     b.title = "Aktualisiert um " + new Date().toLocaleTimeString("de-CH",{hour:"2-digit",minute:"2-digit"});
   }catch(e){
     $("#banners").prepend(el("div","banner warn","Aktualisieren fehlgeschlagen: "+esc(e.message)));
@@ -402,14 +407,28 @@ $("#btnReload").onclick = async ()=>{
     console.error(e);
     return;
   }
-  loadHistory();
+  beobachteVerlauf();
 })();
 
 let EV = null;
-async function loadHistory(){
+// Erst laden, wenn der Verlauf in Sichtweite kommt. Die erste Anzeige soll unter
+// einer Sekunde bleiben (SPEC 8.5), und die Verlaufsdaten braucht niemand, der nur
+// nach dem Handlungssatz schaut. Ohne IntersectionObserver wird sofort geladen.
+let histGeladen = false;
+async function loadHistory(erzwingen=false){
+  if(histGeladen && !erzwingen) return;   // der Aktualisieren-Knopf umgeht die Sperre
+  histGeladen = true;
   try{ const r = await fetch("data/phases.json",{cache:"no-store"}); if(r.ok) PH = await r.json(); }catch{}
   try{ const r = await fetch("data/events.json",{cache:"no-store"}); if(r.ok) EV = await r.json(); }catch{}
   if(PH) drawChart();
+}
+function beobachteVerlauf(){
+  const ziel = $("#histCard");
+  if(!ziel || typeof IntersectionObserver !== "function"){ loadHistory(); return; }
+  const beob = new IntersectionObserver(eintraege=>{
+    if(eintraege.some(e=>e.isIntersecting)){ beob.disconnect(); loadHistory(); }
+  }, { rootMargin: "400px" });
+  beob.observe(ziel);
 }
 
 // ============================================================ Aufbau
@@ -778,9 +797,36 @@ function sheet(id,side){
   sec("Wichtig", `Alle Indikatoren rechnen mit dem <b>Wochenschluss</b> vom ${esc(dateDE(D.week_id))} (${usd(D.price?.close)} USD), nicht mit dem aktuellen Tageskurs. Das ist Absicht: nur so flackern die Signale nicht. Wer mit dem Tageskurs nachrechnet, erhält leicht andere Zahlen.`);
   const close = el("button","btn ghost","Schliessen"); close.onclick=closeSheet;
   inner.appendChild(close);
-  const sh=$("#sheet"); sh.classList.add("open"); close.focus();
+  const sh=$("#sheet"); sh.classList.add("open"); openSheet(close);
 }
-function closeSheet(){ $("#sheet").classList.remove("open"); }
+
+// Fokus im Sheet halten und beim Schliessen dorthin zurückgeben, wo er herkam.
+// Ohne das landet die Tastatur hinter dem Overlay und verliert nach dem Schliessen
+// ihre Stelle in der Seite (WCAG 2.1.2 und 2.4.3).
+let sheetReturn = null;
+function fokussierbare(){
+  return [...$("#sheet").querySelectorAll('button,[href],input,select,textarea,[tabindex]:not([tabindex="-1"])')]
+    .filter(el => !el.disabled && el.offsetParent !== null);
+}
+function openSheet(first){
+  sheetReturn = document.activeElement;
+  (first || fokussierbare()[0])?.focus();
+}
+function closeSheet(){
+  const sh=$("#sheet");
+  if(!sh.classList.contains("open")) return;
+  sh.classList.remove("open");
+  if(sheetReturn && document.contains(sheetReturn)) sheetReturn.focus();
+  sheetReturn = null;
+}
+$("#sheet").addEventListener("keydown", e=>{
+  if(e.key!=="Tab") return;
+  const f = fokussierbare();
+  if(!f.length) return;
+  const erste = f[0], letzte = f.at(-1);
+  if(e.shiftKey && document.activeElement===erste){ e.preventDefault(); letzte.focus(); }
+  else if(!e.shiftKey && document.activeElement===letzte){ e.preventDefault(); erste.focus(); }
+});
 $("#sheet").addEventListener("click",e=>{ if(e.target.id==="sheet") closeSheet(); });
 document.addEventListener("keydown",e=>{ if(e.key==="Escape") closeSheet(); });
 
