@@ -259,6 +259,10 @@ Position, erledigte Tranchen und Journal liegen ausschliesslich im Browser (`loc
 
 **Aktualisieren.** Ein Knopf oben rechts lädt die Daten mit Cache-Umgehung neu und zeichnet alles neu.
 
+**Erklär-Sheets an zwei Karten.** Neben „Motoren" und „Bis Phase …" steht ein Fragezeichen, das dasselbe Sheet öffnet wie die Indikator-Kacheln (`infoSheet()`, gemeinsame Hülle, gleiche Fokusfalle). Beide Karten zeigten vorher Zahlen, die ohne Vorwissen nichts sagen, vor allem die Konvergenzzeile und der Zähler „bestätigte Wochen". Vier Abschnitte je Sheet, ein bis drei Sätze, zusammen rund 240 Wörter; eine erste Fassung mit 700 war zu lang und wurde verworfen. Herleitungen und Zahlenbeispiele bleiben in der Spezifikation.
+
+**Ungleich hohe Spalten, bewusst so gelassen.** Links stehen vier Karten, rechts zwei, unten rechts bleibt eine Lücke. Gemessen am 13.09.2026: links 707 px, rechts 528. Zwei Auswege wurden probiert und verworfen. Die rechte Spalte auf volle Höhe zu strecken erzeugt eine leere Karte, die wie ein Fehler aussieht. Eine Karte hinüberzuschieben dreht die Lücke nur um (Checkliste nach rechts: 531 zu 720). Die einzige Zuordnung, die heute fast aufgeht, wäre die Zyklusphase nach rechts über die Zyklus-Uhr (590 zu 645), aber die Kartenhöhen hängen vom Inhalt ab: Die Checkliste wächst mit der Zahl der Bedingungen, die Positionskarte mit den erledigten Tranchen. Jede feste Zuordnung driftet wieder weg. Die Lücke bleibt deshalb stehen.
+
 **Zyklus-Uhr.** Die Achse reicht bis 720 Tage nach dem geschätzten Halving, damit das Top-Fenster vollständig hineinpasst. Beschriftungen an den Rändern rücken links- beziehungsweise rechtsbündig. Mit echten Daten geprüft: letztes Hoch bei 0 %, Tief-Fenster 17 bis 30 %, heute 20,7 %, Halving 55,4 %, Top-Fenster 83,3 bis 95 %.
 
 **Verlauf.** Liest zusätzlich `events.json` und zeichnet **alle** Tranchen der Historie ein, nicht nur die des laufenden Zyklus. Mehrere Tranchen derselben Woche und Richtung werden zu einer Marke zusammengefasst. Die Legende nennt Tranchen, nicht Transaktionen: Es sind 18 Signale, von denen die Simulation 12 ausführte (2015 fehlte das Startkapital).
@@ -278,7 +282,7 @@ Vier Lücken wurden geschlossen:
 
 Beim Verzögern des Verlaufs entstand kurz ein Rückschritt: Die Sperre gegen doppeltes Laden machte den Aktualisieren-Knopf wirkungslos. `loadHistory(true)` umgeht sie, der Knopf holt also weiterhin frische Daten.
 
-**Noch offen aus M7:** Antippen des Verlaufs für Details zu einer Woche, Systemsignale aus `events.json` im Journal, Prüfung mit einem echten Screenreader, Messung der ersten Anzeige auf einem Handy.
+**Noch offen aus M7:** Antippen des Verlaufs für Details zu einer Woche, Systemsignale aus `events.json` im Journal, Prüfung mit einem echten Screenreader, Messung der ersten Anzeige auf einem Handy. Erledigt nebenbei: Erklär-Sheets für die beiden Karten, die ohne Vorwissen nicht lesbar waren.
 
 ---
 
@@ -297,6 +301,7 @@ Alle sind in `SPEC.md` eingearbeitet. Hier die Begründungen:
 | Schwelle von Weg E2 | fest 40 | 40 × Abdeckung | Mit einer dauerhaft fehlenden Familie sind 20 Gewichtspunkte unerreichbar. Deshalb wurde 2025 um vier Punkte verfehlt. Weg E1 bleibt ungekoppelt, damit der Pfad der Überhitzung in einer Parabel nicht zu früh öffnet. |
 | Trendbruch-Meldung | nur bei offenen Tranchen | immer beim Übergang ③ → ④ | Der Trendbruch ist auch dann wichtig, wenn nichts mehr zu verkaufen ist. |
 | Desktop-Layout | zwei Spalten | drei Bereiche | Zwei Spalten wurden ungleich hoch, die Kacheln nutzen die volle Breite besser. |
+| Spaltenhöhe | „absichtlich etwa gleich hoch" (SPEC 8.2) | ungleich, Lücke unten rechts bleibt | Kartenhöhen hängen vom Inhalt ab. Strecken erzeugt eine leere Karte, Umsortieren dreht die Lücke nur um. Begründung in Abschnitt 6. |
 | Rechenzeile der Kacheln | im Browser aus den Operanden verkettet | fertig aus der Pipeline (`source_calc.compact`) | Die Verkettung stellte die Formel falsch dar, etwa „MC ÷ RC ÷ σ" statt „(MC − RC) ÷ σ". |
 | Divisionszeichen | ÷ | / | Bei 11 Pixel verliert ÷ seine Punkte und sieht aus wie ein Plus. |
 
