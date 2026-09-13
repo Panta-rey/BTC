@@ -1,0 +1,612 @@
+{
+  "erstellt": "2026-09-13T17:07:20.915Z",
+  "config_version": "1.0",
+  "reihen": 68,
+  "gegenprobe": [
+    {
+      "name": "Wochenschluss",
+      "id": "price_usd",
+      "stat": {
+        "n": 843,
+        "korrelation": 0.9999874728552148,
+        "mittlereAbweichung": 47.14037315198748,
+        "mittlereRelativeAbweichung": 0.00642850713622979,
+        "groessteRelativeAbweichung": 0.27885018524254235,
+        "von": 0
+      },
+      "fehlt": false
+    },
+    {
+      "name": "Realized Price",
+      "id": "realized_price",
+      "stat": {
+        "n": 843,
+        "korrelation": 0.9999783273136899,
+        "mittlereAbweichung": 31.01265717674974,
+        "mittlereRelativeAbweichung": 0.0005855974123454484,
+        "groessteRelativeAbweichung": 0.01966980881963587,
+        "von": 0
+      },
+      "fehlt": false
+    },
+    {
+      "name": "MVRV-Z-Score",
+      "id": "mvrv_z",
+      "stat": {
+        "n": 791,
+        "korrelation": 0.9999645560907215,
+        "mittlereAbweichung": 0.002721238938053097,
+        "mittlereRelativeAbweichung": 0.0046446738400181715,
+        "groessteRelativeAbweichung": 0.2760736196319017,
+        "von": 52
+      },
+      "fehlt": false
+    },
+    {
+      "name": "Puell Multiple",
+      "id": "puell",
+      "stat": {
+        "n": 791,
+        "korrelation": 0.9788487045900458,
+        "mittlereAbweichung": 0.11971517067003797,
+        "mittlereRelativeAbweichung": 0.08649504389232737,
+        "groessteRelativeAbweichung": 0.5094222222222222,
+        "von": 52
+      },
+      "fehlt": false
+    },
+    {
+      "name": "Mayer Multiple",
+      "id": "mayer",
+      "stat": {
+        "n": 797,
+        "korrelation": 0.9988309131799364,
+        "mittlereAbweichung": 0.008716060225846924,
+        "mittlereRelativeAbweichung": 0.00796035538963077,
+        "groessteRelativeAbweichung": 0.5523613963039014,
+        "von": 46
+      },
+      "fehlt": false
+    },
+    {
+      "name": "200-Wochen-Schnitt",
+      "id": "sma_200w",
+      "stat": {
+        "n": 644,
+        "korrelation": 0.9999991476097411,
+        "mittlereAbweichung": 32.73020186335399,
+        "mittlereRelativeAbweichung": 0.004313857000113046,
+        "groessteRelativeAbweichung": 0.09066227889757295,
+        "von": 199
+      },
+      "fehlt": false
+    },
+    {
+      "name": "Pi-Cycle-Nähe",
+      "id": "pi_cycle_ratio",
+      "stat": {
+        "n": 767,
+        "korrelation": 0.9999487783738147,
+        "mittlereAbweichung": 0.0006460507404342085,
+        "mittlereRelativeAbweichung": 0.0013283017967664925,
+        "groessteRelativeAbweichung": 0.032463185378590165,
+        "von": 76
+      },
+      "fehlt": false
+    },
+    {
+      "name": "Allzeithoch",
+      "id": "ath_stats",
+      "stat": {
+        "n": 837,
+        "korrelation": 0.9999926986127768,
+        "mittlereAbweichung": 80.20566308243754,
+        "mittlereRelativeAbweichung": 0.006298911878106442,
+        "groessteRelativeAbweichung": 0.4285714285714286,
+        "von": 0
+      },
+      "fehlt": false
+    },
+    {
+      "name": "Abstand vom Hoch",
+      "id": "ath_stats",
+      "stat": {
+        "n": 837,
+        "korrelation": 0.9942988477066547,
+        "mittlereAbweichung": 0.6930005973715654,
+        "mittlereRelativeAbweichung": null,
+        "groessteRelativeAbweichung": null,
+        "von": 0
+      },
+      "fehlt": false
+    },
+    {
+      "name": "Fear & Greed (Woche)",
+      "id": "fear_greed",
+      "stat": {
+        "n": 448,
+        "korrelation": 0.9587086538930172,
+        "mittlereAbweichung": 4.478794642857144,
+        "mittlereRelativeAbweichung": null,
+        "groessteRelativeAbweichung": null,
+        "von": 395
+      },
+      "fehlt": false
+    },
+    {
+      "name": "Wikipedia 4 Wochen",
+      "id": "wikipedia",
+      "stat": {
+        "n": 581,
+        "korrelation": 0.9994014728219124,
+        "mittlereAbweichung": 2327.4174689338183,
+        "mittlereRelativeAbweichung": 0.19477317156082513,
+        "groessteRelativeAbweichung": 0.33816968582244367,
+        "von": 262
+      },
+      "fehlt": false
+    },
+    {
+      "name": "Funding 30 Tage",
+      "id": "funding",
+      "stat": {
+        "n": 240,
+        "korrelation": 0.8457235163519764,
+        "mittlereAbweichung": 0.010135464496481783,
+        "mittlereRelativeAbweichung": 113.4073261509855,
+        "groessteRelativeAbweichung": 2322.091447453119,
+        "von": 495
+      },
+      "fehlt": false
+    }
+  ],
+  "varianten": [
+    {
+      "label": "ohne Zusatzdaten (Stand heute)",
+      "wert": 314146.2611813864,
+      "btc": 1.3276897760505832,
+      "cash": 207481.0188170541,
+      "trades": 15,
+      "erfuellt": 4,
+      "phase": 4
+    },
+    {
+      "label": "nur STH-Einstand",
+      "wert": 314146.2611813864,
+      "btc": 1.3276897760505832,
+      "cash": 207481.0188170541,
+      "trades": 15,
+      "erfuellt": 4,
+      "phase": 4
+    },
+    {
+      "label": "mit allen fünf",
+      "wert": 196857.28006533076,
+      "btc": 2.4503333259313322,
+      "cash": 0,
+      "trades": 12,
+      "erfuellt": 3,
+      "phase": 2
+    }
+  ],
+  "kandidaten": [
+    {
+      "id": "aviv",
+      "name": "AVIV-Ratio",
+      "gruppe": "C",
+      "tief": 12.369791666666666,
+      "hoch": 80.04740392914523,
+      "nTief": 3,
+      "nHoch": 4,
+      "trenn": 67.67761226247856,
+      "wochen": 842
+    },
+    {
+      "id": "realized_mayer",
+      "name": "Realized Mayer Multiple",
+      "gruppe": "C",
+      "tief": 11.423053151246135,
+      "hoch": 78.5487115103944,
+      "nTief": 3,
+      "nHoch": 4,
+      "trenn": 67.12565835914826,
+      "wochen": 797
+    },
+    {
+      "id": "cycle_extreme",
+      "name": "Cycle Extreme (Composite)",
+      "gruppe": "C",
+      "tief": 10.667067307692307,
+      "hoch": 77.30768627430767,
+      "nTief": 3,
+      "nHoch": 4,
+      "trenn": 66.64061896661536,
+      "wochen": 827
+    },
+    {
+      "id": "price_temperature",
+      "name": "Price Temperature (Z gegen 4J-SMA)",
+      "gruppe": "C",
+      "tief": 10.715027821072038,
+      "hoch": 76.94697476128962,
+      "nTief": 2,
+      "nHoch": 3,
+      "trenn": 66.23194694021758,
+      "wochen": 617
+    },
+    {
+      "id": "nupl",
+      "name": "NUPL",
+      "gruppe": "C",
+      "tief": 11.97916666666667,
+      "hoch": 75.26764670493532,
+      "nTief": 3,
+      "nHoch": 4,
+      "trenn": 63.288480038268645,
+      "wochen": 843
+    },
+    {
+      "id": "mvrv_lth",
+      "name": "MVRV LTH",
+      "gruppe": "C",
+      "tief": 9.301180351727721,
+      "hoch": 70.26354258935646,
+      "nTief": 3,
+      "nHoch": 4,
+      "trenn": 60.96236223762874,
+      "wochen": 815
+    },
+    {
+      "id": "regime_score",
+      "name": "Regime Score (Composite)",
+      "gruppe": "C",
+      "tief": 14.723834629070103,
+      "hoch": 75.0921393750371,
+      "nTief": 3,
+      "nHoch": 4,
+      "trenn": 60.368304745967,
+      "wochen": 774
+    },
+    {
+      "id": "macro_risk_index",
+      "name": "Macro Risk Index (Composite)",
+      "gruppe": "C",
+      "tief": 13.885859370845091,
+      "hoch": 73.35485221909218,
+      "nTief": 3,
+      "nHoch": 4,
+      "trenn": 59.46899284824709,
+      "wochen": 797
+    },
+    {
+      "id": "profitable_days",
+      "name": "Profitable Days",
+      "gruppe": "C",
+      "tief": 41.02564102564103,
+      "hoch": 100,
+      "nTief": 3,
+      "nHoch": 4,
+      "trenn": 58.97435897435897,
+      "wochen": 829
+    },
+    {
+      "id": "sopr_lth",
+      "name": "SOPR LTH",
+      "gruppe": "C",
+      "tief": 10.657051282051281,
+      "hoch": 69.49107308207789,
+      "nTief": 3,
+      "nHoch": 4,
+      "trenn": 58.834021800026605,
+      "wochen": 843
+    },
+    {
+      "id": "power_law_osc",
+      "name": "Power-Law-Oszillator",
+      "gruppe": "C",
+      "tief": 34.06450320512821,
+      "hoch": 81.73360715006451,
+      "nTief": 3,
+      "nHoch": 4,
+      "trenn": 47.6691039449363,
+      "wochen": 836
+    },
+    {
+      "id": "illiquid_supply",
+      "name": "Illiquid Supply",
+      "gruppe": "C",
+      "tief": 91.78685897435896,
+      "hoch": 45.22332908953712,
+      "nTief": 3,
+      "nHoch": 4,
+      "trenn": -46.56352988482185,
+      "wochen": 843
+    },
+    {
+      "id": "sopr",
+      "name": "SOPR",
+      "gruppe": "C",
+      "tief": 17.69831730769231,
+      "hoch": 61.534116144104885,
+      "nTief": 3,
+      "nHoch": 4,
+      "trenn": 43.83579883641258,
+      "wochen": 843
+    },
+    {
+      "id": "hashribbons_ratio",
+      "name": "Hash Ribbons (30T / 60T)",
+      "gruppe": "?",
+      "tief": 25.049279226099014,
+      "hoch": 67.60752053236034,
+      "nTief": 3,
+      "nHoch": 4,
+      "trenn": 42.55824130626132,
+      "wochen": 767
+    },
+    {
+      "id": "m2_bank",
+      "name": "M2 Zentralbanken",
+      "gruppe": "D",
+      "tief": 51.981868912319925,
+      "hoch": 92.93811274509805,
+      "nTief": 3,
+      "nHoch": 3,
+      "trenn": 40.95624383277813,
+      "wochen": 746
+    },
+    {
+      "id": "mvrv_sth",
+      "name": "MVRV STH",
+      "gruppe": "C",
+      "tief": 24.501003218833876,
+      "hoch": 59.47869532428356,
+      "nTief": 3,
+      "nHoch": 3,
+      "trenn": 34.97769210544968,
+      "wochen": 714
+    },
+    {
+      "id": "supply_shock",
+      "name": "Supply Shock Ratio",
+      "gruppe": "C",
+      "tief": 51.802884615384606,
+      "hoch": 18.403550487818993,
+      "nTief": 3,
+      "nHoch": 4,
+      "trenn": -33.39933412756561,
+      "wochen": 843
+    },
+    {
+      "id": "hashprice",
+      "name": "Hashprice",
+      "gruppe": "C",
+      "tief": 1.9949466122099426,
+      "hoch": 33.07199389081967,
+      "nTief": 3,
+      "nHoch": 4,
+      "trenn": 31.077047278609726,
+      "wochen": 819
+    },
+    {
+      "id": "liveliness",
+      "name": "Liveliness",
+      "gruppe": "C",
+      "tief": 66.46634615384615,
+      "hoch": 95.32974021183294,
+      "nTief": 3,
+      "nHoch": 4,
+      "trenn": 28.863394057986795,
+      "wochen": 843
+    },
+    {
+      "id": "vdd",
+      "name": "VDD Multiple",
+      "gruppe": "C",
+      "tief": 62.62550199896001,
+      "hoch": 91.02277875238025,
+      "nTief": 3,
+      "nHoch": 4,
+      "trenn": 28.397276753420236,
+      "wochen": 819
+    },
+    {
+      "id": "true_market_mean",
+      "name": "True Market Mean",
+      "gruppe": "C",
+      "tief": 71.45432692307692,
+      "hoch": 99.6264773829112,
+      "nTief": 3,
+      "nHoch": 4,
+      "trenn": 28.172150459834285,
+      "wochen": 838
+    },
+    {
+      "id": "halving_progress",
+      "name": "Halving-Fortschritt",
+      "gruppe": "C",
+      "tief": 64.27283653846153,
+      "hoch": 37.78458255577921,
+      "nTief": 3,
+      "nHoch": 4,
+      "trenn": -26.488253982682323,
+      "wochen": 837
+    },
+    {
+      "id": "ssr",
+      "name": "Stablecoin Supply Ratio",
+      "gruppe": "C",
+      "tief": 6.483495854533625,
+      "hoch": 31.78305645662281,
+      "nTief": 1,
+      "nHoch": 2,
+      "trenn": 25.299560602089183,
+      "wochen": 403
+    },
+    {
+      "id": "m2global",
+      "name": "M2 global",
+      "gruppe": "D",
+      "tief": 73.81454220687347,
+      "hoch": 98.87643759426847,
+      "nTief": 3,
+      "nHoch": 3,
+      "trenn": 25.061895387394998,
+      "wochen": 746
+    },
+    {
+      "id": "stablecoin_supply",
+      "name": "Stablecoin-Angebot",
+      "gruppe": "D",
+      "tief": 74.8798076923077,
+      "hoch": 99.87689924094303,
+      "nTief": 1,
+      "nHoch": 2,
+      "trenn": 24.99709154863534,
+      "wochen": 458
+    },
+    {
+      "id": "sopr_sth",
+      "name": "SOPR STH",
+      "gruppe": "C",
+      "tief": 30.679086538461537,
+      "hoch": 55.17859548743711,
+      "nTief": 3,
+      "nHoch": 4,
+      "trenn": 24.49950894897557,
+      "wochen": 843
+    },
+    {
+      "id": "sth_risk_index",
+      "name": "STH Risk Index (Composite)",
+      "gruppe": "C",
+      "tief": 29.602958107882813,
+      "hoch": 53.624622926093515,
+      "nTief": 3,
+      "nHoch": 3,
+      "trenn": 24.021664818210702,
+      "wochen": 714
+    },
+    {
+      "id": "exchange_reserve",
+      "name": "Exchange Reserve (BTC)",
+      "gruppe": "C",
+      "tief": 88.11040776181558,
+      "hoch": 64.69881221719456,
+      "nTief": 3,
+      "nHoch": 3,
+      "trenn": -23.411595544621022,
+      "wochen": 753
+    },
+    {
+      "id": "nvt_z",
+      "name": "NVT-Z-Score",
+      "gruppe": "C",
+      "tief": 64.52323717948718,
+      "hoch": 42.19417687171606,
+      "nTief": 3,
+      "nHoch": 4,
+      "trenn": -22.329060307771122,
+      "wochen": 843
+    },
+    {
+      "id": "cdd_90dma",
+      "name": "CDD 90dma",
+      "gruppe": "C",
+      "tief": 60.99759615384615,
+      "hoch": 80.92065683110425,
+      "nTief": 3,
+      "nHoch": 4,
+      "trenn": 19.9230606772581,
+      "wochen": 838
+    },
+    {
+      "id": "miner_reserve",
+      "name": "Miner Reserve (BTC)",
+      "gruppe": "C",
+      "tief": 16.927083333333332,
+      "hoch": 7.434699592422904,
+      "nTief": 3,
+      "nHoch": 4,
+      "trenn": -9.492383740910428,
+      "wochen": 843
+    },
+    {
+      "id": "google_trends",
+      "name": "Google Trends",
+      "gruppe": "C",
+      "tief": 62.88060897435898,
+      "hoch": 67.57224015257266,
+      "nTief": 3,
+      "nHoch": 4,
+      "trenn": 4.691631178213683,
+      "wochen": 843
+    },
+    {
+      "id": "ancient_supply",
+      "name": "Ancient Supply (10 J+)",
+      "gruppe": "C",
+      "tief": 100,
+      "hoch": 96.8975360576923,
+      "nTief": 3,
+      "nHoch": 4,
+      "trenn": -3.1024639423076934,
+      "wochen": 808
+    },
+    {
+      "id": "ats",
+      "name": "Accumulation Trend Score",
+      "gruppe": "C",
+      "tief": 31.620592948717952,
+      "hoch": 28.635751981516332,
+      "nTief": 3,
+      "nHoch": 4,
+      "trenn": -2.9848409672016203,
+      "wochen": 843
+    },
+    {
+      "id": "lth_realized_price",
+      "name": "LTH-Realized-Price",
+      "gruppe": "A",
+      "tief": 96.66625569074863,
+      "hoch": 99.4037274113607,
+      "nTief": 3,
+      "nHoch": 4,
+      "trenn": 2.7374717206120778,
+      "wochen": 767
+    },
+    {
+      "id": "miner_net_flow",
+      "name": "Miner Net Flow (BTC)",
+      "gruppe": "C",
+      "tief": 45.002003205128204,
+      "hoch": 42.34154825321656,
+      "nTief": 3,
+      "nHoch": 4,
+      "trenn": -2.660454951911646,
+      "wochen": 843
+    },
+    {
+      "id": "exchange_netflow",
+      "name": "Exchange Netflow (BTC)",
+      "gruppe": "C",
+      "tief": 53.56565632543127,
+      "hoch": 52.1316459276018,
+      "nTief": 3,
+      "nHoch": 3,
+      "trenn": -1.4340103978294678,
+      "wochen": 753
+    },
+    {
+      "id": "thermocap",
+      "name": "Thermocap-Ratio",
+      "gruppe": "C",
+      "tief": 100,
+      "hoch": 100,
+      "nTief": 3,
+      "nHoch": 4,
+      "trenn": 0,
+      "wochen": 843
+    }
+  ]
+}

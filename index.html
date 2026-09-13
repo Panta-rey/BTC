@@ -213,6 +213,9 @@ svg.chart{width:100%;height:190px;display:block}
 .mtop b{font-size:13.5px;font-weight:600}
 .mtop .badge{font-size:10.5px;border:1px solid var(--line);border-radius:5px;padding:1px 6px;color:var(--mut)}
 .mtop .badge.now{color:var(--buy);border-color:rgba(45,212,167,.35)}
+.mtop .badge.later{color:var(--ready);border-color:rgba(240,180,41,.35)}
+.mrow.later{opacity:.72;background:#0C1018}
+.mrow .warn{margin-top:7px;font-size:11.5px;color:var(--ready);line-height:1.45}
 .mtop .sp{flex:1}
 .chartbtn{display:inline-flex;align-items:center;gap:5px;border:1px solid var(--line);border-radius:8px;
   padding:5px 10px;font-size:12px;color:var(--info);text-decoration:none;white-space:nowrap}
@@ -863,46 +866,57 @@ function importBackup(){
   }catch(e){ alert("Backup konnte nicht gelesen werden: "+e.message); } };
   i.click();
 }
-// Kennzahlen, die BGeometrics braucht und die von Hand aus Checkonchain kommen können.
-// Die absoluten wirken sofort, die perzentilbasierten erst mit rund einem Jahr Historie.
+// Kennzahlen, die es nur bei BGeometrics gibt und die von Hand nachgetragen werden können.
+//
+// Die Reihenfolge folgt dem Vergleich vom 13.09.2026 (reports/bgeometrics-vergleich.md):
+// Die ersten drei heben die Abdeckung des KAUF-Motors und sind unbedenklich. Die letzten
+// zwei heben die Abdeckung des VERKAUFS-Motors, und damit steigt die an die Abdeckung
+// gekoppelte Schwelle von Weg E2 von 32 auf 40. Im Nachlauf mit allen fünf Kennzahlen
+// verschwand dadurch der gesamte Verkaufszyklus 2025. Sie sind deshalb zurückgestellt,
+// nicht verworfen: Die eigentliche Schwachstelle ist die Kopplung, und die wird nach dem
+// Ende des laufenden Zyklus neu bewertet (HANDOFF §4a).
 const MANUAL = [
-  { k:"sth_realized_price", n:"STH-Realized-Price", u:"USD", sofort:true,
-    chart:"Key Cost Basis Models",
-    url:"https://charts.checkonchain.com/btconchain/pricing/pricing_costbasisoriginals/pricing_costbasisoriginals_light.html",
-    read:"Auf der Startseite unter Pricing Models als „Key Cost Basis!\" verlinkt. Im Chart die Linie Short-Term Holder Realised Price ablesen, aktuellster Punkt rechts." },
-  { k:"supply_in_profit", n:"Angebot im Gewinn", u:"%", sofort:true,
-    chart:"Percent Supply in Profit",
-    url:"https://charts.checkonchain.com/btconchain/unrealised/pctsupplyinprofit_all/pctsupplyinprofit_all_light.html",
-    read:"Prozentwert der Hauptlinie ablesen, zum Beispiel 52.3. Die Ampel rechnet daraus 100 minus Wert, also das Angebot im Verlust." },
-  { k:"reserve_risk", n:"Reserve Risk", u:"", sofort:true,
+  { k:"reserve_risk", n:"Reserve Risk", u:"", sofort:true, rang:"monatlich", motor:"Kauf",
     chart:"Bitcoin Reserve Risk (BGeometrics)",
     url:"https://charts.bgeometrics.com/reserve_risk.html",
     read:"Wert der Reserve-Risk-Linie ablesen, erwartet wird die Skala von BGeometrics, also rund 0.001 bis 0.05. Unter 0.002 gilt als Akkumulationsbereich, über 0.02 als erhöhtes Risiko. Bewusst BGeometrics und nicht Checkonchain: Andere Anbieter normieren anders, und die absolute Bewertung hängt an der Skala." },
-  { k:"rhodl", n:"RHODL-Ratio", u:"", sofort:false,
+  { k:"supply_in_profit", n:"Angebot im Gewinn", u:"%", sofort:true, rang:"monatlich", motor:"Kauf",
+    chart:"Percent Supply in Profit",
+    url:"https://charts.checkonchain.com/btconchain/unrealised/pctsupplyinprofit_all/pctsupplyinprofit_all_light.html",
+    read:"Prozentwert der Hauptlinie ablesen, zum Beispiel 52.3. Die Ampel rechnet daraus 100 minus Wert, also das Angebot im Verlust. Wichtig: den Prozentwert nehmen, nicht die Menge in Bitcoin." },
+  { k:"sth_realized_price", n:"STH-Realized-Price", u:"USD", sofort:true, rang:"monatlich", motor:"Trendfilter",
+    chart:"Key Cost Basis Models",
+    url:"https://charts.checkonchain.com/btconchain/pricing/pricing_costbasisoriginals/pricing_costbasisoriginals_light.html",
+    read:"Auf der Startseite unter Pricing Models als „Key Cost Basis!\" verlinkt. Im Chart die Linie Short-Term Holder Realised Price ablesen, aktuellster Punkt rechts. Verschiebt laut Nachlauf keine Phasenwechsel, schaltet aber die Nachkauf-Chance in Phase ② frei." },
+  { k:"rhodl", n:"RHODL-Ratio", u:"", sofort:false, rang:"zurückgestellt", motor:"Verkauf",
     chart:"RHODL Ratio",
     url:"https://charts.checkonchain.com/btconchain/supply/rhodl/rhodl_light.html",
-    read:"Wert der RHODL-Linie ablesen. Wirkt erst mit rund 26 Wochen Historie, weil die Skala über die Zyklen gewandert ist und nur relativ bewertet werden kann." },
-  { k:"lth_net_position_change", n:"LTH-Positionsänderung 30 T", u:"BTC", sofort:false,
+    read:"Wert der RHODL-Linie ablesen. Wirkt erst mit rund 26 Wochen Historie, weil die Skala über die Zyklen gewandert ist und nur relativ bewertet werden kann.",
+    warn:"Zurückgestellt. Diese Kennzahl vervollständigt die Familie „Halterverhalten\" des Verkaufs-Motors. Dadurch steigt die an die Abdeckung gekoppelte Schwelle von Weg E2 von 32 auf 40, und das knappe Hoch-Signal von 2025 fällt darunter. Erst nach dem Zyklusende eintragen, zusammen mit einer neuen Bewertung der Kopplung." },
+  { k:"lth_net_position_change", n:"LTH-Positionsänderung 30 T", u:"BTC", sofort:false, rang:"zurückgestellt", motor:"Verkauf",
     chart:"LTH Supply Net Position Change (30-day)",
     url:"https://charts.checkonchain.com/btconchain/supply/lthnetposchange_0/lthnetposchange_0_light.html",
-    read:"Wert mit Vorzeichen eintragen. Negativ bedeutet Abgabe der Langzeithalter. Immer dieselbe Einheit verwenden, damit die Reihe vergleichbar bleibt." },
+    read:"Wert mit Vorzeichen eintragen. Negativ bedeutet Abgabe der Langzeithalter. Immer dieselbe Einheit verwenden, damit die Reihe vergleichbar bleibt.",
+    warn:"Zurückgestellt, aus demselben Grund wie die RHODL-Ratio: Sie gehört zur Familie „Halterverhalten\" des Verkaufs-Motors und hebt damit die Schwelle von Weg E2." },
 ];
 
 function manualPanel(){
   const box = el("div");
   box.appendChild(el("p",null,
-    `Solange BGeometrics nicht antwortet, kannst du fünf Kennzahlen von Hand nachtragen.
-     Lies sie bei Checkonchain ab, trag sie hier ein und übernimm den erzeugten Block in
-     <code>data/manual.json</code>. Der nächste Wochenlauf rechnet damit.`));
+    `Fünf Kennzahlen gibt es nur bei BGeometrics. Die ersten drei trägst du monatlich nach:
+     Sie heben die Abdeckung des Kauf-Motors von 80 auf 100 Prozent und wirken ab der
+     ersten Lesung. Die letzten zwei sind bewusst zurückgestellt, die Begründung steht
+     an der Kachel. Eine Erinnerung kommt jeden Monatsanfang als GitHub-Issue.`));
   const draft = store.get("manual_draft",{});
   const series = D.manual?.series || {};
   const rows = el("div");
   for(const m of MANUAL){
-    const r = el("div","mrow");
+    const r = el("div","mrow" + (m.rang==="zurückgestellt" ? " later" : ""));
     const top = el("div","mtop",
       `<b>${esc(m.n)}</b>` +
       (m.u ? `<span class="badge">${esc(m.u)}</span>` : "") +
-      `<span class="badge${m.sofort?" now":""}">${m.sofort?"wirkt sofort":"braucht Historie"}</span>` +
+      `<span class="badge${m.rang==="monatlich"?" now":" later"}">${m.rang==="monatlich"?"monatlich eintragen":"zurückgestellt"}</span>` +
+      `<span class="badge">${esc(m.motor)}-Motor</span>` +
       `<span class="sp"></span>`);
     const a = el("a","chartbtn","↗ Chart öffnen");
     a.href = m.url; a.target = "_blank"; a.rel = "noopener noreferrer";
@@ -911,10 +925,12 @@ function manualPanel(){
     r.appendChild(top);
 
     const i = el("input"); i.id="m_"+m.k; i.type="number"; i.step="any"; i.inputMode="decimal";
-    i.placeholder = "Wert eintragen"; i.value = draft[m.k] ?? "";
+    i.placeholder = m.rang==="monatlich" ? "Wert eintragen" : "nur eintragen, wenn bewusst gewollt";
+    i.value = draft[m.k] ?? "";
     i.setAttribute("aria-label", m.n + (m.u ? " in " + m.u : ""));
     i.oninput = ()=>{ draft[m.k] = i.value; store.set("manual_draft",draft); snippet(); };
     r.appendChild(i);
+    if(m.warn) r.appendChild(el("div","warn",esc(m.warn)));
     r.appendChild(el("div","read",esc(m.read)));
     const have = series[m.k] || [];
     if(have.length) r.appendChild(el("div","last",

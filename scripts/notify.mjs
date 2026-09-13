@@ -14,7 +14,7 @@
 // Beträge werden nie verschickt: die Position lebt nur im Browser.
 
 import { readJSON, writeJSON } from "./lib/store.mjs";
-import { selectPending, body, stale, yearlyReview, KIND } from "./lib/events.mjs";
+import { selectPending, body, stale, yearlyReview, monthlyManual, KIND } from "./lib/events.mjs";
 
 const DRY = process.argv.includes("--dry-run");
 const TEST = process.argv.includes("--test");
@@ -92,6 +92,18 @@ if (stale(week, { now: NOW })) {
 }
 const yr = yearlyReview(events, { now: NOW });
 if (yr) extra.push(yr);
+
+// Monatliche Erinnerung an die Handeingabe. Das Datum der letzten Lesung je Kennzahl
+// steht in data/manual.json, damit die Erinnerung entfällt, wenn sie schon erledigt ist.
+const manual = await readJSON("data/manual.json", null);
+const letzteLesung = {};
+for (const [k, v] of Object.entries(manual ?? {})) {
+  if (k.startsWith("_")) continue;
+  if (Array.isArray(v) && v.length) letzteLesung[k] = v.at(-1).d;
+  else if (v?.as_of) letzteLesung[k] = v.as_of;
+}
+const mm = monthlyManual(events, { now: NOW, readings: letzteLesung });
+if (mm) extra.push(mm);
 if (TEST) extra.push({ id: `${new Date(NOW).toISOString().slice(0, 16)}:TEST`, week_id: week ?? "2026-01-04",
   type: "ALERT", text: "Testmeldung. Wenn du das liest, funktionieren Benachrichtigungen.", notified_at: null });
 

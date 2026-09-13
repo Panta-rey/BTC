@@ -2,7 +2,7 @@
 
 Zustandsbericht des Projekts. Wer hier einsteigt, liest zuerst dieses Dokument, dann `SPEC.md`.
 
-**Stand:** 13. September 2026 · Konfiguration `1.0` (eingefroren) · Node 22, keine Abhängigkeiten · 52 Tests grün
+**Stand:** 13. September 2026 · Konfiguration `1.0` (eingefroren) · Node 22, keine Abhängigkeiten · 53 Tests grün
 **Status:** betriebsbereit. M0 bis M6 abgeschlossen, nur M7 (Härtung) offen.
 **Seite:** https://panta-rey.github.io/Panta-Rey-BTC-Ampel/ · **Repo:** https://github.com/Panta-rey/Panta-Rey-BTC-Ampel
 
@@ -34,9 +34,11 @@ Keine Anlageberatung. Das Modell beruht auf vier Zyklen und kann falsch liegen.
 | M4 | Position und Journal im Browser | ✅ in `index.html` |
 | M5 | Benachrichtigungen (GitHub Issues, optional ntfy) | ✅ `scripts/notify.mjs`, im Ernstfall getestet |
 | M6 | Verlauf und Zyklus-Uhr als Grafik | ✅ eigenes SVG, ohne Bibliothek |
-| M7 | Härtung, Barrierefreiheit, Grenzfälle | ⬜ wartet bewusst auf die geklärte Datenlage |
+| M7 | Härtung, Barrierefreiheit, Grenzfälle | ⬜ kann beginnen, Datenlage seit 13.09.2026 geklärt |
 
 **Aktueller Marktstand laut Ampel:** Phase 4 Abwärtstrend seit 9. November 2025. Kauf-Motor 42, Verkaufs-Motor 1, Ampel gelb, „Bereit machen. Die Kaufzone rückt näher, noch nicht kaufen." Es fehlen 18 Punkte zur Kaufzone, kein Tor ist offen, 2 von 4 Indikatoren in Zone aus 2 von 3 Familien.
+
+**Die BGeometrics-Frage ist am 13. September 2026 abschliessend beantwortet.** Ein Monatsabo Advanced, ein vollständiger Datenabzug und ein Dreifach-Nachlauf haben ergeben: Ein dauerhaftes Abo verbessert das System nicht. Einzelheiten in Abschnitt 11, die Zahlen in `reports/bgeometrics-vergleich.md`. Daraus folgt die neue Regel für die Handeingabe in Abschnitt 4a.
 
 ---
 
@@ -102,7 +104,11 @@ Der Realized Price wird aus `PriceUSD ÷ CapMVRVCur` abgeleitet, weil Coin Metri
 
 **Fehlend (fünf Kennzahlen, nur bei BGeometrics):** STH-Realized-Price, Angebot im Verlust, Reserve Risk, RHODL-Ratio, LTH-Abgabe.
 
-Die Gratis-Stufe von BGeometrics verbietet genau unseren Aufbau: Abrufe von fremden Systemen (GitHub-Runner) und die Anzeige auf einer öffentlichen Seite gelten als kommerzielle Weiterverbreitung. **Eine Anfrage an info@bgeometrics.com läuft.** Der Token liegt als Secret `BGEOMETRICS_TOKEN` bereit und wird nicht benutzt.
+Die Nutzungsbedingungen (Stand 24.02.2026) verbieten genau unseren Aufbau, und zwar **tarifunabhängig**: Der Einsatz des Tokens von Systemen, die dem Schlüsselinhaber nicht gehören (GitHub-Runner), und jede Anwendung, die die Daten an Endnutzer ausliefert (eine öffentliche Seite), gelten als kommerzielle Weiterverbreitung und verlangen den Professional-Tarif. Auch der Advanced-Tarif deckt das nicht. Der Token liegt als Secret `BGEOMETRICS_TOKEN` bereit und wird nicht benutzt.
+
+Die Marketing-Seite zum Zusatzmodul „Commercial Publishing" klingt milder und nimmt persönliches, nicht-kommerzielles Veröffentlichen ausdrücklich von der Lizenzpflicht aus. Die Bedingungen sind aber das bindende Dokument und widersprechen dem an diesem Punkt. Wer die Pipeline je auf BGeometrics stellen will, klärt das vorher schriftlich mit info@bgeometrics.com.
+
+**Tarifdaten, am 13.09.2026 geprüft:** Advanced kostet 18 Dollar im Monat oder 180 im Jahr, erlaubt 200 Abrufe pro Stunde und höchstens 3 verschiedene IPs am Tag, und **hebt die Vier-Jahres-Grenze der Gratis-Stufe auf**. Alle Endpunkte kennen `/last` für den letzten Wert, `/csv` für den Export und die Parameter `day`, `startday`, `endday`. Ein Abruf holt damit eine ganze Reihe. Abos verlängern sich automatisch, also direkt nach dem Kauf kündigen.
 
 ### Manuelle Werte als Zwischenlösung
 
@@ -140,7 +146,29 @@ Der Unterschied: Die ersten drei nutzen absolute Ankerpunkte und wirken ab der e
 - Der STH-Realized-Price kommt aus `data/manual.json`. Ohne Eintrag arbeitet der Trendfilter nur mit dem Bull Market Support Band, und die Nachkauf-Chance in Phase ② ist abgeschaltet. Die Seite zeigt dafür ein Banner.
 - Gate B stützt sich statt auf das Angebot im Verlust allein auf das MVRV-Perzentil.
 
-**Bei einer Zusage:** Die fünf Kennzahlen kommen über `fetch.mjs` dazu, die Familien werden vollständig, die Konvergenzanforderung steigt automatisch zurück auf drei Familien, und die Schwelle von Weg E2 steigt von 32 auf 40. Danach muss der Backtest neu bewertet werden, weil sich beide Motoren ändern.
+**Bei einer Zusage:** Die fünf Kennzahlen kommen über `fetch.mjs` dazu, die Familien werden vollständig, die Konvergenzanforderung steigt automatisch zurück auf drei Familien, und die Schwelle von Weg E2 steigt von 32 auf 40. Danach muss der Backtest neu bewertet werden, weil sich beide Motoren ändern. Der Nachlauf vom 13.09.2026 zeigt, wie gross dieser Eingriff ist: siehe Abschnitt 4a.
+
+---
+
+## 4a. Welche Werte von Hand eingetragen werden, und welche nicht
+
+Der Dreifach-Nachlauf (Abschnitt 11) hat eine Unterscheidung sichtbar gemacht, die vorher niemand gesehen hat. Sie ist die praktisch wichtigste Erkenntnis des ganzen Vorgangs.
+
+| Kennzahl | Familie | Motor | Regel |
+|---|---|---|---|
+| Reserve Risk | Halter & Stimmung | **Kauf** | monatlich eintragen |
+| Angebot im Gewinn | Halter & Stimmung | **Kauf** | monatlich eintragen |
+| STH-Realized-Price | Trendfilter (ohne Score) | – | monatlich eintragen |
+| RHODL-Ratio | Halterverhalten | **Verkauf** | **zurückgestellt** |
+| LTH-Positionsänderung 30 T | Halterverhalten | **Verkauf** | **zurückgestellt** |
+
+**Warum die Trennung.** Die ersten drei heben die Abdeckung des Kauf-Motors von 80 auf 100 % und berühren Weg E2 nicht. Die letzten zwei vervollständigen die Familie „Halterverhalten" des Verkaufs-Motors. Dessen Abdeckung steigt damit auf 100 %, und weil die Schwelle von Weg E2 an die Abdeckung gekoppelt ist, steigt sie von 32 auf 40. Im Nachlauf mit allen fünf Kennzahlen verschwand dadurch nicht nur das knappe Signal von 2025, sondern der ganze Verkaufszyklus: Die Maschine ging im Oktober 2025 gar nicht mehr in Phase ③ und steht bis heute im Aufwärtstrend seit Januar 2023. Endvermögen 196'857 statt 314'146 USD.
+
+**Warum „zurückgestellt" und nicht „verworfen".** Daten wegzulassen, damit eine Schwelle niedrig bleibt, ist selbst eine Form der Überanpassung, und zwar auf genau einen Zyklus. SPEC 10.5 verbietet das. Die ehrliche Lesart ist deshalb nicht „mehr Daten schaden", sondern: **Das Signal von 2025 hing an vier Punkten, und die Kopplung von Weg E2 an die Abdeckung ist die eigentliche Schwachstelle.** Sie gehört nach dem Ende des laufenden Zyklus neu bewertet, zusammen mit einer wiederholten Empfindlichkeitsprüfung (SPEC 10.3). Bis dahin bleiben die beiden Reihen leer, und die Oberfläche nennt den Grund an der Kachel.
+
+**Zum STH-Realized-Price.** Er verschiebt keinen einzigen der zwölf Phasenwechsel. Der vereinfachte Trendfilter, der nur das Bull Market Support Band prüft, kam historisch zum selben Ergebnis. Die Einschätzung aus der alten Fassung von Abschnitt 11, er sei „der wertvollste Posten", ist damit widerlegt. Eintragen lohnt trotzdem, aber aus einem anderen Grund: Er schaltet die Nachkauf-Chance in Phase ② frei, und die kommt in der Simulation gar nicht vor, weil sie nur die sechs regulären Tranchen ausführt.
+
+**Erinnerung.** `monthlyManual()` in `scripts/lib/events.mjs` erzeugt in den ersten fünf Tagen jedes Monats ein Issue vom Typ `MONTHLY_MANUAL`, sofern für den laufenden Monat noch keine Lesung in `data/manual.json` steht. Es nennt nur die noch offenen der drei empfohlenen Kennzahlen. Kein eigener Workflow nötig, der Tageslauf ruft `notify.mjs` ohnehin auf.
 
 ---
 
@@ -185,6 +213,8 @@ Die beiden Ausreisser sind `gates.sell_E2.halving_days_min` ×1,15 (480 → 552 
 **Zur Lesart der Tabelle.** Die erste Fassung zeigte nur BTC am Ende, was in die Irre führte: 1,3277 BTC sahen schlechter aus als 3,3192. Tatsächlich sind 1,3277 genau 40 % von 3,3192, also die Kernposition. Die Läufe mit weniger BTC haben 2025 verkauft und halten Cash. Nachgerechnet: 1,9915 BTC zu 104'705 ergeben 207'479 USD, das Gesamtvermögen steigt von 266'661 auf 314'144 USD, also **18 % mehr**. Der Bericht zeigt deshalb jetzt das Gesamtvermögen und die konkret verlorenen Kriterien.
 
 **Bekannte Schwachstelle: das Signal von 2025 ist der wackeligste Teil des Systems.** Verkauf-Score 36 bei einer wirksamen Schwelle von 32. Das ist knapp. Wird E2 auch nur etwas strenger, oder fällt die Abdeckung des Verkaufs-Motors (dann steigt die gekoppelte Schwelle), verschwindet das Signal. Das ist kein Fehler, sondern spiegelt, dass 2025 ein wirklich leises Hoch war. Es ist bewusst nicht wegoptimiert, aber beim nächsten Zyklus im Auge zu behalten.
+
+**Am 13.09.2026 bestätigt, und zwar deutlicher als erwartet.** Der Nachlauf mit vollständiger Datenlage verliert nicht nur das Signal, sondern den gesamten Verkaufszyklus 2025 (Abschnitt 4a). Die Empfindlichkeitsprüfung hatte dasselbe Muster schon gezeigt: Beide Ausreisser von zehn Verschiebungen betrafen Weg E2. Drei unabhängige Prüfungen zeigen damit auf dieselbe Stelle. Nach dem Zyklusende gehört die Kopplung `score_min × Abdeckung` neu durchdacht, nicht die Datenlage künstlich klein gehalten.
 
 **Konfiguration `1.0` ist eingefroren** und wird erst nach dem Ende des laufenden Zyklus neu bewertet (SPEC 10.5). Eine Ausnahme: Kommen die BGeometrics-Kennzahlen dazu, ändern sich Abdeckung und die gekoppelte E2-Schwelle, dann muss der Backtest neu bewertet werden.
 
@@ -251,7 +281,7 @@ Alle sind in `SPEC.md` eingearbeitet. Hier die Begründungen:
 | Anlass | Was zu tun ist |
 |---|---|
 | Signal-Issue kommt | Seite öffnen, Handlungssatz und Betrag lesen, Tranche ausführen, auf „Erledigt" tippen, Issue schliessen |
-| einmal im Monat, optional | Reserve Risk auf der BGeometrics-Chartseite ablesen, in den Einstellungen eintragen, speichern. Hebt die Abdeckung des Kauf-Motors von 80 auf 100 % |
+| Monatsanfang, Issue kommt von selbst | Reserve Risk, Angebot im Gewinn und STH-Realized-Price ablesen, in den Einstellungen eintragen, speichern. Hebt die Abdeckung des Kauf-Motors von 80 auf 100 %. RHODL und LTH-Positionsänderung bewusst **nicht** eintragen (Abschnitt 4a) |
 | Technik-Issue kommt | Actions-Tab prüfen, meist eine ausgefallene Quelle |
 | einmal im Jahr (1. Januar) | Review-Issue abarbeiten: Backup exportieren, Kernposition prüfen, Quellenstatus ansehen |
 | nach einem abgeschlossenen Zyklus | Backtest neu bewerten, Konfiguration gegebenenfalls auf 2.0 |
@@ -303,40 +333,60 @@ Ein Abgleich gegen Checkonchain am 12. September 2026 (Tageskurs 77'123) ergab d
 
 Die Seite zeigt die Herkunft jetzt selbst: Jede Kachel trägt eine Rechenzeile mit den eingesetzten Zahlen, und das Erklär-Sheet nennt Formel, alle Operanden und den Hinweis auf den Wochenschluss.
 
----
+**Nachtrag 13.09.2026: die Definitionsfrage ist erledigt.** Der Abgleich über 791 Wochen gegen BGeometrics ergibt für den MVRV-Z-Score Korrelation 1,0000 bei 0,5 % mittlerer Abweichung. Beide rechnen also dieselbe klassische Definition, und die Ankerpunkte sitzen auf der richtigen Skala. Der abweichende Wert von −0,89 stammte von einer dritten Quelle mit anderer Formel. Ebenso bestätigt: der abgeleitete Realized Price auf 0,1 % über 843 Wochen, der 200-Wochen-Schnitt auf 0,4 %, das Allzeithoch auf 0,6 %. BGeometrics nimmt für das Allzeithoch ebenfalls den höchsten Tagesschluss, nicht die Intraday-Spitze.
 
-## 11. Offene Frage: lohnt sich BGeometrics?
+Zwei Abweichungen sind beziffert statt vermutet. Der **Puell Multiple** weicht um 8,6 % ab, weil wir nur die Neuemission bewerten und BGeometrics die Gebühren mitzählt. Da unsere Ankerpunkte absolut sind, verschiebt das den Score leicht; notieren, nicht ändern. Die **Wikipedia-Aufrufe** liegen 19,5 % daneben bei Korrelation 0,9994, also gleiche Form, anderes Niveau, weil wir zwei Sprachen summieren. Ohne Wirkung, weil der Indikator über sein eigenes Perzentil bewertet wird.
 
-Das Add-on „Commercial Publishing" kostet 20 Dollar im Monat, der Tarif Advanced 18. Für ein privates Projekt ist das viel, und ein dauerhaftes Abo wurde deshalb verworfen. Offen bleibt aber, ob die fünf Kennzahlen das System überhaupt besser machen. Diese Frage lässt sich mit **einem Monat Advanced, rein zur Auswertung**, ein für alle Mal klären.
-
-**Welcher Tarif.** Advanced für 18 Dollar genügt weit: Ein Vollabzug braucht 20 bis 40 Anfragen, Advanced erlaubt 200 pro Stunde und 300 pro Tag, dazu zwei IPs. Premium und Premium+ bringen nur mehr Durchsatz und die Block-API, die wir nicht brauchen.
-
-**Vorher klären.** Bei der Gratis-Stufe steht „Historical data limited to the last 4 years". Bei den bezahlten Stufen taucht die Historie in der Vergleichsansicht gar nicht auf, dort stehen nur Durchsatz, Alerts und IPs. Ob Advanced die volle Historie enthält, entscheidet über den ganzen Zweck. Eine kurze Rückfrage an info@bgeometrics.com genügt.
-
-**Was die Werkzeuge tun.**
-
-`scripts/local/fetch-bgeometrics.mjs` zieht zehn Reihen: die fünf fehlenden Kennzahlen, vier zur Gegenprobe unserer eigenen Ableitungen (Realized Price, MVRV-Z, Puell, Hash Ribbons) und Funding mit längerer Historie. Es pausiert 20 Sekunden zwischen den Abrufen und schreibt nach `data/private/`, das von `.gitignore` ausgeschlossen ist.
-
-`scripts/local/compare.mjs` beantwortet daraus zwei Fragen und schreibt `reports/bgeometrics-vergleich.md`:
-
-1. **Wie gut rechnen wir selbst?** Korrelation und relative Abweichung unserer aus Coin Metrics abgeleiteten Reihen gegen die veröffentlichten. Beim Puell wissen wir, dass wir nur die Neuemission ohne Gebühren bewerten; Hash Ribbons ist ganz selbstgebaut. **Dieser Nutzen bleibt auch nach der Kündigung**, weil er die freie Pipeline bestätigt, statt sie zu ersetzen.
-2. **Verändern die Zusatzdaten das Ergebnis?** Drei Durchläufe im Vergleich: ohne Zusatzdaten, nur mit dem STH-Einstand, und mit allen fünf. Dazu die Phasenwechsel nebeneinander.
-
-**Der STH-Einstand ist dabei der wertvollste Posten**, wertvoller als die fünf fehlenden Kennzahlen. Der Trendfilter soll laut Spezifikation Trendband **und** STH-Einstand prüfen. Historisch war der zweite Teil nie verfügbar, deshalb hat jeder bisherige Backtest nur mit dem Band gerechnet. Die Übergänge „Tief bestätigt" und „Trendbruch" sind in ihrer eigentlich gedachten Form also nie geprüft worden.
-
-**Erwartung.** Meine Vermutung ist, dass die fünf Kennzahlen das System nicht verbessern, sondern das Signal von 2025 kosten: Mit voller Abdeckung steigt die gekoppelte Schwelle von Weg E2 von 32 auf 40, und 2025 hatte einen Score von 36. Falls das eintritt, ist die Frage für 18 Dollar dauerhaft erledigt.
-
-**Sauberkeit.** Beide Scripts laufen nur lokal, nie im Runner. Rohdaten bleiben in `data/private/`. Veröffentlicht wird nur der Bericht, also Kennzahlen über die Daten, nicht die Daten. Das ist während eines laufenden Zugangs gedeckt und bleibt es auch danach.
+Ein Punkt bleibt offen: **Funding** erreicht nur Korrelation 0,85 über 240 Wochen, deutlich schwächer als alles andere. Wir holen Deribit BTC-PERPETUAL, BGeometrics mittelt über mehrere Börsen. Der Indikator trägt rund 5 von 100 Gewichtspunkten, das ist verkraftbar, aber er ist der unsicherste der Sammlung.
 
 ---
+
+## 11. Beantwortet: BGeometrics lohnt sich nicht
+
+Am 13. September 2026 wurde ein Monatsabo Advanced gelöst (18 Dollar, sofort gekündigt), vollständig abgezogen und ausgewertet. Die Frage ist damit erledigt. Rohdaten in `data/private/` (gitignored), Bericht in `reports/bgeometrics-vergleich.md`.
+
+**Der Abzug.** 68 Reihen, fast alle mit voller Historie zurück bis 2009 oder 2010. Der Advanced-Tarif hebt die Vier-Jahres-Grenze tatsächlich auf. `scripts/local/fetch-bgeometrics.mjs` kennt dafür vier Modi: `--list` zeigt den Katalog ohne Netz, `--probe` sucht Server und Pfade über `/last`, der Normallauf zieht über `/csv` ab, `--repair` setzt offline die richtige Spalte als Hauptwert und rechnet Ableitungen aus.
+
+**Stolperstein, der Zeit gekostet hat.** Viele Endpunkte antworten mehrspaltig, und die erste Spalte ist fast immer `priceUsd`. Der Abzug speichert deshalb jetzt **alle** Spalten, nicht nur eine geratene. Ausserdem liefert BGeometrics das Angebot im Gewinn als Menge in Bitcoin, nicht in Prozent; `supply_in_profit_pct` wird daraus lokal gerechnet (Gewinn ÷ (Gewinn + Verlust) × 100).
+
+### Die drei Ergebnisse
+
+**1. Die freie Pipeline trägt.** Zwölf Kennzahlen im Abgleich, die meisten mit Korrelation 1,0000 und unter 1 % Abweichung. Einzelheiten in Abschnitt 10. Für ein Abo gibt es von dieser Seite kein Argument: Coin Metrics, Bitstamp und die eigene Rechnung liefern dieselben Zahlen.
+
+**2. Die fünf fehlenden Kennzahlen verschlechtern das System.** Drei vollständige Nachläufe über 843 Wochen:
+
+| Variante | Endvermögen | BTC | Cash | Transaktionen | Kriterien |
+|---|---|---|---|---|---|
+| ohne Zusatzdaten (Stand heute) | 314'146 | 1,3277 | 207'481 | 15 | 4 von 7 |
+| nur STH-Einstand | 314'146 | 1,3277 | 207'481 | 15 | 4 von 7 |
+| mit allen fünf | 196'857 | 2,4503 | 0 | 12 | 3 von 7 |
+
+Ursache und Konsequenz stehen in Abschnitt 4a. Kurz: Weg E2 wird strenger, der Verkaufszyklus 2025 fällt weg. Zusätzlich verschlechtert sich 2017 von 0,55 × auf 0,37 ×.
+
+**3. Der STH-Einstand ist nicht der wertvollste Posten.** Die Spalte „nur STH-Einstand" ist Zeichen für Zeichen identisch mit „ohne Zusatzdaten", kein einziger der zwölf Phasenwechsel verschiebt sich. Die frühere Einschätzung in diesem Abschnitt war falsch. Einschränkung: Die Simulation führt nur die sechs regulären Tranchen aus, die an ihm hängende Nachkauf-Chance kommt darin nicht vor.
+
+### Zur Rangliste der Kandidaten
+
+Der Bericht misst für 38 zusätzliche Reihen, wo sie an den bekannten Zyklustiefs und Zyklushochs innerhalb ihrer eigenen Vier-Jahres-Historie standen (Fenster ± 8 Wochen, nur Vergangenheit sichtbar). Fünfzehn kommen über 40 Punkte Trennschärfe, aber die Liste täuscht:
+
+- **Die Spitze misst dasselbe nochmal.** AVIV (+67,7), Realized Mayer (+67,1), Price Temperature (+66,2), NUPL (+63,3) und MVRV LTH (+61,0) setzen alle den Preis ins Verhältnis zum Einstand. Genau das tut die Familie „Bewertung" mit Gewicht 50 bereits.
+- **Die Composites sind aus unseren eigenen Indikatoren gebaut.** Cycle Extreme (+66,6) besteht laut Anbieter aus MVRV-Z, Puell, Reserve Risk, Power Law und Rainbow. Sie messen die Ampel, nicht etwas Neues. Ausserdem wären sie eine Blackbox mit dauerhafter Abhängigkeit.
+- **Artefakte erkennen.** Thermocap (100 zu 100), Ancient Supply (100 zu 96,9) und der LTH-Realized-Price (96,7 zu 99,4) sind stetig steigende Reihen, deren Perzentil immer oben klebt. Dass die Messung sie als nutzlos ausweist, spricht für die Messung.
+- **Wirklich neu sind zwei:** SOPR LTH (+58,8) und Illiquid Supply (−46,6). Beide sprechen über Halterverhalten, also über die Familie, die ohne Abo fehlt. Beide gibt es nur bei BGeometrics. Damit beisst sich die Katze in den Schwanz.
+
+Nichts davon rechtfertigt eine Änderung an `1.0`. Es sind Notizen für die Bewertung nach dem Zyklusende.
+
+### Sauberkeit
+
+Beide lokalen Scripts laufen nie im Runner. Rohdaten bleiben in `data/private/`. Veröffentlicht wird nur der Bericht, also Kennzahlen über die Daten. Was ausdrücklich **nicht** gemacht wurde: die abgezogene Historie in die öffentliche `data/manual.json` schreiben. Das wäre Weiterverbreitung der Rohdaten und ist auch mit dem Zusatzmodul „Commercial Publishing" nicht gedeckt. Verlockend wäre es gewesen, weil es die Perzentil-Untergrenze von 26 Wochen sofort erfüllt hätte.
 
 ## 12. Nächste Schritte
 
 Das System ist betriebsbereit. Nichts davon ist dringend.
 
-1. **Rückfrage an BGeometrics.** Ob der Advanced-Tarif die volle Historie enthält oder ob die Vier-Jahres-Grenze auch dort gilt. Davon hängt ab, ob der Monatsabzug überhaupt Sinn ergibt. Eine Anfrage zur Nutzung des freien Tarifs läuft bereits; die Historien-Frage lässt sich anhängen.
-2. **Reserve Risk monatlich nachtragen** (optional, eine Zahl, ein Knopf). Hebt die Abdeckung des Kauf-Motors von 80 auf 100 % und macht die Familie „Halter & Stimmung" wieder wertend.
-3. **Nach der Antwort: Monatsabzug und Vergleich** mit `scripts/local/`. Klärt für 18 Dollar dauerhaft, ob die fünf Kennzahlen das System besser machen. Siehe Abschnitt 11.
-4. **M7, Härtung.** Barrierefreiheit, Grenzfälle der Oberfläche, Ladezeit. Bewusst zurückgestellt: Kommen die fehlenden Kennzahlen dazu, ändern sich Abdeckung, Konvergenz und Schwellen, und dieselben Grenzfälle wären erneut zu prüfen.
+1. **Monatlich drei Zahlen eintragen.** Reserve Risk, Angebot im Gewinn, STH-Realized-Price. Die Erinnerung kommt am Monatsanfang von selbst als Issue. Hebt die Abdeckung des Kauf-Motors von 80 auf 100 %. RHODL und LTH-Positionsänderung bleiben leer, Begründung in Abschnitt 4a.
+2. **M7, Härtung.** Barrierefreiheit, Grenzfälle der Oberfläche, Ladezeit. Der Grund für die Zurückstellung ist entfallen: Die Datenlage ist geklärt, die Abdeckung ändert sich nicht mehr überraschend. M7 ist damit der einzige noch offene Meilenstein und kann beginnen.
+3. **Nach dem Zyklusende: Weg E2 neu denken.** Drei unabhängige Prüfungen zeigen auf dieselbe Stelle (Abschnitt 5). Die Kopplung `score_min × Abdeckung` ist entweder zu grob oder die Schwelle von 40 zu hoch. Erst dann entscheidet sich auch, ob RHODL und LTH-Positionsänderung dazukommen.
+4. **Zweiter Abzug vor Ablauf des Zugangs**, etwa am 10. Oktober 2026: `node scripts/local/fetch-bgeometrics.mjs --probe --out=data/private-2` und danach derselbe Aufruf ohne `--probe`. Sichert die Reihen bis zum letzten Tag. Danach läuft der Zugang aus und wird nicht erneuert.
 
-**Was ausdrücklich nicht getan werden sollte:** an `config/engine.json` drehen. Die Konfiguration `1.0` hat vier Backtest-Läufe und die Empfindlichkeitsprüfung hinter sich und bleibt bis zum Ende des laufenden Zyklus unverändert (SPEC 10.5). Einzige Ausnahme ist eine geänderte Datenlage, und die zieht ohnehin eine neue Bewertung nach sich.
+**Was ausdrücklich nicht getan werden sollte:** an `config/engine.json` drehen. Die Konfiguration `1.0` hat vier Backtest-Läufe, die Empfindlichkeitsprüfung und jetzt zusätzlich den BGeometrics-Nachlauf hinter sich. Sie bleibt bis zum Ende des laufenden Zyklus unverändert (SPEC 10.5). Das gilt ausdrücklich auch für die Versuchung, Weg E2 jetzt zu entkoppeln: Das Ergebnis von 2025 wäre damit auf genau einen Zyklus optimiert.

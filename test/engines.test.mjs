@@ -421,3 +421,33 @@ test("Reserve Risk mit falscher Skala wird abgewiesen", async () => {
   assert.ok(falsch.error.includes("Normierung"), `Hinweis fehlt: ${falsch.error}`);
   assert.equal(parseSubmission(j(0.0018), { today: "2026-09-12" }).ok, true);
 });
+
+test("Monatliche Erinnerung kommt am Monatsanfang und nur einmal", async () => {
+  const { monthlyManual } = await import("../scripts/lib/events.mjs");
+  const anfang = Date.parse("2026-10-02T06:15:00Z");
+
+  const e = monthlyManual([], { now: anfang, readings: {} });
+  assert.ok(e, "am 2. des Monats fällig");
+  assert.equal(e.id, "2026-10:MONTHLY_MANUAL");
+  assert.equal(monthlyManual([e], { now: anfang, readings: {} }), null, "nicht zweimal im selben Monat");
+
+  assert.equal(monthlyManual([], { now: Date.parse("2026-10-20T06:15:00Z"), readings: {} }), null,
+    "nur in den ersten Tagen");
+
+  // Schon in diesem Monat abgelesen: keine Erinnerung mehr.
+  const fertig = { reserve_risk: "2026-10-01", supply_in_profit: "2026-10-01", sth_realized_price: "2026-10-01" };
+  assert.equal(monthlyManual([], { now: anfang, readings: fertig }), null, "erledigt, also still");
+
+  // Nur eine erledigt: die übrigen werden genannt.
+  const teil = monthlyManual([], { now: anfang, readings: { reserve_risk: "2026-10-01" } });
+  assert.deepEqual(teil.offen, ["supply_in_profit", "sth_realized_price"]);
+  assert.ok(!teil.text.includes("Reserve Risk"), "erledigte Kennzahl wird nicht genannt");
+
+  // Lesung aus dem Vormonat zählt nicht als erledigt.
+  const alt = monthlyManual([], { now: anfang, readings: { reserve_risk: "2026-09-06" } });
+  assert.ok(alt.offen.includes("reserve_risk"), "alte Lesung erinnert erneut");
+
+  // RHODL und LTH sind bewusst nicht dabei (HANDOFF §4a).
+  assert.ok(!teil.offen.includes("rhodl"));
+  assert.ok(!teil.offen.includes("lth_net_position_change"));
+});
