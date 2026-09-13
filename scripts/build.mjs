@@ -183,29 +183,52 @@ async function main() {
   const ocIdx = row.onchain_as_of ? dates.indexOf(row.onchain_as_of) : -1;
   const at = (arr) => (ocIdx >= 0 ? arr[ocIdx] : null);
   const P = (label, value, unit) => ({ label, value: round(value, Math.abs(value ?? 0) >= 1000 ? 0 : 4), unit });
+  // Zahl für die kompakte Zeile: gross gerundet, klein mit sinnvollen Nachkommastellen
+  const short = (v) => {
+    if (v == null || !Number.isFinite(v)) return "–";
+    const a = Math.abs(v);
+    if (a >= 1e12) return (v / 1e12).toFixed(2) + " Bio.";
+    if (a >= 1e9) return (v / 1e9).toFixed(2) + " Mrd.";
+    if (a >= 1e6) return (v / 1e6).toFixed(2) + " Mio.";
+    if (a >= 1000) return Math.round(v).toLocaleString("de-CH").replace(/[\u2019\u202F\u00A0]/g, "'");
+    if (a >= 1) return Number.isInteger(v) ? String(v) : v.toFixed(2);
+    return v.toPrecision(3);
+  };
+  const C = (...parts) => parts.map((x) => (typeof x === "number" ? short(x) : x)).join(" ")
+    .replace(/\(\s+/g, "(").replace(/\s+\)/g, ")");
   const src = {
     mvrv_z: { formula: "(Marktkapitalisierung − Realized Cap) ÷ σ(Marktkapitalisierung)", parts: [
       P("Marktkapitalisierung", at(input.cm.mc), "USD"), P("Realized Cap", at(daily.rc), "USD"),
-      P("σ (ganze Historie)", at(daily.mcStd), "USD")] },
+      P("σ (ganze Historie)", at(daily.mcStd), "USD")],
+      compact: C("(", at(input.cm.mc), "−", at(daily.rc), ") ÷", at(daily.mcStd)) },
     p_rp: { formula: "Wochenschluss ÷ Realized Price", parts: [
-      P("Wochenschluss", row.close, "USD"), P("Realized Price", row.realized_price, "USD")] },
+      P("Wochenschluss", row.close, "USD"), P("Realized Price", row.realized_price, "USD")],
+      compact: C(row.close, "÷", row.realized_price) },
     p_200w: { formula: "Wochenschluss ÷ Schnitt der letzten 200 Wochenschlüsse", parts: [
-      P("Wochenschluss", row.close, "USD"), P("200-Wochen-Schnitt", row.sma200w, "USD")] },
+      P("Wochenschluss", row.close, "USD"), P("200-Wochen-Schnitt", row.sma200w, "USD")],
+      compact: C(row.close, "÷", row.sma200w) },
     mayer: { formula: "Wochenschluss ÷ Schnitt der letzten 200 Tagesschlüsse", parts: [
-      P("Wochenschluss", row.close, "USD"), P("200-Tage-Schnitt", row.sma200d, "USD")] },
+      P("Wochenschluss", row.close, "USD"), P("200-Tage-Schnitt", row.sma200d, "USD")],
+      compact: C(row.close, "÷", row.sma200d) },
     puell: { formula: "Tageserlös der Miner ÷ Schnitt der letzten 365 Tage", parts: [
-      P("Tageserlös", at(input.cm.iss), "USD"), P("365-Tage-Schnitt", at(daily.iss365), "USD")] },
+      P("Tageserlös", at(input.cm.iss), "USD"), P("365-Tage-Schnitt", at(daily.iss365), "USD")],
+      compact: C(at(input.cm.iss), "÷", at(daily.iss365)) },
     hash_ribbons: { formula: "30-Tage-Schnitt der Hashrate gegen 60-Tage-Schnitt", parts: [
-      P("30-Tage-Schnitt", at(daily.ribbons.h30), "TH/s"), P("60-Tage-Schnitt", at(daily.ribbons.h60), "TH/s")] },
+      P("30-Tage-Schnitt", at(daily.ribbons.h30), "TH/s"), P("60-Tage-Schnitt", at(daily.ribbons.h60), "TH/s")],
+      compact: C("30 T", at(daily.ribbons.h30), "gegen 60 T", at(daily.ribbons.h60)) },
     drawdown: { formula: "Wochenschluss ÷ höchster Tagesschluss aller Zeiten − 1", parts: [
-      P("Wochenschluss", row.close, "USD"), P("höchster Tagesschluss", row.ath, "USD")] },
+      P("Wochenschluss", row.close, "USD"), P("höchster Tagesschluss", row.ath, "USD")],
+      compact: C(row.close, "÷", row.ath, "− 1") },
     months_since_ath: { formula: "Tage seit dem Allzeithoch ÷ 30,44", parts: [
-      P("Allzeithoch am", row.ath_date ? null : null, row.ath_date || "–"),
-      P("Tage seither", row.ath_date ? daysBetween(row.ath_date, weekId) : null, "Tage")] },
+      { label: "Allzeithoch am", value: null, unit: row.ath_date || "–" },
+      P("Tage seither", row.ath_date ? daysBetween(row.ath_date, weekId) : null, "Tage")],
+      compact: row.ath_date ? C(daysBetween(row.ath_date, weekId), "Tage ÷ 30,44") : "–" },
     bmsb_ext: { formula: "Wochenschluss ÷ Oberkante des Trendbands", parts: [
-      P("Wochenschluss", row.close, "USD"), P("Oberkante (max aus SMA 20 W und EMA 21 W)", row.bmsb_hi, "USD")] },
+      P("Wochenschluss", row.close, "USD"), P("Oberkante (max aus SMA 20 W und EMA 21 W)", row.bmsb_hi, "USD")],
+      compact: C(row.close, "÷", row.bmsb_hi) },
     pi_cycle: { formula: "111-Tage-Schnitt ÷ (2 × 350-Tage-Schnitt)", parts: [
-      P("111-Tage-Schnitt", at(daily.sma111d), "USD"), P("350-Tage-Schnitt", at(daily.sma350d), "USD")] },
+      P("111-Tage-Schnitt", at(daily.sma111d), "USD"), P("350-Tage-Schnitt", at(daily.sma350d), "USD")],
+      compact: C(at(daily.sma111d), "÷ (2 ×", at(daily.sma350d), ")") },
     fng_4w: { formula: "Schnitt des Fear-&-Greed-Index über 28 Tage", parts: [
       P("Tageswert", input.fng[lastFngIdx], "0–100")] },
     funding_30d: { formula: "Schnitt der Finanzierungsrate über 30 Tage", parts: [] },

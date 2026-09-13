@@ -59,6 +59,10 @@ Benötigt Node 22 oder neuer. Keine Abhängigkeiten.
 
 `index.html?fixture=kauf-tranche`, `?fixture=verkauf` und `?fixture=datenluecke` laden eine Datei aus `data/fixtures/` statt des echten Wochenstands. So lässt sich jede Ansicht prüfen, ohne auf den Markt zu warten.
 
+## Nur lokal
+
+`scripts/local/` enthält Werkzeuge, die bewusst nicht im Runner laufen: ein einmaliger Datenabzug von BGeometrics und ein Vergleich, der prüft, ob die zusätzlichen Kennzahlen das System verbessern. Die Rohdaten landen in `data/private/` und sind von `.gitignore` ausgeschlossen; veröffentlicht wird nur der Bericht.
+
 ## Manuelle Werte
 
 Fünf On-Chain-Kennzahlen haben derzeit keine freie Quelle. Sie sind auf [charts.checkonchain.com](https://charts.checkonchain.com/) ablesbar und werden in [`data/manual.json`](data/manual.json) eingetragen:

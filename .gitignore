@@ -1,3 +1,7 @@
 node_modules/
 .DS_Store
 *.log
+
+# Lokal bezogene Rohdaten aus einem zeitlich begrenzten Zugang.
+# Gehören nie ins öffentliche Repo. Veröffentlicht wird nur der Bericht.
+data/private/

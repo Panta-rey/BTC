@@ -47,6 +47,10 @@ scripts/fetch.mjs      Quellen  → data/raw/          (Netzwerk, fehlertolerant
 scripts/build.mjs      data/raw → data/*.json        (Wochenauswertung + Wiedergabe)
 scripts/backtest.mjs   weekly   → reports/backtest.md
 scripts/notify.mjs     Benachrichtigungen (Issues, optional ntfy)
+scripts/lib/sim.mjs        Simulation und Bewertung, von Backtest und Vergleich genutzt
+scripts/local/             läuft NUR lokal, nie im Runner
+  fetch-bgeometrics.mjs  einmaliger Datenabzug → data/private/ (gitignored)
+  compare.mjs            Vergleich → reports/bgeometrics-vergleich.md
 scripts/apply-manual.mjs   manuelle Werte aus einem Issue übernehmen
 scripts/check-sources.mjs  Quellen-Check (M0)
 engine/                reine Logik, kein Netzwerk, deterministisch
@@ -270,7 +274,32 @@ Die Seite zeigt die Herkunft jetzt selbst: Jede Kachel trägt eine Rechenzeile m
 
 ---
 
-## 10. Nächste Schritte
+## 10. Offene Frage: lohnt sich BGeometrics?
+
+Das Add-on „Commercial Publishing" kostet 20 Dollar im Monat, der Tarif Advanced 18. Für ein privates Projekt ist das viel, und ein dauerhaftes Abo wurde deshalb verworfen. Offen bleibt aber, ob die fünf Kennzahlen das System überhaupt besser machen. Diese Frage lässt sich mit **einem Monat Advanced, rein zur Auswertung**, ein für alle Mal klären.
+
+**Welcher Tarif.** Advanced für 18 Dollar genügt weit: Ein Vollabzug braucht 20 bis 40 Anfragen, Advanced erlaubt 200 pro Stunde und 300 pro Tag, dazu zwei IPs. Premium und Premium+ bringen nur mehr Durchsatz und die Block-API, die wir nicht brauchen.
+
+**Vorher klären.** Bei der Gratis-Stufe steht „Historical data limited to the last 4 years". Bei den bezahlten Stufen taucht die Historie in der Vergleichsansicht gar nicht auf, dort stehen nur Durchsatz, Alerts und IPs. Ob Advanced die volle Historie enthält, entscheidet über den ganzen Zweck. Eine kurze Rückfrage an info@bgeometrics.com genügt.
+
+**Was die Werkzeuge tun.**
+
+`scripts/local/fetch-bgeometrics.mjs` zieht zehn Reihen: die fünf fehlenden Kennzahlen, vier zur Gegenprobe unserer eigenen Ableitungen (Realized Price, MVRV-Z, Puell, Hash Ribbons) und Funding mit längerer Historie. Es pausiert 20 Sekunden zwischen den Abrufen und schreibt nach `data/private/`, das von `.gitignore` ausgeschlossen ist.
+
+`scripts/local/compare.mjs` beantwortet daraus zwei Fragen und schreibt `reports/bgeometrics-vergleich.md`:
+
+1. **Wie gut rechnen wir selbst?** Korrelation und relative Abweichung unserer aus Coin Metrics abgeleiteten Reihen gegen die veröffentlichten. Beim Puell wissen wir, dass wir nur die Neuemission ohne Gebühren bewerten; Hash Ribbons ist ganz selbstgebaut. **Dieser Nutzen bleibt auch nach der Kündigung**, weil er die freie Pipeline bestätigt, statt sie zu ersetzen.
+2. **Verändern die Zusatzdaten das Ergebnis?** Drei Durchläufe im Vergleich: ohne Zusatzdaten, nur mit dem STH-Einstand, und mit allen fünf. Dazu die Phasenwechsel nebeneinander.
+
+**Der STH-Einstand ist dabei der wertvollste Posten**, wertvoller als die fünf fehlenden Kennzahlen. Der Trendfilter soll laut Spezifikation Trendband **und** STH-Einstand prüfen. Historisch war der zweite Teil nie verfügbar, deshalb hat jeder bisherige Backtest nur mit dem Band gerechnet. Die Übergänge „Tief bestätigt" und „Trendbruch" sind in ihrer eigentlich gedachten Form also nie geprüft worden.
+
+**Erwartung.** Meine Vermutung ist, dass die fünf Kennzahlen das System nicht verbessern, sondern das Signal von 2025 kosten: Mit voller Abdeckung steigt die gekoppelte Schwelle von Weg E2 von 32 auf 40, und 2025 hatte einen Score von 36. Falls das eintritt, ist die Frage für 18 Dollar dauerhaft erledigt.
+
+**Sauberkeit.** Beide Scripts laufen nur lokal, nie im Runner. Rohdaten bleiben in `data/private/`. Veröffentlicht wird nur der Bericht, also Kennzahlen über die Daten, nicht die Daten. Das ist während eines laufenden Zugangs gedeckt und bleibt es auch danach.
+
+---
+
+## 11. Nächste Schritte
 
 1. **Benachrichtigungen prüfen.** Unter Actions → Wochenlauf → „Run workflow" das Häkchen bei „Zusätzlich eine Testmeldung verschicken" setzen. Es entsteht ein Issue mit dem Label `signal`, das als E-Mail und über die GitHub-App als Push ankommt. Optional ein Secret `NTFY_TOPIC` mit einem zufälligen Namen für Push ohne GitHub-App.
 2. **M7, Härtung.** Barrierefreiheit prüfen, Grenzfälle der Oberfläche, Ladezeit. Sinnvoll erst, wenn die Datenlage geklärt ist: Kommen die fehlenden Kennzahlen dazu, ändern sich Abdeckung, Konvergenz und Schwellen, und dieselben Grenzfälle wären erneut zu prüfen.

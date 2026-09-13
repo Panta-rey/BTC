@@ -706,13 +706,9 @@ function tile(id,side){
   const mini = el("div","mini",`<i style="width:${clamp(score??0)}%;background:${col}"></i>`);
   mini.appendChild(el("u")).style.left="70%";
   b.appendChild(mini);
-  // Kompakte Herkunftszeile: die eingesetzten Zahlen, damit der Wert nachrechenbar ist.
-  const calc = ind.source_calc;
-  if(calc?.parts?.length){
-    const nums = calc.parts.filter(x=>x.value!=null).map(x=>nf(x.value, Math.abs(x.value)>=1000?0:4));
-    if(nums.length>=2) b.appendChild(el("div","tcalc",esc(nums.join(id==="drawdown"?" ÷ ":" ÷ "))));
-    else if(nums.length===1) b.appendChild(el("div","tcalc",esc(nums[0])));
-  }
+  // Kompakte Herkunftszeile. Sie kommt fertig aus der Pipeline, damit hier nicht
+  // geraten werden muss, welcher Rechenschritt zwischen den Zahlen steht.
+  if(ind.source_calc?.compact) b.appendChild(el("div","tcalc",esc(ind.source_calc.compact)));
   const foot = el("div","tfoot");
   foot.appendChild(el("span",null,score==null?"zählt nicht":`Score ${score}`));
   if(ind.stale) foot.appendChild(el("span","tag old",`alt · ${esc(dateDE(ind.as_of))}`));
