@@ -30,14 +30,8 @@ body{padding:0 16px calc(40px + env(safe-area-inset-bottom))}
 @media(min-width:960px){
   .wrap{max-width:1160px}
   #app{display:grid;grid-template-columns:400px minmax(0,1fr);gap:20px;
-       grid-template-areas:"l r" "w w";align-items:stretch}
+       grid-template-areas:"l r" "w w";align-items:start}
   #colL{grid-area:l} #colR{grid-area:r} #colW{grid-area:w}
-  /* Die rechte Spalte hat weniger Karten als die linke, und wie viele es sind,
-     hängt vom Inhalt ab: Die Checkliste wächst mit der Zahl der Bedingungen.
-     Statt Karten hin und her zu schieben, füllt die untere Karte die Resthöhe.
-     Beide Blöcke enden damit immer bündig (SPEC 8.2: etwa gleich hoch). */
-  #colR{display:flex;flex-direction:column}
-  #colR > .card:last-child{flex:1 1 auto;margin-bottom:0}
 }
 .num{font-family:var(--num);font-variant-numeric:tabular-nums}
 h1,h2,h3{margin:0;font-family:var(--num);font-weight:600}
@@ -64,6 +58,15 @@ header{display:flex;align-items:center;gap:10px;padding:18px 0 14px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);
   padding:16px;margin-bottom:var(--gap)}
 .card h2{font-size:13px;color:var(--mut);font-weight:500;letter-spacing:.04em;margin-bottom:12px}
+/* Kopfzeile mit Erklär-Knopf. Der Knopf ist ein echter <button> mit 44 px Tippfläche;
+   sichtbar ist nur das Fragezeichen, die Fläche darum ist durchsichtig. */
+.h2row{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.h2row h2{margin-bottom:0;flex:1}
+.qbtn{width:44px;height:44px;margin:-11px -12px -11px 0;background:none;border:0;color:var(--mut);
+  display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+.qbtn span{width:20px;height:20px;border:1px solid var(--edge);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;font-size:12px;line-height:1}
+.qbtn:hover span{color:var(--ink);border-color:var(--info)}
 
 /* ---------- Ampel ---------- */
 .hero{display:flex;gap:18px;align-items:flex-start}
@@ -538,7 +541,7 @@ function passed(id){
 
 // ---------------------------------------------------------- Motoren
 function engines(){
-  const c = el("div","card"); c.appendChild(el("h2",null,"Motoren"));
+  const c = el("div","card"); c.appendChild(cardHead("Motoren", motorSheet, "Motoren: Erklärung öffnen"));
   c.appendChild(engRow("buy",D.engines.buy,D.engines.active==="buy"));
   c.appendChild(engRow("sell",D.engines.sell,D.engines.active==="sell"));
   return c;
@@ -577,7 +580,7 @@ const zoneText = (z)=>({ruhig:"ruhig",annaeherung:"Annäherung",aktiv:"aktiv",st
 function checklist(){
   const c = el("div","card");
   const nt = D.next_transition||{};
-  c.appendChild(el("h2",null,`Bis Phase ${nt.to} · ${esc(PHASES[nt.to]?.n||"")}`));
+  c.appendChild(cardHead(`Bis Phase ${nt.to} · ${PHASES[nt.to]?.n||""}`, checklistSheet, "Checkliste: Erklärung öffnen"));
   const ul = el("ul","chk");
   for(const cond of nt.conditions||[]){
     const li = el("li");
@@ -768,6 +771,77 @@ function tile(id,side){
 }
 
 // ---------------------------------------------------------- Erklär-Sheet
+
+// Kopfzeile einer Karte mit Erklär-Knopf. Nicht jede Karte braucht einen; er kommt
+// dorthin, wo die Anzeige ohne Vorwissen nicht selbsterklärend ist.
+function cardHead(titel, sheetFn, label){
+  const row = el("div","h2row");
+  row.appendChild(el("h2",null,titel));
+  const b = el("button","qbtn","<span>?</span>");
+  b.setAttribute("aria-label", label || `${titel}: Erklärung öffnen`);
+  b.onclick = sheetFn;
+  row.appendChild(b);
+  return row;
+}
+
+// Sheet für erklärenden Text statt für einen Indikator. Gleiche Hülle, damit
+// Fokusfalle, Escape und Schliessen-Knopf identisch funktionieren.
+function infoSheet(titel, unter, abschnitte){
+  const inner = $("#sheetIn");
+  inner.innerHTML = `<div class="grabber"></div>
+    <h3 id="sheetTitle">${esc(titel)}</h3>
+    <div class="sub">${esc(unter)}</div>`;
+  for(const [h,p] of abschnitte)
+    inner.appendChild(el("section",null,`<h4>${esc(h)}</h4><p>${p}</p>`));
+  const close = el("button","btn ghost","Schliessen"); close.onclick=closeSheet;
+  inner.appendChild(close);
+  $("#sheet").classList.add("open"); openSheet(close);
+}
+
+function motorSheet(){
+  const b = D.engines.buy, v = D.engines.sell, aktiv = D.engines.active;
+  const cf = b.confluence||{};
+  infoSheet("Die beiden Motoren", "Wie aus siebzehn Einzelwerten zwei Zahlen werden", [
+    ["Warum zwei getrennte Motoren",
+     "Zyklustiefs erkennt man an der Bewertung, Zyklushochs eher an Zeit und Trendbruch. Der Grund: Die Bewertungsspitzen sinken von Zyklus zu Zyklus, 2017 lag der MVRV-Z-Score am Hoch bei etwa 9, 2025 nur noch bei 3. Ein gemeinsamer Score würde beides verwässern. Deshalb rechnet die Ampel einen <b>Kauf-Motor</b> und einen <b>Verkaufs-Motor</b>, jeder von 0 bis 100."],
+    ["Wie der Wert entsteht",
+     "Jeder Indikator wird auf 0 bis 100 normiert, dann zu Familien gemittelt, dann werden die Familien nach Gewicht zusammengezogen. Beim Kauf-Motor wiegt die Bewertung 50 von 100, beim Verkaufs-Motor Zeit und Trend 40. Fehlt eine Familie, wird sie <b>herausgerechnet</b> und nicht als Null gezählt."],
+    ["Was die Zonen bedeuten",
+     "0 bis 39 ruhig, nichts in Sicht. 40 bis 59 Annäherung, bereit machen. 60 bis 79 aktiv, die Zone ist erreicht, sofern auch Tor und Konvergenz stimmen. 80 bis 100 ein ausgeprägtes Extrem. " +
+     `Derzeit steht der Kauf-Motor bei <b class="num">${b.score}</b>, der Verkaufs-Motor bei <b class="num">${v.score}</b>.`],
+    ["Abdeckung",
+     `Der Anteil der Familien, für die Daten vorliegen. Aktuell <b class="num">${Math.round((aktiv==="buy"?b:v).coverage*100)} %</b>. ` +
+     "Unter 60 % gilt die Woche als Datenlücke und wird gar nicht ausgewertet. Fehlt dauerhaft eine Quelle, sinkt auch die geforderte Zahl der Familien mit, damit ein Signal nicht daran scheitert, dass eine Kennzahl nicht lizenziert ist."],
+    ["Konvergenz: warum der Durchschnitt allein nichts auslöst",
+     `Die Zeile „${cf.in_zone||0} von ${cf.of||0} in Zone · ${cf.families||0} Familien" ist eine eigene Bedingung. Ein hoher Durchschnitt könnte von einer einzigen Familie stammen, etwa wenn nur der Preis gefallen ist. Gefordert sind deshalb mehrere Indikatoren <b>aus verschiedenen Familien</b> gleichzeitig. Ein Indikator gilt ab Score 70 als in Zone.`],
+    ["Die Tore",
+     "Zusätzlich muss ein Tor offen sein. Tor A ist die klassische Kapitulation: MVRV-Z unter 0 oder Preis unter dem Realized Price. Tor B ist das flache Tief und verlangt vier Dinge gleichzeitig: mindestens 6 Monate seit dem Hoch, mindestens 40 % unter dem Hoch, höchstens 1,05 mal der 200-Wochen-Schnitt, und entweder über 45 % des Angebots im Verlust oder ein sehr tiefes MVRV-Perzentil. Tor B gibt es, weil auch die Tiefs flacher werden und Tor A 2026 nie ausgelöst hätte."],
+    ["Der graue Motor darunter",
+     `Der jeweils andere Motor läuft im Hintergrund mit. Er löst nichts aus, dient aber als Warnung: Steht er trotz gegenläufiger Phase hoch, erscheint ein Hinweis. Aktiv ist gerade der <b>${aktiv==="buy"?"Kauf":"Verkaufs"}-Motor</b>, weil die Phase das bestimmt.`],
+    ["Grenzen",
+     "Die Gewichte und Schwellen stammen aus vier Zyklen. Das ist wenig. Sie wurden vorab festgelegt und nach dem Backtest eingefroren, nicht nachträglich passend gesucht."],
+  ]);
+}
+
+function checklistSheet(){
+  const nt = D.next_transition||{};
+  const ziel = PHASES[nt.to]?.n || "";
+  infoSheet(`Bis Phase ${nt.to} · ${ziel}`, "Was genau noch fehlt, und warum es zweimal gelten muss", [
+    ["Was die Liste zeigt",
+     `Die Phasen laufen nur vorwärts: ④ Abwärtstrend → ① Akkumulation → ② Aufwärtstrend → ③ Verteilung → ④. Es gibt keinen Rückweg. Die Liste zeigt jede Teilbedingung für den <b>nächstmöglichen</b> Übergang, hier nach Phase ${nt.to} ${esc(ziel)}, mit dem aktuellen Wert und dem Zielwert. Ein ✓ heisst erfüllt, ein ✗ noch nicht.`],
+    ["Warum zwei bestätigte Wochen",
+     `Die Zeile „Bestätigte Wochen ${nt.counter??0} von ${nt.needed??2}" ist die wichtigste Regel des Systems. Jede Bedingung wird ausschliesslich am <b>Wochenschluss</b> geprüft, Sonntag 24:00 UTC, und sie muss <b>zweimal hintereinander</b> gelten. Eine einzelne Woche reicht nie.`],
+    ["Was den Zähler zurücksetzt",
+     "Verfehlt eine Woche die Bedingung, fällt der Zähler sofort auf 0 und beginnt von vorn. Ohne diese Regel würde die Ampel bei jedem Zucken des Marktes umspringen. Sie kostet im Gegenzug bis zu eine Woche Verzögerung, und das ist bei einem Zeithorizont von Jahren zu verschmerzen."],
+    ["Bei unvollständigen Daten",
+     "Fällt eine Datenquelle aus und sinkt die Abdeckung unter 60 %, wird die Woche nicht ausgewertet. Der Zähler wird dann weder erhöht noch zurückgesetzt, er <b>bleibt einfach stehen</b>. Es wird nie mit geratenen Werten weitergerechnet."],
+    ["Alle Bedingungen müssen gelten",
+     "Die Punkte sind mit UND verknüpft, nicht mit ODER. Ein einzelnes ✗ genügt, damit der Übergang nicht stattfindet. Die Ausnahme ist die Zeile zu den Toren: Dort reicht Tor A <b>oder</b> Tor B."],
+    ["Warum das sichtbar ist",
+     "Damit die Maschine durchschaubar bleibt. Man sieht nicht nur \u201Egelb\u201C, sondern woran es genau liegt und wie weit es noch ist."],
+  ]);
+}
+
 function sheet(id,side){
   const meta = I[id]||{n:id}, s=D.scores?.[id]||{}, ind=D.indicators?.[id]||{};
   const score = side==="buy"?s.score_buy:s.score_sell;
