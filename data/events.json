@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "generated_at": "2026-09-12T21:29:39.864Z",
+  "generated_at": "2026-09-13T10:12:44.174Z",
   "config_version": "1.0",
   "events": [
     {
@@ -463,13 +463,6 @@
         "S3"
       ],
       "notified_at": "backfill"
-    },
-    {
-      "id": "2026-09-12T21:29:TEST",
-      "week_id": "2026-09-06",
-      "type": "ALERT",
-      "text": "Testmeldung. Wenn du das liest, funktionieren Benachrichtigungen.",
-      "notified_at": "2026-09-12T21:29:39.864Z"
     }
   ]
 }
