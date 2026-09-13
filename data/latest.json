@@ -3,7 +3,7 @@
   "stage": "M2",
   "config_version": "1.0",
   "mode": "weekly",
-  "generated_at": "2026-09-13T10:12:43.873Z",
+  "generated_at": "2026-09-13T10:29:22.092Z",
   "week_id": "2026-09-06",
   "price": {
     "close": 80338.98,
@@ -37,9 +37,9 @@
     "days_since_last_halving": 869,
     "next_halving": {
       "height": 1050000,
-      "blocks_left": 83197,
-      "estimate": "2028-03-19",
-      "tip_height": 966803,
+      "blocks_left": 83194,
+      "estimate": "2028-03-18",
+      "tip_height": 966806,
       "as_of": "2026-09-13"
     }
   },
@@ -483,7 +483,7 @@
             "unit": "USD"
           }
         ],
-        "compact": "(1.61 Bio. − 1.07 Bio.) ÷ 611.70 Mrd."
+        "compact": "(1.61 Bio. − 1.07 Bio.) / 611.70 Mrd."
       }
     },
     "realized_price": {
@@ -519,7 +519,7 @@
             "unit": "USD"
           }
         ],
-        "compact": "80'339 ÷ 53'175"
+        "compact": "80'339 / 53'175"
       }
     },
     "p_200w": {
@@ -546,7 +546,7 @@
             "unit": "USD"
           }
         ],
-        "compact": "80'339 ÷ 64'869"
+        "compact": "80'339 / 64'869"
       }
     },
     "mayer": {
@@ -573,7 +573,7 @@
             "unit": "USD"
           }
         ],
-        "compact": "80'339 ÷ 69'756"
+        "compact": "80'339 / 69'756"
       }
     },
     "puell": {
@@ -599,7 +599,7 @@
             "unit": "USD"
           }
         ],
-        "compact": "41.41 Mio. ÷ 36.80 Mio."
+        "compact": "41.41 Mio. / 36.80 Mio."
       }
     },
     "hash_ribbons": {
@@ -652,7 +652,7 @@
             "unit": "USD"
           }
         ],
-        "compact": "80'339 ÷ 124'728 − 1"
+        "compact": "80'339 / 124'728 − 1"
       }
     },
     "months_since_ath": {
@@ -678,7 +678,7 @@
             "unit": "Tage"
           }
         ],
-        "compact": "335 Tage ÷ 30,44"
+        "compact": "335 Tage / 30,44"
       }
     },
     "days_since_halving": {
@@ -718,7 +718,7 @@
             "unit": "USD"
           }
         ],
-        "compact": "80'339 ÷ 71'217"
+        "compact": "80'339 / 71'217"
       }
     },
     "pi_cycle": {
@@ -744,7 +744,7 @@
             "unit": "USD"
           }
         ],
-        "compact": "67'408 ÷ (2 × 80'579)"
+        "compact": "67'408 / (2 × 80'579)"
       }
     },
     "fng_fear_weeks": {
@@ -906,49 +906,49 @@
       "ok": true,
       "last": "2026-09-12",
       "error": null,
-      "at": "2026-09-13T10:12:41.144Z"
+      "at": "2026-09-13T10:29:19.773Z"
     },
     "price_coinbase": {
       "ok": true,
       "last": "2026-09-12",
       "error": null,
-      "at": "2026-09-13T10:12:41.185Z"
+      "at": "2026-09-13T10:29:19.840Z"
     },
     "coinmetrics": {
       "ok": true,
       "last": "2026-09-12",
       "error": null,
-      "at": "2026-09-13T10:12:41.352Z"
+      "at": "2026-09-13T10:29:20.117Z"
     },
     "fng": {
       "ok": true,
       "last": "2026-09-12",
       "error": null,
-      "at": "2026-09-13T10:12:41.722Z"
+      "at": "2026-09-13T10:29:20.392Z"
     },
     "wiki_en": {
       "ok": true,
       "last": "2026-09-12",
       "error": null,
-      "at": "2026-09-13T10:12:42.164Z"
+      "at": "2026-09-13T10:29:20.630Z"
     },
     "wiki_de": {
       "ok": true,
       "last": "2026-09-12",
       "error": null,
-      "at": "2026-09-13T10:12:42.652Z"
+      "at": "2026-09-13T10:29:20.880Z"
     },
     "funding_deribit": {
       "ok": true,
       "last": "2026-09-12",
       "error": null,
-      "at": "2026-09-13T10:12:43.174Z"
+      "at": "2026-09-13T10:29:21.408Z"
     },
     "network": {
       "ok": true,
       "last": "2026-09-13",
       "error": null,
-      "at": "2026-09-13T10:12:43.816Z"
+      "at": "2026-09-13T10:29:22.036Z"
     }
   },
   "attribution": [
