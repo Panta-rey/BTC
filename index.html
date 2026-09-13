@@ -622,12 +622,21 @@ function position(){
   c.appendChild(mk("Cash in USD","cash","10000"));
   c.appendChild(mk("Kernposition in Prozent","core_pct","40"));
 
+  // Vier Zustände: erledigt, übersprungen, diese Woche fällig, in einer früheren
+  // Woche ausgelöst. Ein gesetztes Datum allein heisst nicht "fällig": die Liste
+  // trägt die Tranchen des laufenden Zyklus bis zum nächsten Phasenwechsel mit.
   const row = el("div","trancheRow");
   for(const t of ["B1","B2","B3","S1","S2","S3"]){
-    const due = D.tranches?.[t];
+    const ausgeloest = D.tranches?.[t] || null;
     const st = DONE[key(t)];
-    const cls = st?.state==="done"?"tr done":st?.state==="skip"?"tr skip":due?"tr due":"tr";
-    row.appendChild(el("span",cls,`${TR[t]}${due?"":" · offen"}`));
+    let cls = "tr", text = `${TR[t]} · offen`;
+    if(st?.state==="done"){ cls="tr done"; text=`${TR[t]} ✓`; }
+    else if(st?.state==="skip"){ cls="tr skip"; text=TR[t]; }
+    else if(ausgeloest===D.week_id){ cls="tr due"; text=`${TR[t]} · fällig`; }
+    else if(ausgeloest){ text=`${TR[t]} · ${dateDE(ausgeloest).replace(/ \d{4}$/, "")}`; }
+    const chip = el("span",cls,esc(text));
+    if(ausgeloest) chip.title = `Ausgelöst am ${dateDE(ausgeloest)}`;
+    row.appendChild(chip);
   }
   c.appendChild(row);
   if(POS.btc==null && POS.cash==null)
