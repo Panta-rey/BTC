@@ -30,8 +30,14 @@ body{padding:0 16px calc(40px + env(safe-area-inset-bottom))}
 @media(min-width:960px){
   .wrap{max-width:1160px}
   #app{display:grid;grid-template-columns:400px minmax(0,1fr);gap:20px;
-       grid-template-areas:"l r" "w w";align-items:start}
+       grid-template-areas:"l r" "w w";align-items:stretch}
   #colL{grid-area:l} #colR{grid-area:r} #colW{grid-area:w}
+  /* Die rechte Spalte hat weniger Karten als die linke, und wie viele es sind,
+     hängt vom Inhalt ab: Die Checkliste wächst mit der Zahl der Bedingungen.
+     Statt Karten hin und her zu schieben, füllt die untere Karte die Resthöhe.
+     Beide Blöcke enden damit immer bündig (SPEC 8.2: etwa gleich hoch). */
+  #colR{display:flex;flex-direction:column}
+  #colR > .card:last-child{flex:1 1 auto;margin-bottom:0}
 }
 .num{font-family:var(--num);font-variant-numeric:tabular-nums}
 h1,h2,h3{margin:0;font-family:var(--num);font-weight:600}
