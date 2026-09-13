@@ -209,6 +209,8 @@ Position, erledigte Tranchen und Journal liegen ausschliesslich im Browser (`loc
 
 **Testzustände:** `?fixture=kauf-tranche`, `?fixture=verkauf`, `?fixture=datenluecke` laden eine Datei aus `data/fixtures/` statt `data/latest.json`.
 
+Der Verlauf liest zusätzlich `events.json` und zeichnet **alle** Transaktionen der Historie ein, nicht nur die des laufenden Zyklus.
+
 **Noch offen:** Antippen des Verlaufs für Details zu einer Woche, Systemsignale aus `events.json` im Journal, Prüfung der Barrierefreiheit (M7).
 
 ---

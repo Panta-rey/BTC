@@ -133,6 +133,8 @@ header{display:flex;align-items:center;gap:10px;padding:18px 0 14px}
 .mk.now{background:var(--ink);width:2px}
 .mk span{position:absolute;top:36px;left:50%;transform:translateX(-50%);font-size:10.5px;
   color:var(--mut);white-space:nowrap}
+.mk.edgeL span{left:0;transform:none}
+.mk.edgeR span{left:auto;right:0;transform:none}
 .mk.now span{color:var(--ink)}
 .kv{display:flex;justify-content:space-between;font-size:13px;padding:5px 0;border-bottom:1px solid var(--line)}
 .kv:last-child{border-bottom:0}
@@ -400,8 +402,11 @@ $("#btnReload").onclick = async ()=>{
   loadHistory();
 })();
 
+let EV = null;
 async function loadHistory(){
-  try{ const r = await fetch("data/phases.json",{cache:"no-store"}); if(r.ok){ PH = await r.json(); drawChart(); } }catch{}
+  try{ const r = await fetch("data/phases.json",{cache:"no-store"}); if(r.ok) PH = await r.json(); }catch{}
+  try{ const r = await fetch("data/events.json",{cache:"no-store"}); if(r.ok) EV = await r.json(); }catch{}
+  if(PH) drawChart();
 }
 
 // ============================================================ Aufbau
@@ -572,18 +577,22 @@ function clock(){
   const cc = D.cycle_clock||{};
   const c = el("div","card"); c.appendChild(el("h2",null,"Zyklus-Uhr"));
   const t0 = Date.parse(cc.ath_date+"T00:00:00Z");
-  const t1 = Date.parse((cc.next_halving?.estimate||"2028-04-14")+"T00:00:00Z") + 200*86400000;
+  // Die Achse muss bis hinter das Top-Fenster reichen (Halving + 640 Tage),
+  // sonst wird der wichtigste Teil abgeschnitten.
+  const tH = Date.parse((cc.next_halving?.estimate||"2028-04-14")+"T00:00:00Z");
+  const t1 = tH + 720*86400000;
   const x = (ms)=>clamp(((ms-t0)/(t1-t0))*100,0,100);
   const box = el("div","clock",'<div class="clockLine"></div>');
   const band=(a,b,cls)=>{const d=el("div","band "+cls);d.style.left=x(a)+"%";d.style.width=Math.max(1,x(b)-x(a))+"%";box.appendChild(d);};
   band(t0+9*30.44*86400000, t0+16*30.44*86400000, "low");
-  if(cc.next_halving){
-    const h=Date.parse(cc.next_halving.estimate+"T00:00:00Z");
-    band(h+450*86400000, h+640*86400000, "top");
-  }
-  const mark=(ms,label,now)=>{const m=el("div","mk"+(now?" now":""),`<span>${esc(label)}</span>`);m.style.left=x(ms)+"%";box.appendChild(m);};
-  mark(t0,"Hoch");
-  if(cc.next_halving) mark(Date.parse(cc.next_halving.estimate+"T00:00:00Z"),"Halving");
+  band(tH+450*86400000, tH+640*86400000, "top");
+  const mark=(ms,label,now)=>{
+    const pos=x(ms);
+    const m=el("div","mk"+(now?" now":"")+(pos<12?" edgeL":pos>88?" edgeR":""),`<span>${esc(label)}</span>`);
+    m.style.left=pos+"%"; box.appendChild(m);
+  };
+  mark(t0,"letztes Hoch");
+  mark(tH,"Halving");
   mark(Date.parse(D.week_id+"T00:00:00Z"),"heute",true);
   c.appendChild(box);
 
@@ -592,7 +601,10 @@ function clock(){
   kv("Seit dem Hoch",`${cc.days_since_ath} Tage · ${nf(cc.days_since_ath/30.44,1)} Monate`);
   kv("Letztes Halving",`${dateDE(cc.last_halving)} · ${cc.days_since_last_halving} Tage`);
   if(cc.next_halving) kv("Nächstes Halving",`geschätzt ${dateDE(cc.next_halving.estimate)} · ${nf(cc.next_halving.blocks_left)} Blöcke`);
-  c.appendChild(el("div","why","Die schraffierten Felder zeigen, wo die Tiefs und Hochs der vier bisherigen Zyklen lagen. Muster, keine Prognose."));
+  c.appendChild(el("div","legend",
+    '<span><i style="background:rgba(45,212,167,.5)"></i>Tief-Fenster</span>' +
+    '<span><i style="background:rgba(240,101,106,.5)"></i>Top-Fenster</span>'));
+  c.appendChild(el("div","why","Die farbigen Felder zeigen, wo die Tiefs und Hochs der vier bisherigen Zyklen lagen: 9 bis 16 Monate nach dem Hoch, und 450 bis 640 Tage nach dem Halving. Muster, keine Prognose."));
   return c;
 }
 
@@ -784,10 +796,20 @@ function drawChart(){
     }
   }
   const path = rows.map((r,i)=>`${i?"L":"M"}${xs(i).toFixed(1)},${ys(r[1]).toFixed(1)}`).join("");
-  const marks = (D.tranches?Object.entries(D.tranches).filter(([,w])=>w):[]).map(([t,w])=>{
+  // Alle Transaktionen der Historie aus events.json, nicht nur die des laufenden Zyklus.
+  const trades = new Map();
+  for(const e of (EV?.events||[])){
+    const ts = [e.tranche, ...(e.tranches||[])].filter(Boolean);
+    for(const t of ts) trades.set(e.week_id+":"+t, {w:e.week_id, up:t[0]==="B"});
+  }
+  if(!trades.size) for(const [t,w] of Object.entries(D.tranches||{})) if(w) trades.set(w+":"+t,{w,up:t[0]==="B"});
+  // Mehrere Tranchen in derselben Woche nur einmal zeichnen
+  const seen = new Set();
+  const marks = [...trades.values()].map(({w,up})=>{
+    const key=w+(up?"B":"S"); if(seen.has(key)) return ""; seen.add(key);
     const i=rows.findIndex(r=>r[0]===w); if(i<0) return "";
-    const up=t[0]==="B";
-    return `<path d="M${xs(i).toFixed(1)},${(ys(rows[i][1])+(up?7:-7)).toFixed(1)} l-4,${up?5:-5} l8,0 z" fill="${up?"var(--buy)":"var(--sell)"}"/>`;
+    const y=ys(rows[i][1]);
+    return `<path d="M${xs(i).toFixed(1)},${(y+(up?7:-7)).toFixed(1)} l-4,${up?5:-5} l8,0 z" fill="${up?"var(--buy)":"var(--sell)"}"/>`;
   }).join("");
   try{
   box.innerHTML = `<svg class="chart" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img"
@@ -797,7 +819,7 @@ function drawChart(){
       <span><i style="background:rgba(45,212,167,.5)"></i>Akkumulation</span>
       <span><i style="background:rgba(240,101,106,.5)"></i>Verteilung</span>
       <span><i style="background:rgba(34,45,60,.9)"></i>Abwärtstrend</span>
-      <span>▲ Kauf ▼ Verkauf</span>
+      <span>▲ Kauf ▼ Verkauf (${trades.size} Transaktionen)</span>
     </div>
     <div class="why">Logarithmisch, ${rows.length} Wochen ab ${esc(dateDE(rows[0][0]))}.</div>`;
   }catch(e){ box.innerHTML = '<div class="why">Der Verlauf konnte nicht gezeichnet werden.</div>'; console.error(e); }
