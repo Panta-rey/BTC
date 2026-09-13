@@ -164,7 +164,7 @@ header{display:flex;align-items:center;gap:10px;padding:18px 0 14px}
 .mini{height:6px;border-radius:3px;background:#0A111A;margin-top:9px;position:relative;overflow:hidden}
 .mini i{position:absolute;top:0;bottom:0;left:0;border-radius:3px;opacity:.75}
 .mini u{position:absolute;top:-2px;bottom:-2px;width:1px;background:#3A4A5E}
-.tcalc{margin-top:6px;font-size:11px;color:var(--mut);font-family:var(--num)}
+.tcalc{margin-top:6px;font-size:11.5px;color:var(--mut);font-family:var(--num);letter-spacing:.01em}
 .tfoot{margin-top:7px;font-size:11px;color:var(--mut);display:flex;gap:7px;flex-wrap:wrap}
 .calc{background:#0A111A;border:1px solid var(--line);border-radius:9px;padding:10px 11px;margin-top:6px}
 .calc .f{font-size:12.5px;color:var(--mut);margin-bottom:7px}
@@ -819,7 +819,7 @@ function drawChart(){
       <span><i style="background:rgba(45,212,167,.5)"></i>Akkumulation</span>
       <span><i style="background:rgba(240,101,106,.5)"></i>Verteilung</span>
       <span><i style="background:rgba(34,45,60,.9)"></i>Abwärtstrend</span>
-      <span>▲ Kauf ▼ Verkauf (${trades.size} Transaktionen)</span>
+      <span>▲ Kauf ▼ Verkauf · ${trades.size} Tranchen</span>
     </div>
     <div class="why">Logarithmisch, ${rows.length} Wochen ab ${esc(dateDE(rows[0][0]))}.</div>`;
   }catch(e){ box.innerHTML = '<div class="why">Der Verlauf konnte nicht gezeichnet werden.</div>'; console.error(e); }

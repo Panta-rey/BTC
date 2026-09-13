@@ -664,9 +664,9 @@ Einzige automatische Bewegung: Öffnet man die Seite zum ersten Mal nach einem P
 |---|---|
 | 1 | Name und Zustandspunkt: gefüllt in Motorfarbe = in Zone, halb gefüllt = nahe, leerer Kreis = neutral, gestrichelt = fehlt, Etikett „alt" bei überschrittenem Höchstalter |
 | 2 | Leitfrage, klein in `--mut` |
-| 3 | Rohwert gross mit Einheit, daneben Tendenzpfeil über 4 Wochen (↗ → ↘) |
+| 3 | Rohwert gross mit Einheit, daneben das Perzentil der letzten vier Jahre, falls vorhanden |
 | 4 | Skala 0–100 des Motorscores mit Markierung bei 70 |
-| 5 | Sparkline über 4 Jahre (Wochenwerte) mit der Linie, ab der der Indikator in Zone ist |
+| 5 | Rechenzeile mit den tatsächlich eingesetzten Zahlen, damit der Wert nachrechenbar ist. Sie wird in der Pipeline fertig gebaut (`source_calc.compact`), nicht im Browser zusammengesetzt. Als Divisionszeichen dient ein Schrägstrich: Ein Geteiltzeichen verliert bei 11 Pixel seine Punkte und sieht aus wie ein Plus. |
 | 6 | „BGeometrics, Stand 6. Sep." und „zuletzt in Zone: Nov. 2022" |
 
 Tippen öffnet das Erklär-Sheet.

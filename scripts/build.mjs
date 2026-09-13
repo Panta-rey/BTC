@@ -200,35 +200,35 @@ async function main() {
     mvrv_z: { formula: "(Marktkapitalisierung − Realized Cap) ÷ σ(Marktkapitalisierung)", parts: [
       P("Marktkapitalisierung", at(input.cm.mc), "USD"), P("Realized Cap", at(daily.rc), "USD"),
       P("σ (ganze Historie)", at(daily.mcStd), "USD")],
-      compact: C("(", at(input.cm.mc), "−", at(daily.rc), ") ÷", at(daily.mcStd)) },
+      compact: C("(", at(input.cm.mc), "−", at(daily.rc), ") /", at(daily.mcStd)) },
     p_rp: { formula: "Wochenschluss ÷ Realized Price", parts: [
       P("Wochenschluss", row.close, "USD"), P("Realized Price", row.realized_price, "USD")],
-      compact: C(row.close, "÷", row.realized_price) },
+      compact: C(row.close, "/", row.realized_price) },
     p_200w: { formula: "Wochenschluss ÷ Schnitt der letzten 200 Wochenschlüsse", parts: [
       P("Wochenschluss", row.close, "USD"), P("200-Wochen-Schnitt", row.sma200w, "USD")],
-      compact: C(row.close, "÷", row.sma200w) },
+      compact: C(row.close, "/", row.sma200w) },
     mayer: { formula: "Wochenschluss ÷ Schnitt der letzten 200 Tagesschlüsse", parts: [
       P("Wochenschluss", row.close, "USD"), P("200-Tage-Schnitt", row.sma200d, "USD")],
-      compact: C(row.close, "÷", row.sma200d) },
+      compact: C(row.close, "/", row.sma200d) },
     puell: { formula: "Tageserlös der Miner ÷ Schnitt der letzten 365 Tage", parts: [
       P("Tageserlös", at(input.cm.iss), "USD"), P("365-Tage-Schnitt", at(daily.iss365), "USD")],
-      compact: C(at(input.cm.iss), "÷", at(daily.iss365)) },
+      compact: C(at(input.cm.iss), "/", at(daily.iss365)) },
     hash_ribbons: { formula: "30-Tage-Schnitt der Hashrate gegen 60-Tage-Schnitt", parts: [
       P("30-Tage-Schnitt", at(daily.ribbons.h30), "TH/s"), P("60-Tage-Schnitt", at(daily.ribbons.h60), "TH/s")],
       compact: C("30 T", at(daily.ribbons.h30), "gegen 60 T", at(daily.ribbons.h60)) },
     drawdown: { formula: "Wochenschluss ÷ höchster Tagesschluss aller Zeiten − 1", parts: [
       P("Wochenschluss", row.close, "USD"), P("höchster Tagesschluss", row.ath, "USD")],
-      compact: C(row.close, "÷", row.ath, "− 1") },
+      compact: C(row.close, "/", row.ath, "− 1") },
     months_since_ath: { formula: "Tage seit dem Allzeithoch ÷ 30,44", parts: [
       { label: "Allzeithoch am", value: null, unit: row.ath_date || "–" },
       P("Tage seither", row.ath_date ? daysBetween(row.ath_date, weekId) : null, "Tage")],
-      compact: row.ath_date ? C(daysBetween(row.ath_date, weekId), "Tage ÷ 30,44") : "–" },
+      compact: row.ath_date ? C(daysBetween(row.ath_date, weekId), "Tage / 30,44") : "–" },
     bmsb_ext: { formula: "Wochenschluss ÷ Oberkante des Trendbands", parts: [
       P("Wochenschluss", row.close, "USD"), P("Oberkante (max aus SMA 20 W und EMA 21 W)", row.bmsb_hi, "USD")],
-      compact: C(row.close, "÷", row.bmsb_hi) },
+      compact: C(row.close, "/", row.bmsb_hi) },
     pi_cycle: { formula: "111-Tage-Schnitt ÷ (2 × 350-Tage-Schnitt)", parts: [
       P("111-Tage-Schnitt", at(daily.sma111d), "USD"), P("350-Tage-Schnitt", at(daily.sma350d), "USD")],
-      compact: C(at(daily.sma111d), "÷ (2 ×", at(daily.sma350d), ")") },
+      compact: C(at(daily.sma111d), "/ (2 ×", at(daily.sma350d), ")") },
     fng_4w: { formula: "Schnitt des Fear-&-Greed-Index über 28 Tage", parts: [
       P("Tageswert", input.fng[lastFngIdx], "0–100")] },
     funding_30d: { formula: "Schnitt der Finanzierungsrate über 30 Tage", parts: [] },
