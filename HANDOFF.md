@@ -2,7 +2,7 @@
 
 Zustandsbericht des Projekts. Wer hier einsteigt, liest zuerst dieses Dokument, dann `SPEC.md`.
 
-**Stand:** 12. September 2026 · Konfiguration `1.0` (eingefroren) · Node 22, keine Abhängigkeiten · 49 Tests grün
+**Stand:** 12. September 2026 · Konfiguration `1.0` (eingefroren) · Node 22, keine Abhängigkeiten · 52 Tests grün
 **Seite:** https://panta-rey.github.io/Panta-Rey-BTC-Ampel/ · **Repo:** https://github.com/Panta-rey/Panta-Rey-BTC-Ampel
 
 ---
@@ -113,12 +113,18 @@ Die Seite kann die Datei nicht selbst schreiben: Sie ist statisch und liegt im B
 |---|---|---|
 | STH-Realized-Price | `btconchain/pricing/pricing_costbasisoriginals/` | **sofort** |
 | Angebot im Gewinn | `btconchain/unrealised/pctsupplyinprofit_all/` | **sofort** |
-| Reserve Risk | `btconchain/lifespan/reserverisk/` | braucht Historie |
+| Reserve Risk | **`charts.bgeometrics.com/reserve_risk.html`** | **sofort** |
 | RHODL-Ratio | `btconchain/supply/rhodl/` | braucht Historie |
 | LTH-Positionsänderung 30 T | `btconchain/supply/lthnetposchange_0/` | braucht Historie |
 
 Alle Adressen wurden am 12. September 2026 einzeln aufgerufen und über den Seitentitel bestätigt. Sie beginnen mit `https://charts.checkonchain.com/` und enden auf `<name>_light.html`. Jede Zeile in den Einstellungen hat einen Knopf „↗ Chart öffnen" und einen Hinweis, welche Linie abzulesen ist. Der erzeugte JSON-Block enthält immer alle fünf Reihen samt bisheriger Lesungen, damit das Einfügen keine Historie löscht.
-Der Unterschied: Die ersten zwei nutzen absolute Ankerpunkte und wirken ab der ersten Lesung. Die letzten drei nutzen Perzentile über vier Jahre. Ein einzelner Wert wäre automatisch das 100. Perzentil und brächte den Indikator fälschlich in Zone. Deshalb gilt eine Untergrenze von 26 Wochen; darunter zählt der Indikator nicht, der Rohwert wird aber angezeigt. Wer monatlich einträgt, hat nach etwa einem halben Jahr genug Historie.
+Der Unterschied: Die ersten drei nutzen absolute Ankerpunkte und wirken ab der ersten Lesung. Die letzten zwei nutzen Perzentile über vier Jahre.
+
+**Reserve Risk wurde am 12.09.2026 von Perzentil auf hybride Bewertung umgestellt.** Die Kennzahl hat etablierte Bänder, die BGeometrics auf der eigenen Chartseite nennt: unter 0,002 Akkumulation, über 0,02 erhöhtes Risiko. Sie braucht deshalb keine Historie. Der Perzentilteil bleibt im Hybrid erhalten und greift automatisch, sobald genug Lesungen vorliegen oder BGeometrics angebunden wird.
+
+**Achtung Skala.** Absolute Ankerpunkte hängen am Anbieter. Bei der Recherche meldete ein Anbieter Reserve Risk mit 0,00000349, während BGeometrics im Bereich 0,001 bis 0,05 liegt, also um drei Grössenordnungen daneben. Die Ankerpunkte sind auf BGeometrics und Glassnode kalibriert, die Prüfung weist Werte ausserhalb von 0,0001 bis 0,5 mit einem Hinweis ab, und der Chart-Knopf verlinkt bewusst auf BGeometrics statt auf Checkonchain. So bleibt die Reihe auch bei einer späteren Zusage von BGeometrics aus einer Quelle.
+
+**Wirkung:** Schon eine einzige der drei sofort wirkenden Kennzahlen hebt die Abdeckung des Kauf-Motors von 80 auf 100 %. Nachgemessen mit Reserve Risk 0,0018: Score 84, Familie „Halter & Stimmung" verfügbar, Familien in Zone 2 → 3. Ein einzelner Wert wäre automatisch das 100. Perzentil und brächte den Indikator fälschlich in Zone. Deshalb gilt eine Untergrenze von 26 Wochen; darunter zählt der Indikator nicht, der Rohwert wird aber angezeigt. Wer monatlich einträgt, hat nach etwa einem halben Jahr genug Historie.
 
 **Wichtigster Gewinn:** Mit dem Angebot im Gewinn erreicht die Familie „Halter & Stimmung" zwei von drei Mitgliedern und wird wieder wertend. Die Abdeckung des Kauf-Motors steigt von 80 auf 100 %. Nachgemessen: Kauf-Score 33 → 34, Familien in Zone 2 → 3.
 
@@ -214,6 +220,7 @@ Alle sind in `SPEC.md` eingearbeitet. Hier die Begründungen:
 | Konvergenz | fest 3 Familien | `min(3, verfügbare Familien)`, mindestens 2 | Eine Kauf-Familie fehlt dauerhaft. Ein Signal darf nicht daran scheitern, dass eine Quelle nicht lizenziert ist. |
 | Konvergenz-Zählung | alle Familien mit einem Indikator in Zone | nur Familien, die in den Score eingehen | Sonst war die Bedingung leichter zu erfüllen als der Score selbst. Sichtbar an der unmöglichen Meldung „4 Familien (3 verfügbar)". |
 | Mindestabdeckung | 70 % | 60 % | Ohne Fear & Greed und Funding erreicht der Verkaufs-Motor nur 65 %. Mit 70 % war er bis 2018 blind. |
+| Reserve Risk | nur Perzentil | Hybrid: absolute Bänder plus Perzentil | Die Bänder sind etabliert und vom Anbieter dokumentiert. Damit wirkt eine einzelne Handeingabe sofort, statt 26 Wochen Historie zu brauchen. |
 | Schwelle von Weg E2 | fest 40 | 40 × Abdeckung | Mit einer dauerhaft fehlenden Familie sind 20 Gewichtspunkte unerreichbar. Deshalb wurde 2025 um vier Punkte verfehlt. Weg E1 bleibt ungekoppelt, damit der Pfad der Überhitzung in einer Parabel nicht zu früh öffnet. |
 | Trendbruch-Meldung | nur bei offenen Tranchen | immer beim Übergang ③ → ④ | Der Trendbruch ist auch dann wichtig, wenn nichts mehr zu verkaufen ist. |
 | Desktop-Layout | zwei Spalten | drei Bereiche | Zwei Spalten wurden ungleich hoch, die Kacheln nutzen die volle Breite besser. |
@@ -267,5 +274,5 @@ Die Seite zeigt die Herkunft jetzt selbst: Jede Kachel trägt eine Rechenzeile m
 
 1. **Benachrichtigungen prüfen.** Unter Actions → Wochenlauf → „Run workflow" das Häkchen bei „Zusätzlich eine Testmeldung verschicken" setzen. Es entsteht ein Issue mit dem Label `signal`, das als E-Mail und über die GitHub-App als Push ankommt. Optional ein Secret `NTFY_TOPIC` mit einem zufälligen Namen für Push ohne GitHub-App.
 2. **M7, Härtung.** Barrierefreiheit prüfen, Grenzfälle der Oberfläche, Ladezeit. Sinnvoll erst, wenn die Datenlage geklärt ist: Kommen die fehlenden Kennzahlen dazu, ändern sich Abdeckung, Konvergenz und Schwellen, und dieselben Grenzfälle wären erneut zu prüfen.
-3. **STH-Realized-Price und Angebot im Gewinn** monatlich über den Speichern-Knopf nachtragen, solange BGeometrics offen ist. Beide wirken sofort und heben die Abdeckung des Kauf-Motors von 80 auf 100 %.
+3. **Reserve Risk, STH-Realized-Price und Angebot im Gewinn** monatlich über den Speichern-Knopf nachtragen, solange BGeometrics offen ist. Alle drei wirken sofort; schon eine davon hebt die Abdeckung des Kauf-Motors auf 100 %. Reserve Risk ist die einfachste, weil ein Blick auf die BGeometrics-Chartseite genügt.
 4. **Nach der Antwort von BGeometrics** die fünf Kennzahlen anbinden und den Backtest neu bewerten. Solange warten, bevor an der Konfiguration etwas geändert wird.

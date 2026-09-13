@@ -187,7 +187,7 @@ Alle fünf fehlenden Kennzahlen sind auf `charts.checkonchain.com` ablesbar. Sie
 |---|---|---|---|
 | STH-Realized-Price | `btconchain/pricing/pricing_costbasisoriginals/` — „Key Cost Basis Models" | Linie „Short-Term Holder Realised Price" | **sofort**: Trendfilter und Nachkauf-Chance |
 | Angebot im Gewinn | `btconchain/unrealised/pctsupplyinprofit_all/` — „Percent Supply in Profit" | Prozentwert der Hauptlinie | **sofort**: Gate B und die Familie „Halter & Stimmung" |
-| Reserve Risk | `btconchain/lifespan/reserverisk/` — „Bitcoin Reserve Risk" | Wert der Reserve-Risk-Linie | erst mit Historie |
+| Reserve Risk | **`charts.bgeometrics.com/reserve_risk.html`** (nicht Checkonchain) | Wert der Reserve-Risk-Linie | **sofort** |
 | RHODL-Ratio | `btconchain/supply/rhodl/` — „RHODL Ratio" | Wert der RHODL-Linie | erst mit Historie |
 | LTH-Positionsänderung 30 T | `btconchain/supply/lthnetposchange_0/` — „LTH Supply Net Position Change (30-day)" | Wert mit Vorzeichen, negativ heisst Abgabe | erst mit Historie |
 
@@ -195,9 +195,11 @@ Alle Adressen beginnen mit `https://charts.checkonchain.com/` und enden auf `<na
 
 Die Einstellungen der Seite enthalten je Kennzahl einen Knopf „↗ Chart öffnen", der die geprüfte Adresse in einem neuen Fenster öffnet, dazu einen Hinweis, welche Linie abzulesen ist.
 
-Der Unterschied ist wichtig: Die ersten zwei werden über absolute Ankerpunkte bewertet und wirken ab der ersten Lesung. Die letzten drei werden über Perzentile der letzten vier Jahre bewertet. Ein einzelner Wert wäre automatisch das 100. Perzentil und würde den Indikator fälschlich in Zone bringen. Deshalb gilt eine **Untergrenze von 26 Wochen**: darunter liefert das Perzentil keinen Wert, und der Indikator zählt nicht in den Score. Der Rohwert wird trotzdem angezeigt.
+**Reserve Risk wird bewusst bei BGeometrics abgelesen, nicht bei Checkonchain.** Die Kennzahl hat etablierte absolute Bänder (unter 0,002 Akkumulation, über 0,02 erhöhtes Risiko) und wird deshalb absolut bewertet. Absolute Ankerpunkte hängen aber an der Skala des Anbieters, und die ist nicht einheitlich: Manche Anbieter normieren um Grössenordnungen anders. Die Ankerpunkte sind auf die Skala von BGeometrics und Glassnode kalibriert, also rund 0,001 bis 0,05. Werte ausserhalb von 0,0001 bis 0,5 weist die Prüfung mit einem Hinweis auf die Skala ab. Dieselbe Quelle ist auch deshalb richtig, weil bei einer Zusage von BGeometrics die Reihe nahtlos weiterläuft (3.2, eine Quelle pro Reihe).
 
-Das Angebot im Gewinn ist der grösste Gewinn: Damit erreicht die Familie „Halter & Stimmung" zwei von drei Mitgliedern und wird wieder wertend. Die Abdeckung des Kauf-Motors steigt von 80 auf 100 %.
+Der Unterschied ist wichtig: Die ersten drei werden über absolute Ankerpunkte bewertet und wirken ab der ersten Lesung. Die letzten drei werden über Perzentile der letzten vier Jahre bewertet. Ein einzelner Wert wäre automatisch das 100. Perzentil und würde den Indikator fälschlich in Zone bringen. Deshalb gilt eine **Untergrenze von 26 Wochen**: darunter liefert das Perzentil keinen Wert, und der Indikator zählt nicht in den Score. Der Rohwert wird trotzdem angezeigt.
+
+Schon **eine einzige** der drei sofort wirkenden Kennzahlen genügt, damit die Familie „Halter & Stimmung" zwei von drei Mitgliedern erreicht und wieder wertet. Die Abdeckung des Kauf-Motors steigt damit von 80 auf 100 %. Nachgemessen mit Reserve Risk 0,0018: Score 84, Familie verfügbar, Familien in Zone 2 → 3.
 
 Format:
 
@@ -267,7 +269,7 @@ Der Name ist das, was die Oberfläche zeigt. Die Leitfrage steht klein darunter 
 | `p_200w` | Abstand zum 200-Wochen-Schnitt | Wie nah ist der Preis am Langzeitschnitt? | Wochenschluss ÷ SMA der letzten 200 Wochenschlüsse | Kauf → Bewertung |
 | `mayer` | Mayer Multiple | Wie weit liegt der Preis über dem 200-Tage-Schnitt? | Sonntagsschluss ÷ SMA 200 Tage | Kauf → Bewertung; Verkauf → Relative Bewertung |
 | `supply_loss` | Angebot im Verlust | Wie viele Coins liegen unter Wasser? | 100 − Supply in Profit (%) | Kauf → Halter & Stimmung |
-| `reserve_risk` | Reserve Risk | Wie überzeugt sind Langzeithalter im Verhältnis zum Preis? | Quelle, bewertet als Perzentil | Kauf → Halter & Stimmung |
+| `reserve_risk` | Reserve Risk | Wie überzeugt sind Langzeithalter im Verhältnis zum Preis? | Quelle, hybrid bewertet: absolute Bänder plus Perzentil | Kauf → Halter & Stimmung |
 | `fng_fear_weeks` | Dauer der extremen Angst | Wie lange herrscht schon Panik? | Anzahl der letzten 8 Wochen mit Wochendurchschnitt Fear & Greed < 25 | Kauf → Halter & Stimmung |
 | `puell` | Puell Multiple | Stehen die Miner unter Druck? | Tageserlös ÷ 365-Tage-Schnitt | Kauf → Miner |
 | `hash_ribbons` | Hash Ribbons | Ist die Miner-Kapitulation vorbei? | 30-Tage- vs. 60-Tage-Schnitt der Hashrate | Kauf → Miner |
@@ -312,7 +314,7 @@ Jeder Indikator erhält **zwei** Teilscores: `score_buy` (100 = maximal kaufwür
 | `p_200w` | absolut | 2,0 → 0 · 1,5 → 30 · 1,15 → 65 · 1,0 → 90 · 0,85 → 100 |
 | `mayer` | absolut | 1,2 → 0 · 1,0 → 30 · 0,8 → 75 · 0,65 → 100 |
 | `supply_loss` | absolut (%) | 20 → 0 · 35 → 40 · 45 → 70 · 55 → 100 |
-| `reserve_risk` | Perzentil | 50 → 0 · 25 → 50 · 10 → 85 · 3 → 100 |
+| `reserve_risk` | Hybrid | absolut: 0,020 → 0 · 0,010 → 10 · 0,005 → 35 · 0,0025 → 70 · 0,0015 → 90 · 0,0008 → 100 · Perzentil: 50 → 0 · 25 → 50 · 10 → 85 · 3 → 100 |
 | `fng_fear_weeks` | absolut (Wochen) | 0 → 0 · 2 → 40 · 4 → 75 · 6 → 100 |
 | `puell` | absolut | 1,0 → 0 · 0,8 → 30 · 0,6 → 65 · 0,5 → 85 · 0,4 → 100 |
 | `hash_ribbons` | Regel | Kaufsignal (30T kreuzt 60T nach einer Kapitulation wieder nach oben) in den letzten 8 Wochen → 100 · Kapitulation läuft (30T < 60T) → 60 · sonst 0 |

@@ -392,3 +392,32 @@ test("Unplausible Einreichungen werden abgewiesen", async () => {
     assert.ok(r.error.includes(teil), `Fehlermeldung passt nicht: ${r.error}`);
   }
 });
+
+test("Reserve Risk wird absolut bewertet und wirkt ab der ersten Lesung", () => {
+  // Ohne Historie darf es keinen Perzentilwert geben, der Score muss trotzdem stehen.
+  const tief = row("2026-09-06", { ...BEAR, reserve_risk: 0.0015 });
+  const s = scoreIndicators(tief, [], cfg);
+  assert.equal(s.reserve_risk.pct, null, "kein Perzentil ohne Historie");
+  assert.ok(s.reserve_risk.score_buy >= 85, `zu niedrig: ${s.reserve_risk.score_buy}`);
+  assert.equal(s.reserve_risk.state_buy, "in_zone");
+
+  const hoch = scoreIndicators(row("2026-09-06", { ...BEAR, reserve_risk: 0.025 }), [], cfg);
+  assert.equal(hoch.reserve_risk.score_buy, 0, "im Risikobereich kein Kaufsignal");
+});
+
+test("Reserve Risk allein macht die Familie Halter und Stimmung verfügbar", () => {
+  const ohne = engineScore(scoreIndicators(row("2026-09-06", BEAR), [], cfg), cfg.engines.buy, "buy");
+  assert.equal(ohne.families.halter_stimmung.available, false);
+  const mit = engineScore(scoreIndicators(row("2026-09-06", { ...BEAR, reserve_risk: 0.0015 }), [], cfg), cfg.engines.buy, "buy");
+  assert.equal(mit.families.halter_stimmung.available, true, "2 von 3 Mitgliedern genügen");
+  assert.equal(Math.round(mit.coverage * 100), 100);
+});
+
+test("Reserve Risk mit falscher Skala wird abgewiesen", async () => {
+  const { parseSubmission } = await import("../scripts/lib/manual.mjs");
+  const j = (v) => "```json\n" + JSON.stringify({ reserve_risk: [{ d: "2026-09-06", v }] }) + "\n```";
+  const falsch = parseSubmission(j(0.00000349), { today: "2026-09-12" });
+  assert.equal(falsch.ok, false);
+  assert.ok(falsch.error.includes("Normierung"), `Hinweis fehlt: ${falsch.error}`);
+  assert.equal(parseSubmission(j(0.0018), { today: "2026-09-12" }).ok, true);
+});

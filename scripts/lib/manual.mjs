@@ -4,7 +4,11 @@
 export const KEYS = {
   sth_realized_price:      { label: "STH-Realized-Price", unit: "USD", min: 1,    max: 10_000_000 },
   supply_in_profit:        { label: "Angebot im Gewinn",  unit: "%",   min: 0,    max: 100 },
-  reserve_risk:            { label: "Reserve Risk",       unit: "",    min: 0,    max: 1 },
+  // Reserve Risk wird absolut bewertet (SPEC 4.3). Die Skala hängt am Anbieter:
+  // BGeometrics und Glassnode liegen bei rund 0.001 bis 0.05, andere rechnen
+  // um Grössenordnungen kleiner. Werte ausserhalb werden deshalb abgewiesen.
+  reserve_risk:            { label: "Reserve Risk",       unit: "",    min: 0.0001, max: 0.5,
+                             hint: "Erwartet wird die Skala von BGeometrics oder Glassnode, also etwa 0.001 bis 0.05. Liegt dein Wert um Grössenordnungen daneben, stammt er von einem Anbieter mit anderer Normierung." },
   rhodl:                   { label: "RHODL-Ratio",        unit: "",    min: 0,    max: 100_000_000 },
   lth_net_position_change: { label: "LTH-Positionsänderung 30 T", unit: "BTC", min: -5_000_000, max: 5_000_000 },
 };
@@ -45,7 +49,7 @@ export function parseSubmission(body, { today } = {}) {
       if (today && d > today) return { ok: false, error: `${k}: Datum ${d} liegt in der Zukunft.` };
       if (!Number.isFinite(val)) return { ok: false, error: `${k}: Wert bei ${d} ist keine Zahl.` };
       if (val < meta.min || val > meta.max)
-        return { ok: false, error: `${k}: Wert ${val} bei ${d} liegt ausserhalb von ${meta.min} bis ${meta.max}.` };
+        return { ok: false, error: `${k}: Wert ${val} bei ${d} liegt ausserhalb von ${meta.min} bis ${meta.max}.${meta.hint ? " " + meta.hint : ""}` };
       list.push({ d, v: val });
     }
     values[k] = list.sort((a, b) => (a.d < b.d ? -1 : 1));
