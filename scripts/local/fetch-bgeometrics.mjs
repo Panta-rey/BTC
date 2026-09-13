@@ -95,6 +95,11 @@ const CATALOG = [
     paths: ["/v1/btc-price", "/v1/price-usd", "/v1/price", "/v1/btc-price-usd"] },
   { id: "ohlc", g: "B", name: "OHLC täglich", field: "close", plaus: [0.01, 1e7],
     paths: ["/v1/ohlc", "/v1/btc-ohlc", "/v1/ohlc-daily"] },
+  // Reines Archiv, kein Eingang in die Ampel: Signale werden ausschliesslich auf
+  // Wochenschlüssen geprüft und Intraday-Spitzen bewusst ignoriert (SPEC 2.3).
+  // Kostet zwei Abrufe, deshalb mitgenommen. Frei auch bei Bitstamp erhältlich.
+  { id: "ohlc_4h", g: "B", name: "OHLC 4 Stunden (Archiv)", field: "close", plaus: [0.01, 1e7],
+    paths: ["/v1/ohlc-4h", "/v1/ohlc4h", "/v1/btc-ohlc-4h", "/v1/ohlc-4hours"] },
   { id: "realized_price", g: "B", name: "Realized Price", plaus: [1, 1e7],
     paths: ["/v1/realized-price", "/v1/realised-price"] },
   { id: "mvrv_z", g: "B", name: "MVRV-Z-Score", plaus: [-5, 20],
@@ -399,9 +404,16 @@ async function serverFinden() {
 
 async function probe() {
   const server = await serverFinden();
-  const gefunden = {};
+  // Bestehende Landkarte übernehmen. Ein Lauf mit --only oder --group darf die
+  // Pfade der übrigen Kennzahlen nicht löschen: Sie wurden teuer erkauft.
+  const vorher = await readJSON(`${OUT}/_paths.json`, null);
+  const gefunden = { ...(vorher?.gefunden ?? {}) };
+  const offenAlt = new Set(vorher?.offen ?? []);
+  const gesperrtAlt = new Set(vorher?.gesperrt ?? []);
+  const geprueft = new Set(auswahl.map((m) => m.id));
   const offen = [];
   const gesperrt = [];
+  if (vorher) console.log(`Bestehende Landkarte: ${Object.keys(gefunden).length} Pfade, wird ergänzt.`);
   console.log(`\nPrüfe ${auswahl.length} Kennzahlen mit /last, höchstens ${auswahl.reduce((s, m) => s + m.paths.length, 0)} Abrufe.`);
   console.log(`Bremse: ${RPH} Abrufe pro Stunde, also ${(GAP_MS / 1000).toFixed(0)} s Abstand.\n`);
 
@@ -440,11 +452,18 @@ async function probe() {
     }
   }
 
+  // Was in diesem Lauf nicht geprüft wurde, behält seinen bisherigen Zustand.
+  const offenGesamt = [...new Set([...offen, ...[...offenAlt].filter((id) => !geprueft.has(id))])].sort();
+  const gesperrtGesamt = [...new Set([...gesperrt, ...[...gesperrtAlt].filter((id) => !geprueft.has(id))])].sort();
+
   await writeJSON(`${OUT}/_paths.json`, {
-    geprueft_am: new Date().toISOString(), server, abrufe, gefunden, offen, gesperrt,
+    geprueft_am: new Date().toISOString(), server, abrufe,
+    zuletzt_geprueft: [...geprueft].sort(),
+    gefunden, offen: offenGesamt, gesperrt: gesperrtGesamt,
   }, { pretty: true });
 
-  console.log(`\n${Object.keys(gefunden).length} von ${auswahl.length} Pfaden bestätigt, ${abrufe} Abrufe verbraucht.`);
+  const neu = Object.keys(gefunden).filter((id) => geprueft.has(id)).length;
+  console.log(`\n${neu} von ${auswahl.length} geprüften Pfaden bestätigt, Landkarte umfasst jetzt ${Object.keys(gefunden).length}. ${abrufe} Abrufe verbraucht.`);
   if (gesperrt.length) console.log(`Vom Tarif nicht gedeckt: ${gesperrt.join(", ")}`);
   if (offen.length) {
     console.log(`Offen: ${offen.join(", ")}`);

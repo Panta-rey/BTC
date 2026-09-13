@@ -82,7 +82,10 @@ export function monthlyManual(events, { now = Date.now(), readings = {}, keys = 
   };
 }
 
-export const MONTHLY_KEYS = ["reserve_risk", "supply_in_profit", "sth_realized_price"];
+// Reserve Risk fehlt hier bewusst: Seine absoluten Ankerpunkte sind veraltet und
+// melden im laufenden Zyklus in 100 % der Wochen "in Zone" (reports/anker-check.md).
+// Siehe HANDOFF §4a. Erst nach neu geschnittenen Ankern wieder aufnehmen.
+export const MONTHLY_KEYS = ["supply_in_profit", "sth_realized_price"];
 
 export const MANUAL_LABEL = {
   reserve_risk: "Reserve Risk",

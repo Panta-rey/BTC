@@ -435,19 +435,21 @@ test("Monatliche Erinnerung kommt am Monatsanfang und nur einmal", async () => {
     "nur in den ersten Tagen");
 
   // Schon in diesem Monat abgelesen: keine Erinnerung mehr.
-  const fertig = { reserve_risk: "2026-10-01", supply_in_profit: "2026-10-01", sth_realized_price: "2026-10-01" };
+  const fertig = { supply_in_profit: "2026-10-01", sth_realized_price: "2026-10-01" };
   assert.equal(monthlyManual([], { now: anfang, readings: fertig }), null, "erledigt, also still");
 
   // Nur eine erledigt: die übrigen werden genannt.
-  const teil = monthlyManual([], { now: anfang, readings: { reserve_risk: "2026-10-01" } });
-  assert.deepEqual(teil.offen, ["supply_in_profit", "sth_realized_price"]);
-  assert.ok(!teil.text.includes("Reserve Risk"), "erledigte Kennzahl wird nicht genannt");
+  const teil = monthlyManual([], { now: anfang, readings: { supply_in_profit: "2026-10-01" } });
+  assert.deepEqual(teil.offen, ["sth_realized_price"]);
+  assert.ok(!teil.text.includes("Angebot im Gewinn"), "erledigte Kennzahl wird nicht genannt");
 
   // Lesung aus dem Vormonat zählt nicht als erledigt.
-  const alt = monthlyManual([], { now: anfang, readings: { reserve_risk: "2026-09-06" } });
-  assert.ok(alt.offen.includes("reserve_risk"), "alte Lesung erinnert erneut");
+  const alt = monthlyManual([], { now: anfang, readings: { supply_in_profit: "2026-09-06" } });
+  assert.ok(alt.offen.includes("supply_in_profit"), "alte Lesung erinnert erneut");
 
-  // RHODL und LTH sind bewusst nicht dabei (HANDOFF §4a).
-  assert.ok(!teil.offen.includes("rhodl"));
-  assert.ok(!teil.offen.includes("lth_net_position_change"));
+  // Reserve Risk, RHODL und LTH sind bewusst nicht dabei (HANDOFF §4a).
+  const voll = monthlyManual([], { now: anfang, readings: {} });
+  assert.ok(!voll.offen.includes("reserve_risk"), "Reserve Risk: veraltete Anker");
+  assert.ok(!voll.offen.includes("rhodl"));
+  assert.ok(!voll.offen.includes("lth_net_position_change"));
 });

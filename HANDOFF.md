@@ -156,19 +156,29 @@ Der Dreifach-Nachlauf (Abschnitt 11) hat eine Unterscheidung sichtbar gemacht, d
 
 | Kennzahl | Familie | Motor | Regel |
 |---|---|---|---|
-| Reserve Risk | Halter & Stimmung | **Kauf** | monatlich eintragen |
 | Angebot im Gewinn | Halter & Stimmung | **Kauf** | monatlich eintragen |
 | STH-Realized-Price | Trendfilter (ohne Score) | – | monatlich eintragen |
-| RHODL-Ratio | Halterverhalten | **Verkauf** | **zurückgestellt** |
-| LTH-Positionsänderung 30 T | Halterverhalten | **Verkauf** | **zurückgestellt** |
+| Reserve Risk | Halter & Stimmung | Kauf | **zurückgestellt**, veraltete Anker |
+| RHODL-Ratio | Halterverhalten | **Verkauf** | **zurückgestellt**, nachlassend |
+| LTH-Positionsänderung 30 T | Halterverhalten | **Verkauf** | **zurückgestellt**, nachlassend |
 
-**Warum die Trennung.** Die ersten drei heben die Abdeckung des Kauf-Motors von 80 auf 100 % und berühren Weg E2 nicht. Die letzten zwei vervollständigen die Familie „Halterverhalten" des Verkaufs-Motors. Dessen Abdeckung steigt damit auf 100 %, und weil die Schwelle von Weg E2 an die Abdeckung gekoppelt ist, steigt sie von 32 auf 40. Im Nachlauf mit allen fünf Kennzahlen verschwand dadurch nicht nur das knappe Signal von 2025, sondern der ganze Verkaufszyklus: Die Maschine ging im Oktober 2025 gar nicht mehr in Phase ③ und steht bis heute im Aufwärtstrend seit Januar 2023. Endvermögen 196'857 statt 314'146 USD.
+**Das Angebot im Gewinn allein genügt.** Die Familie „Halter & Stimmung" braucht zwei ihrer drei Mitglieder, und Fear & Greed ist ohnehin da. Eine einzige eingetragene Kennzahl hebt die Abdeckung des Kauf-Motors damit von 80 auf 100 %. Reserve Risk wird dafür nicht gebraucht.
 
-**Warum „zurückgestellt" und nicht „verworfen".** Daten wegzulassen, damit eine Schwelle niedrig bleibt, ist selbst eine Form der Überanpassung, und zwar auf genau einen Zyklus. SPEC 10.5 verbietet das. Die ehrliche Lesart ist deshalb nicht „mehr Daten schaden", sondern: **Das Signal von 2025 hing an vier Punkten, und die Kopplung von Weg E2 an die Abdeckung ist die eigentliche Schwachstelle.** Sie gehört nach dem Ende des laufenden Zyklus neu bewertet, zusammen mit einer wiederholten Empfindlichkeitsprüfung (SPEC 10.3). Bis dahin bleiben die beiden Reihen leer, und die Oberfläche nennt den Grund an der Kachel.
+**Warum Reserve Risk zurückgestellt ist (Prüfung vom 13.09.2026, `reports/anker-check.md`).** Die absoluten Ankerpunkte stammen aus veröffentlichten Bändern und wurden nie gegen Daten gehalten. Gegen die volle Historie gemessen liegt der Anteil der Wochen „in Zone" bei 37,7 % bis zum Tief 2015, dann 75,5 %, dann 90,8 %, und **im laufenden Zyklus bei 100 % aller 198 Wochen**. Score am Median der Gesamthistorie: 91,8. Die Kennzahl bestätigt an den Extremen zwar zuverlässig (Score 100 an allen drei Tiefs), unterscheidet aber nichts mehr. Eingetragen würde sie den Kauf-Motor dauerhaft anheben und der Konvergenzbedingung permanent eine dritte Familie in Zone liefern.
+
+**Warum die Hybridregel das nicht abfängt.** Sie nimmt das Maximum aus absolutem Anker und Perzentil. Das hilft gegen einen zu *strengen* absoluten Anker, und dafür wurde sie gebaut (SPEC 4.2). Gegen einen zu *lockeren* ist sie wirkungslos, weil das Maximum den hohen Wert durchreicht. Der Schutz ist asymmetrisch, und der Fehler liegt hier auf der ungeschützten Seite. Dasselbe Risiko trägt jeder absolute Anker auf einer wandernden Kennzahl.
+
+**Warum RHODL und LTH-Positionsänderung zurückgestellt sind.** Sie vervollständigen die Familie „Halterverhalten" des Verkaufs-Motors. Dessen Abdeckung steigt damit auf 100 %, und weil die Schwelle von Weg E2 an die Abdeckung gekoppelt ist, steigt sie von 32 auf 40. Im Nachlauf mit allen fünf Kennzahlen verschwand dadurch nicht nur das knappe Signal von 2025, sondern der ganze Verkaufszyklus: Die Maschine ging im Oktober 2025 gar nicht mehr in Phase ③ und steht bis heute im Aufwärtstrend seit Januar 2023. Endvermögen 196'857 statt 314'146 USD.
+
+Dazu kommt ein zweiter, unabhängiger Befund aus der Ankerprüfung: **Beide Kennzahlen haben aufgehört, Hochs zu markieren.** RHODL erreichte an den Hochs 2013 und 2017 Score 100, an dem von 2021 nur 57,7 und an dem von 2025 nur 15,1. Die LTH-Positionsänderung fällt von 100 über 88,1 und 82,0 auf 41,1. Sie hätten das Signal von 2025 also doppelt gekostet: über die höhere Schwelle **und** über einen niedrigeren Score. Das Zurückstellen ist damit keine Schwellenkosmetik, sondern eine belegte Aussage über zwei nachlassende Indikatoren.
+
+**Warum „zurückgestellt" und nicht „verworfen".** Daten wegzulassen, damit eine Schwelle niedrig bleibt, wäre eine Überanpassung auf genau einen Zyklus, und SPEC 10.5 verbietet das. Die Befunde oben liefern unabhängige Gründe, aber der Kern bleibt: **Das Signal von 2025 hing an vier Punkten, und die Kopplung von Weg E2 an die Abdeckung ist die eigentliche Schwachstelle.** Sie gehört nach dem Ende des laufenden Zyklus neu bewertet, zusammen mit einer wiederholten Empfindlichkeitsprüfung (SPEC 10.3). Bis dahin bleiben die beiden Reihen leer, und die Oberfläche nennt den Grund an der Kachel.
 
 **Zum STH-Realized-Price.** Er verschiebt keinen einzigen der zwölf Phasenwechsel. Der vereinfachte Trendfilter, der nur das Bull Market Support Band prüft, kam historisch zum selben Ergebnis. Die Einschätzung aus der alten Fassung von Abschnitt 11, er sei „der wertvollste Posten", ist damit widerlegt. Eintragen lohnt trotzdem, aber aus einem anderen Grund: Er schaltet die Nachkauf-Chance in Phase ② frei, und die kommt in der Simulation gar nicht vor, weil sie nur die sechs regulären Tranchen ausführt.
 
-**Erinnerung.** `monthlyManual()` in `scripts/lib/events.mjs` erzeugt in den ersten fünf Tagen jedes Monats ein Issue vom Typ `MONTHLY_MANUAL`, sofern für den laufenden Monat noch keine Lesung in `data/manual.json` steht. Es nennt nur die noch offenen der drei empfohlenen Kennzahlen. Kein eigener Workflow nötig, der Tageslauf ruft `notify.mjs` ohnehin auf.
+**Die Perzentilfalle entfällt damit.** Teil B der Ankerprüfung zeigt, dass eine monatlich eingetragene Kennzahl mit Perzentilanteil nach sechs Lesungen falsche Signale erzeugen kann: 26 belegte Wochen entsprechen nur rund sechs echten Messpunkten, und über das Maximum kann ein daraus errechnetes Perzentil einen korrekten absoluten Score von 0 überschreiben. Betroffen wären Reserve Risk (2,5 % der Wochen), RHODL (19,4 %) und die LTH-Positionsänderung (9,3 %). Alle drei sind jetzt zurückgestellt, und das Angebot im Gewinn wird rein absolut bewertet. Die Falle kann also nicht zuschnappen. Sie bleibt ein Thema für den Tag, an dem eine der drei zurückkommt: dann `floor_weeks` von 26 auf 104 heben oder die Untergrenze an der Zahl der Messpunkte statt der Wochen festmachen.
+
+**Erinnerung.** `monthlyManual()` in `scripts/lib/events.mjs` erzeugt in den ersten fünf Tagen jedes Monats ein Issue vom Typ `MONTHLY_MANUAL`, sofern für den laufenden Monat noch keine Lesung in `data/manual.json` steht. Es nennt nur die noch offenen der beiden empfohlenen Kennzahlen. Kein eigener Workflow nötig, der Tageslauf ruft `notify.mjs` ohnehin auf.
 
 ---
 
@@ -281,7 +291,7 @@ Alle sind in `SPEC.md` eingearbeitet. Hier die Begründungen:
 | Anlass | Was zu tun ist |
 |---|---|
 | Signal-Issue kommt | Seite öffnen, Handlungssatz und Betrag lesen, Tranche ausführen, auf „Erledigt" tippen, Issue schliessen |
-| Monatsanfang, Issue kommt von selbst | Reserve Risk, Angebot im Gewinn und STH-Realized-Price ablesen, in den Einstellungen eintragen, speichern. Hebt die Abdeckung des Kauf-Motors von 80 auf 100 %. RHODL und LTH-Positionsänderung bewusst **nicht** eintragen (Abschnitt 4a) |
+| Monatsanfang, Issue kommt von selbst | Angebot im Gewinn und STH-Realized-Price ablesen, in den Einstellungen eintragen, speichern. Hebt die Abdeckung des Kauf-Motors von 80 auf 100 %. Reserve Risk, RHODL und LTH-Positionsänderung bewusst **nicht** eintragen (Abschnitt 4a) |
 | Technik-Issue kommt | Actions-Tab prüfen, meist eine ausgefallene Quelle |
 | einmal im Jahr (1. Januar) | Review-Issue abarbeiten: Backup exportieren, Kernposition prüfen, Quellenstatus ansehen |
 | nach einem abgeschlossenen Zyklus | Backtest neu bewerten, Konfiguration gegebenenfalls auf 2.0 |
@@ -384,9 +394,10 @@ Beide lokalen Scripts laufen nie im Runner. Rohdaten bleiben in `data/private/`.
 
 Das System ist betriebsbereit. Nichts davon ist dringend.
 
-1. **Monatlich drei Zahlen eintragen.** Reserve Risk, Angebot im Gewinn, STH-Realized-Price. Die Erinnerung kommt am Monatsanfang von selbst als Issue. Hebt die Abdeckung des Kauf-Motors von 80 auf 100 %. RHODL und LTH-Positionsänderung bleiben leer, Begründung in Abschnitt 4a.
-2. **M7, Härtung.** Barrierefreiheit, Grenzfälle der Oberfläche, Ladezeit. Der Grund für die Zurückstellung ist entfallen: Die Datenlage ist geklärt, die Abdeckung ändert sich nicht mehr überraschend. M7 ist damit der einzige noch offene Meilenstein und kann beginnen.
-3. **Nach dem Zyklusende: Weg E2 neu denken.** Drei unabhängige Prüfungen zeigen auf dieselbe Stelle (Abschnitt 5). Die Kopplung `score_min × Abdeckung` ist entweder zu grob oder die Schwelle von 40 zu hoch. Erst dann entscheidet sich auch, ob RHODL und LTH-Positionsänderung dazukommen.
-4. **Zweiter Abzug vor Ablauf des Zugangs**, etwa am 10. Oktober 2026: `node scripts/local/fetch-bgeometrics.mjs --probe --out=data/private-2` und danach derselbe Aufruf ohne `--probe`. Sichert die Reihen bis zum letzten Tag. Danach läuft der Zugang aus und wird nicht erneuert.
+1. **Monatlich zwei Zahlen eintragen.** Angebot im Gewinn und STH-Realized-Price. Die Erinnerung kommt am Monatsanfang von selbst als Issue. Das Angebot im Gewinn allein hebt die Abdeckung des Kauf-Motors von 80 auf 100 %. Reserve Risk, RHODL und LTH-Positionsänderung bleiben leer, Begründung in Abschnitt 4a.
+2. **Nach dem Zyklusende: Ankerpunkte von Reserve Risk neu schneiden.** Die vorhandene Historie liegt in `data/private/` und genügt dafür, ein zweites Abo ist nicht nötig. Ziel ist ein Anteil „in Zone" im einstelligen bis niedrigen zweistelligen Prozentbereich, wie ihn das Angebot im Gewinn mit 8,6 % im laufenden Zyklus erreicht.
+3. **M7, Härtung.** Barrierefreiheit, Grenzfälle der Oberfläche, Ladezeit. Der Grund für die Zurückstellung ist entfallen: Die Datenlage ist geklärt, die Abdeckung ändert sich nicht mehr überraschend. M7 ist damit der einzige noch offene Meilenstein und kann beginnen.
+4. **Nach dem Zyklusende: Weg E2 neu denken.** Drei unabhängige Prüfungen zeigen auf dieselbe Stelle (Abschnitt 5). Die Kopplung `score_min × Abdeckung` ist entweder zu grob oder die Schwelle von 40 zu hoch. Erst dann entscheidet sich auch, ob RHODL und LTH-Positionsänderung dazukommen.
+5. **Zweiter Abzug vor Ablauf des Zugangs**, etwa am 10. Oktober 2026: `node scripts/local/fetch-bgeometrics.mjs --probe --out=data/private-2` und danach derselbe Aufruf ohne `--probe`. Sichert die Reihen bis zum letzten Tag. Danach läuft der Zugang aus und wird nicht erneuert.
 
 **Was ausdrücklich nicht getan werden sollte:** an `config/engine.json` drehen. Die Konfiguration `1.0` hat vier Backtest-Läufe, die Empfindlichkeitsprüfung und jetzt zusätzlich den BGeometrics-Nachlauf hinter sich. Sie bleibt bis zum Ende des laufenden Zyklus unverändert (SPEC 10.5). Das gilt ausdrücklich auch für die Versuchung, Weg E2 jetzt zu entkoppeln: Das Ergebnis von 2025 wäre damit auf genau einen Zyklus optimiert.

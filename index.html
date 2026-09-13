@@ -876,10 +876,6 @@ function importBackup(){
 // nicht verworfen: Die eigentliche Schwachstelle ist die Kopplung, und die wird nach dem
 // Ende des laufenden Zyklus neu bewertet (HANDOFF §4a).
 const MANUAL = [
-  { k:"reserve_risk", n:"Reserve Risk", u:"", sofort:true, rang:"monatlich", motor:"Kauf",
-    chart:"Bitcoin Reserve Risk (BGeometrics)",
-    url:"https://charts.bgeometrics.com/reserve_risk.html",
-    read:"Wert der Reserve-Risk-Linie ablesen, erwartet wird die Skala von BGeometrics, also rund 0.001 bis 0.05. Unter 0.002 gilt als Akkumulationsbereich, über 0.02 als erhöhtes Risiko. Bewusst BGeometrics und nicht Checkonchain: Andere Anbieter normieren anders, und die absolute Bewertung hängt an der Skala." },
   { k:"supply_in_profit", n:"Angebot im Gewinn", u:"%", sofort:true, rang:"monatlich", motor:"Kauf",
     chart:"Percent Supply in Profit",
     url:"https://charts.checkonchain.com/btconchain/unrealised/pctsupplyinprofit_all/pctsupplyinprofit_all_light.html",
@@ -888,6 +884,11 @@ const MANUAL = [
     chart:"Key Cost Basis Models",
     url:"https://charts.checkonchain.com/btconchain/pricing/pricing_costbasisoriginals/pricing_costbasisoriginals_light.html",
     read:"Auf der Startseite unter Pricing Models als „Key Cost Basis!\" verlinkt. Im Chart die Linie Short-Term Holder Realised Price ablesen, aktuellster Punkt rechts. Verschiebt laut Nachlauf keine Phasenwechsel, schaltet aber die Nachkauf-Chance in Phase ② frei." },
+  { k:"reserve_risk", n:"Reserve Risk", u:"", sofort:true, rang:"zurückgestellt", motor:"Kauf",
+    chart:"Bitcoin Reserve Risk (BGeometrics)",
+    url:"https://charts.bgeometrics.com/reserve_risk.html",
+    read:"Wert der Reserve-Risk-Linie ablesen, Skala von BGeometrics, also rund 0.001 bis 0.05. Bewusst BGeometrics und nicht Checkonchain: Andere Anbieter normieren um Grössenordnungen anders.",
+    warn:"Zurückgestellt. Die absoluten Ankerpunkte stammen aus Bändern einer Epoche, die um 2015 endete. Gegen die volle Historie geprüft meldet die Kennzahl im laufenden Zyklus in 100 Prozent der Wochen Kaufzone und würde den Kauf-Motor dauerhaft anheben, ohne etwas zu unterscheiden. Die Abdeckung von 100 Prozent erreicht das Angebot im Gewinn allein. Erst nach neu geschnittenen Ankern wieder eintragen." },
   { k:"rhodl", n:"RHODL-Ratio", u:"", sofort:false, rang:"zurückgestellt", motor:"Verkauf",
     chart:"RHODL Ratio",
     url:"https://charts.checkonchain.com/btconchain/supply/rhodl/rhodl_light.html",
@@ -903,10 +904,11 @@ const MANUAL = [
 function manualPanel(){
   const box = el("div");
   box.appendChild(el("p",null,
-    `Fünf Kennzahlen gibt es nur bei BGeometrics. Die ersten drei trägst du monatlich nach:
-     Sie heben die Abdeckung des Kauf-Motors von 80 auf 100 Prozent und wirken ab der
-     ersten Lesung. Die letzten zwei sind bewusst zurückgestellt, die Begründung steht
-     an der Kachel. Eine Erinnerung kommt jeden Monatsanfang als GitHub-Issue.`));
+    `Fünf Kennzahlen gibt es nur bei BGeometrics. Die ersten zwei trägst du monatlich nach:
+     Das Angebot im Gewinn allein hebt die Abdeckung des Kauf-Motors von 80 auf 100 Prozent,
+     der STH-Einstand schaltet die Nachkauf-Chance frei. Die übrigen drei sind bewusst
+     zurückgestellt, die Begründung steht jeweils an der Kachel. Eine Erinnerung kommt
+     jeden Monatsanfang als GitHub-Issue.`));
   const draft = store.get("manual_draft",{});
   const series = D.manual?.series || {};
   const rows = el("div");
