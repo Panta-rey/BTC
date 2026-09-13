@@ -791,54 +791,46 @@ function infoSheet(titel, unter, abschnitte){
   inner.innerHTML = `<div class="grabber"></div>
     <h3 id="sheetTitle">${esc(titel)}</h3>
     <div class="sub">${esc(unter)}</div>`;
-  for(const [h,p] of abschnitte)
-    inner.appendChild(el("section",null,`<h4>${esc(h)}</h4><p>${p}</p>`));
+  for(const [h,html] of abschnitte)
+    inner.appendChild(el("section",null,`<h4>${esc(h)}</h4>${html}`));
   const close = el("button","btn ghost","Schliessen"); close.onclick=closeSheet;
   inner.appendChild(close);
   $("#sheet").classList.add("open"); openSheet(close);
 }
 
+// Kurz halten. Wer das Sheet öffnet, will eine Antwort, keinen Aufsatz.
 function motorSheet(){
-  const b = D.engines.buy, v = D.engines.sell, aktiv = D.engines.active;
-  const cf = b.confluence||{};
-  infoSheet("Die beiden Motoren", "Wie aus siebzehn Einzelwerten zwei Zahlen werden", [
-    ["Warum zwei getrennte Motoren",
-     "Zyklustiefs erkennt man an der Bewertung, Zyklushochs eher an Zeit und Trendbruch. Der Grund: Die Bewertungsspitzen sinken von Zyklus zu Zyklus, 2017 lag der MVRV-Z-Score am Hoch bei etwa 9, 2025 nur noch bei 3. Ein gemeinsamer Score würde beides verwässern. Deshalb rechnet die Ampel einen <b>Kauf-Motor</b> und einen <b>Verkaufs-Motor</b>, jeder von 0 bis 100."],
-    ["Wie der Wert entsteht",
-     "Jeder Indikator wird auf 0 bis 100 normiert, dann zu Familien gemittelt, dann werden die Familien nach Gewicht zusammengezogen. Beim Kauf-Motor wiegt die Bewertung 50 von 100, beim Verkaufs-Motor Zeit und Trend 40. Fehlt eine Familie, wird sie <b>herausgerechnet</b> und nicht als Null gezählt."],
-    ["Was die Zonen bedeuten",
-     "0 bis 39 ruhig, nichts in Sicht. 40 bis 59 Annäherung, bereit machen. 60 bis 79 aktiv, die Zone ist erreicht, sofern auch Tor und Konvergenz stimmen. 80 bis 100 ein ausgeprägtes Extrem. " +
-     `Derzeit steht der Kauf-Motor bei <b class="num">${b.score}</b>, der Verkaufs-Motor bei <b class="num">${v.score}</b>.`],
-    ["Abdeckung",
-     `Der Anteil der Familien, für die Daten vorliegen. Aktuell <b class="num">${Math.round((aktiv==="buy"?b:v).coverage*100)} %</b>. ` +
-     "Unter 60 % gilt die Woche als Datenlücke und wird gar nicht ausgewertet. Fehlt dauerhaft eine Quelle, sinkt auch die geforderte Zahl der Familien mit, damit ein Signal nicht daran scheitert, dass eine Kennzahl nicht lizenziert ist."],
-    ["Konvergenz: warum der Durchschnitt allein nichts auslöst",
-     `Die Zeile „${cf.in_zone||0} von ${cf.of||0} in Zone · ${cf.families||0} Familien" ist eine eigene Bedingung. Ein hoher Durchschnitt könnte von einer einzigen Familie stammen, etwa wenn nur der Preis gefallen ist. Gefordert sind deshalb mehrere Indikatoren <b>aus verschiedenen Familien</b> gleichzeitig. Ein Indikator gilt ab Score 70 als in Zone.`],
-    ["Die Tore",
-     "Zusätzlich muss ein Tor offen sein. Tor A ist die klassische Kapitulation: MVRV-Z unter 0 oder Preis unter dem Realized Price. Tor B ist das flache Tief und verlangt vier Dinge gleichzeitig: mindestens 6 Monate seit dem Hoch, mindestens 40 % unter dem Hoch, höchstens 1,05 mal der 200-Wochen-Schnitt, und entweder über 45 % des Angebots im Verlust oder ein sehr tiefes MVRV-Perzentil. Tor B gibt es, weil auch die Tiefs flacher werden und Tor A 2026 nie ausgelöst hätte."],
-    ["Der graue Motor darunter",
-     `Der jeweils andere Motor läuft im Hintergrund mit. Er löst nichts aus, dient aber als Warnung: Steht er trotz gegenläufiger Phase hoch, erscheint ein Hinweis. Aktiv ist gerade der <b>${aktiv==="buy"?"Kauf":"Verkaufs"}-Motor</b>, weil die Phase das bestimmt.`],
-    ["Grenzen",
-     "Die Gewichte und Schwellen stammen aus vier Zyklen. Das ist wenig. Sie wurden vorab festgelegt und nach dem Backtest eingefroren, nicht nachträglich passend gesucht."],
+  const b = D.engines.buy, v = D.engines.sell, cf = b.confluence||{};
+  const cov = Math.round((D.engines.active==="buy"?b:v).coverage*100);
+  infoSheet("Motoren", "Zwei Punktzahlen von 0 bis 100", [
+    ["Was der Balken sagt",
+     `<p>Kauf-Motor <b class="num">${b.score}</b>: wie günstig Bitcoin gerade ist. Verkaufs-Motor <b class="num">${v.score}</b>: wie überhitzt. Es zählt nur der zur Phase passende, der andere steht grau darunter.</p>
+      <div class="calc">
+        <div class="kv"><span>0–39</span><span>ruhig</span></div>
+        <div class="kv"><span>40–59</span><span>bereit machen</span></div>
+        <div class="kv"><span>60–79</span><span>Zone erreicht</span></div>
+        <div class="kv"><span>80–100</span><span>Extrem</span></div>
+      </div>`],
+    ["Warum zwei getrennte",
+     "<p>Tiefs erkennt man an der Bewertung, Hochs eher an Zeit und Trendbruch. Zusammengerechnet würde beides stumpf.</p>"],
+    ["Die Zeile darunter",
+     `<p>„${cf.in_zone||0} von ${cf.of||0} in Zone · ${cf.families||0} Familien". Ein hoher Durchschnitt kann von einer einzigen Gruppe kommen. Deshalb müssen mehrere Indikatoren aus <b>verschiedenen</b> Gruppen gleichzeitig anschlagen. Ab Score 70 zählt einer als in Zone.</p>`],
+    ["Abdeckung und Tore",
+     `<p>Abdeckung <b class="num">${cov} %</b> heisst: so viel der nötigen Daten liegt vor. Unter 60 % wird die Woche nicht ausgewertet. Zusätzlich muss ein Tor offen sein, Tor A für die klassische Kapitulation oder Tor B für ein flaches Tief.</p>`],
   ]);
 }
 
 function checklistSheet(){
   const nt = D.next_transition||{};
-  const ziel = PHASES[nt.to]?.n || "";
-  infoSheet(`Bis Phase ${nt.to} · ${ziel}`, "Was genau noch fehlt, und warum es zweimal gelten muss", [
-    ["Was die Liste zeigt",
-     `Die Phasen laufen nur vorwärts: ④ Abwärtstrend → ① Akkumulation → ② Aufwärtstrend → ③ Verteilung → ④. Es gibt keinen Rückweg. Die Liste zeigt jede Teilbedingung für den <b>nächstmöglichen</b> Übergang, hier nach Phase ${nt.to} ${esc(ziel)}, mit dem aktuellen Wert und dem Zielwert. Ein ✓ heisst erfüllt, ein ✗ noch nicht.`],
-    ["Warum zwei bestätigte Wochen",
-     `Die Zeile „Bestätigte Wochen ${nt.counter??0} von ${nt.needed??2}" ist die wichtigste Regel des Systems. Jede Bedingung wird ausschliesslich am <b>Wochenschluss</b> geprüft, Sonntag 24:00 UTC, und sie muss <b>zweimal hintereinander</b> gelten. Eine einzelne Woche reicht nie.`],
-    ["Was den Zähler zurücksetzt",
-     "Verfehlt eine Woche die Bedingung, fällt der Zähler sofort auf 0 und beginnt von vorn. Ohne diese Regel würde die Ampel bei jedem Zucken des Marktes umspringen. Sie kostet im Gegenzug bis zu eine Woche Verzögerung, und das ist bei einem Zeithorizont von Jahren zu verschmerzen."],
-    ["Bei unvollständigen Daten",
-     "Fällt eine Datenquelle aus und sinkt die Abdeckung unter 60 %, wird die Woche nicht ausgewertet. Der Zähler wird dann weder erhöht noch zurückgesetzt, er <b>bleibt einfach stehen</b>. Es wird nie mit geratenen Werten weitergerechnet."],
-    ["Alle Bedingungen müssen gelten",
-     "Die Punkte sind mit UND verknüpft, nicht mit ODER. Ein einzelnes ✗ genügt, damit der Übergang nicht stattfindet. Die Ausnahme ist die Zeile zu den Toren: Dort reicht Tor A <b>oder</b> Tor B."],
-    ["Warum das sichtbar ist",
-     "Damit die Maschine durchschaubar bleibt. Man sieht nicht nur \u201Egelb\u201C, sondern woran es genau liegt und wie weit es noch ist."],
+  infoSheet(`Bis Phase ${nt.to} · ${PHASES[nt.to]?.n||""}`, "Was noch fehlt", [
+    ["Was hier steht",
+     "<p>Jede Bedingung für den nächsten Phasenwechsel, mit aktuellem Wert und Zielwert. ✓ erfüllt, ✗ offen. <b>Alle</b> Punkte müssen gelten; nur bei den Toren reicht eines von beiden.</p>"],
+    ["Zweimal hintereinander",
+     `<p>Geprüft wird nur am Wochenschluss, sonntags. Jede Bedingung muss <b>zwei Wochen in Folge</b> gelten, sonst springt die Ampel bei jedem Zucken um. Stand: ${nt.counter??0} von ${nt.needed??2}.</p>`],
+    ["Der Zähler",
+     "<p>Verfehlt eine Woche, fällt er auf 0 und beginnt von vorn. Sind die Daten unvollständig, bleibt er stehen, statt zurückzufallen.</p>"],
+    ["Nur vorwärts",
+     "<p>④ Abwärtstrend → ① Akkumulation → ② Aufwärtstrend → ③ Verteilung → ④. Es gibt keinen Rückweg.</p>"],
   ]);
 }
 
