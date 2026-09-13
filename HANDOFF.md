@@ -2,7 +2,8 @@
 
 Zustandsbericht des Projekts. Wer hier einsteigt, liest zuerst dieses Dokument, dann `SPEC.md`.
 
-**Stand:** 12. September 2026 · Konfiguration `1.0` (eingefroren) · Node 22, keine Abhängigkeiten · 52 Tests grün
+**Stand:** 13. September 2026 · Konfiguration `1.0` (eingefroren) · Node 22, keine Abhängigkeiten · 52 Tests grün
+**Status:** betriebsbereit. M0 bis M6 abgeschlossen, nur M7 (Härtung) offen.
 **Seite:** https://panta-rey.github.io/Panta-Rey-BTC-Ampel/ · **Repo:** https://github.com/Panta-rey/Panta-Rey-BTC-Ampel
 
 ---
@@ -28,12 +29,12 @@ Keine Anlageberatung. Das Modell beruht auf vier Zyklen und kann falsch liegen.
 | M0 | Quellen-Check aus dem GitHub-Runner | ✅ `reports/sources-check.md` |
 | M1 | Datenpipeline: Abruf, Wochenreihe, 17 Indikatorwerte | ✅ läuft wöchentlich |
 | M2 | Normierung, zwei Motoren, Gates, Phasenmaschine, Backtest | ✅ kalibriert und eingefroren, `1.0` |
-| M2b | Manuelle Werte aus Checkonchain, Herkunftsanzeige | ✅ |
+| M2b | Manuelle Werte, Herkunftsanzeige je Indikator | ✅ |
 | M3 | Oberfläche: Ampel, Phasenleiste, Motoren, Checkliste, Kacheln | ✅ `index.html` |
 | M4 | Position und Journal im Browser | ✅ in `index.html` |
+| M5 | Benachrichtigungen (GitHub Issues, optional ntfy) | ✅ `scripts/notify.mjs`, im Ernstfall getestet |
 | M6 | Verlauf und Zyklus-Uhr als Grafik | ✅ eigenes SVG, ohne Bibliothek |
-| M5 | Benachrichtigungen (GitHub Issues, optional ntfy) | ✅ `scripts/notify.mjs` |
-| M7 | Härtung, Barrierefreiheit, Grenzfälle | ⬜ **nächster Schritt** |
+| M7 | Härtung, Barrierefreiheit, Grenzfälle | ⬜ wartet bewusst auf die geklärte Datenlage |
 
 **Aktueller Marktstand laut Ampel:** Phase 4 Abwärtstrend seit 9. November 2025. Kauf-Motor 42, Verkaufs-Motor 1, Ampel gelb, „Bereit machen. Die Kaufzone rückt näher, noch nicht kaufen." Es fehlen 18 Punkte zur Kaufzone, kein Tor ist offen, 2 von 4 Indikatoren in Zone aus 2 von 3 Familien.
 
@@ -103,7 +104,7 @@ Der Realized Price wird aus `PriceUSD ÷ CapMVRVCur` abgeleitet, weil Coin Metri
 
 Die Gratis-Stufe von BGeometrics verbietet genau unseren Aufbau: Abrufe von fremden Systemen (GitHub-Runner) und die Anzeige auf einer öffentlichen Seite gelten als kommerzielle Weiterverbreitung. **Eine Anfrage an info@bgeometrics.com läuft.** Der Token liegt als Secret `BGEOMETRICS_TOKEN` bereit und wird nicht benutzt.
 
-### Manuelle Werte aus Checkonchain (Zwischenlösung)
+### Manuelle Werte als Zwischenlösung
 
 Alle fünf Kennzahlen sind auf `charts.checkonchain.com` ablesbar. In den Einstellungen der Seite gibt es je Kennzahl ein Eingabefeld, einen Knopf „↗ Chart öffnen" und den Hinweis, welche Linie abzulesen ist.
 
@@ -209,7 +210,15 @@ Position, erledigte Tranchen und Journal liegen ausschliesslich im Browser (`loc
 
 **Testzustände:** `?fixture=kauf-tranche`, `?fixture=verkauf`, `?fixture=datenluecke` laden eine Datei aus `data/fixtures/` statt `data/latest.json`.
 
-Der Verlauf liest zusätzlich `events.json` und zeichnet **alle** Transaktionen der Historie ein, nicht nur die des laufenden Zyklus.
+**Herkunft jeder Zahl.** Jede Kachel trägt eine Rechenzeile mit den tatsächlich eingesetzten Werten, etwa `(1.61 Bio. − 1.07 Bio.) / 611.70 Mrd.` für den MVRV-Z-Score. Sie wird in der Pipeline fertig gebaut (`source_calc.compact`), nicht im Browser zusammengesetzt: Ein früherer Versuch verkettete alle Operanden mit einem Geteiltzeichen und stellte damit die Formel falsch dar. Als Divisionszeichen dient ein Schrägstrich, weil ein Geteiltzeichen bei 11 Pixel seine Punkte verliert und wie ein Plus aussieht. Das Erklär-Sheet zeigt zusätzlich Formel, alle Operanden und den Hinweis auf den Wochenschluss.
+
+**Aktualisieren.** Ein Knopf oben rechts lädt die Daten mit Cache-Umgehung neu und zeichnet alles neu.
+
+**Zyklus-Uhr.** Die Achse reicht bis 720 Tage nach dem geschätzten Halving, damit das Top-Fenster vollständig hineinpasst. Beschriftungen an den Rändern rücken links- beziehungsweise rechtsbündig. Mit echten Daten geprüft: letztes Hoch bei 0 %, Tief-Fenster 17 bis 30 %, heute 20,7 %, Halving 55,4 %, Top-Fenster 83,3 bis 95 %.
+
+**Verlauf.** Liest zusätzlich `events.json` und zeichnet **alle** Tranchen der Historie ein, nicht nur die des laufenden Zyklus. Mehrere Tranchen derselben Woche und Richtung werden zu einer Marke zusammengefasst. Die Legende nennt Tranchen, nicht Transaktionen: Es sind 18 Signale, von denen die Simulation 12 ausführte (2015 fehlte das Startkapital).
+
+**Tranchen-Chips.** Vier Zustände: offen, in dieser Woche fällig (amber), erledigt, übersprungen. Eine früher ausgelöste Tranche zeigt neutral ihr Datum. Ein gesetztes Datum heisst nicht „fällig": Die Liste trägt die Werte des laufenden Zyklus bis zum nächsten Eintritt in Phase ① mit, sonst stünden in Phase ④ alle sechs Chips fälschlich auf fällig.
 
 **Noch offen:** Antippen des Verlaufs für Details zu einer Woche, Systemsignale aus `events.json` im Journal, Prüfung der Barrierefreiheit (M7).
 
@@ -230,10 +239,30 @@ Alle sind in `SPEC.md` eingearbeitet. Hier die Begründungen:
 | Schwelle von Weg E2 | fest 40 | 40 × Abdeckung | Mit einer dauerhaft fehlenden Familie sind 20 Gewichtspunkte unerreichbar. Deshalb wurde 2025 um vier Punkte verfehlt. Weg E1 bleibt ungekoppelt, damit der Pfad der Überhitzung in einer Parabel nicht zu früh öffnet. |
 | Trendbruch-Meldung | nur bei offenen Tranchen | immer beim Übergang ③ → ④ | Der Trendbruch ist auch dann wichtig, wenn nichts mehr zu verkaufen ist. |
 | Desktop-Layout | zwei Spalten | drei Bereiche | Zwei Spalten wurden ungleich hoch, die Kacheln nutzen die volle Breite besser. |
+| Rechenzeile der Kacheln | im Browser aus den Operanden verkettet | fertig aus der Pipeline (`source_calc.compact`) | Die Verkettung stellte die Formel falsch dar, etwa „MC ÷ RC ÷ σ" statt „(MC − RC) ÷ σ". |
+| Divisionszeichen | ÷ | / | Bei 11 Pixel verliert ÷ seine Punkte und sieht aus wie ein Plus. |
 
 ---
 
-## 8. Fallstricke
+## 8. Betrieb im Alltag
+
+**Normalfall: nichts tun.** Die Pipeline läuft montags, die Seite zeigt den Stand, und bei Handlungsbedarf kommt ein GitHub-Issue als E-Mail und Push. Das offene Issue ist der Merkposten; du schliesst es, wenn die Tranche ausgeführt ist.
+
+| Anlass | Was zu tun ist |
+|---|---|
+| Signal-Issue kommt | Seite öffnen, Handlungssatz und Betrag lesen, Tranche ausführen, auf „Erledigt" tippen, Issue schliessen |
+| einmal im Monat, optional | Reserve Risk auf der BGeometrics-Chartseite ablesen, in den Einstellungen eintragen, speichern. Hebt die Abdeckung des Kauf-Motors von 80 auf 100 % |
+| Technik-Issue kommt | Actions-Tab prüfen, meist eine ausgefallene Quelle |
+| einmal im Jahr (1. Januar) | Review-Issue abarbeiten: Backup exportieren, Kernposition prüfen, Quellenstatus ansehen |
+| nach einem abgeschlossenen Zyklus | Backtest neu bewerten, Konfiguration gegebenenfalls auf 2.0 |
+
+**Nach jeder Code-Änderung, welche die Ausgabestruktur betrifft:** einmal den Wochenlauf von Hand starten. `latest.json` entsteht nur dort. Reine Darstellungsänderungen brauchen nur Strg+F5.
+
+**Reihenfolge beim Übertragen:** Archiv entpacken, `git add -A`, `git commit`, **`git pull --rebase`**, `git push`. Die Pipeline committet jeden Montag selbst, ohne das Rebase wird der Push abgelehnt.
+
+---
+
+## 9. Fallstricke
 
 | Thema | Merksatz |
 |---|---|
@@ -252,7 +281,7 @@ Alle sind in `SPEC.md` eingearbeitet. Hier die Begründungen:
 
 ---
 
-## 9. Warum Nachrechnen andere Zahlen ergibt
+## 10. Warum Nachrechnen andere Zahlen ergibt
 
 Ein Abgleich gegen Checkonchain am 12. September 2026 (Tageskurs 77'123) ergab durchgehend Abweichungen. Alle haben systematische Ursachen, keine ist ein Fehler.
 
@@ -276,7 +305,7 @@ Die Seite zeigt die Herkunft jetzt selbst: Jede Kachel trägt eine Rechenzeile m
 
 ---
 
-## 10. Offene Frage: lohnt sich BGeometrics?
+## 11. Offene Frage: lohnt sich BGeometrics?
 
 Das Add-on „Commercial Publishing" kostet 20 Dollar im Monat, der Tarif Advanced 18. Für ein privates Projekt ist das viel, und ein dauerhaftes Abo wurde deshalb verworfen. Offen bleibt aber, ob die fünf Kennzahlen das System überhaupt besser machen. Diese Frage lässt sich mit **einem Monat Advanced, rein zur Auswertung**, ein für alle Mal klären.
 
@@ -301,9 +330,13 @@ Das Add-on „Commercial Publishing" kostet 20 Dollar im Monat, der Tarif Advanc
 
 ---
 
-## 11. Nächste Schritte
+## 12. Nächste Schritte
 
-1. **Benachrichtigungen prüfen.** Unter Actions → Wochenlauf → „Run workflow" das Häkchen bei „Zusätzlich eine Testmeldung verschicken" setzen. Es entsteht ein Issue mit dem Label `signal`, das als E-Mail und über die GitHub-App als Push ankommt. Optional ein Secret `NTFY_TOPIC` mit einem zufälligen Namen für Push ohne GitHub-App.
-2. **M7, Härtung.** Barrierefreiheit prüfen, Grenzfälle der Oberfläche, Ladezeit. Sinnvoll erst, wenn die Datenlage geklärt ist: Kommen die fehlenden Kennzahlen dazu, ändern sich Abdeckung, Konvergenz und Schwellen, und dieselben Grenzfälle wären erneut zu prüfen.
-3. **Reserve Risk, STH-Realized-Price und Angebot im Gewinn** monatlich über den Speichern-Knopf nachtragen, solange BGeometrics offen ist. Alle drei wirken sofort; schon eine davon hebt die Abdeckung des Kauf-Motors auf 100 %. Reserve Risk ist die einfachste, weil ein Blick auf die BGeometrics-Chartseite genügt.
-4. **Nach der Antwort von BGeometrics** die fünf Kennzahlen anbinden und den Backtest neu bewerten. Solange warten, bevor an der Konfiguration etwas geändert wird.
+Das System ist betriebsbereit. Nichts davon ist dringend.
+
+1. **Rückfrage an BGeometrics.** Ob der Advanced-Tarif die volle Historie enthält oder ob die Vier-Jahres-Grenze auch dort gilt. Davon hängt ab, ob der Monatsabzug überhaupt Sinn ergibt. Eine Anfrage zur Nutzung des freien Tarifs läuft bereits; die Historien-Frage lässt sich anhängen.
+2. **Reserve Risk monatlich nachtragen** (optional, eine Zahl, ein Knopf). Hebt die Abdeckung des Kauf-Motors von 80 auf 100 % und macht die Familie „Halter & Stimmung" wieder wertend.
+3. **Nach der Antwort: Monatsabzug und Vergleich** mit `scripts/local/`. Klärt für 18 Dollar dauerhaft, ob die fünf Kennzahlen das System besser machen. Siehe Abschnitt 11.
+4. **M7, Härtung.** Barrierefreiheit, Grenzfälle der Oberfläche, Ladezeit. Bewusst zurückgestellt: Kommen die fehlenden Kennzahlen dazu, ändern sich Abdeckung, Konvergenz und Schwellen, und dieselben Grenzfälle wären erneut zu prüfen.
+
+**Was ausdrücklich nicht getan werden sollte:** an `config/engine.json` drehen. Die Konfiguration `1.0` hat vier Backtest-Läufe und die Empfindlichkeitsprüfung hinter sich und bleibt bis zum Ende des laufenden Zyklus unverändert (SPEC 10.5). Einzige Ausnahme ist eine geänderte Datenlage, und die zieht ohnehin eine neue Bewertung nach sich.
