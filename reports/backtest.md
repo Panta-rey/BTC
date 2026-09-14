@@ -1,6 +1,6 @@
 # Backtest
 
-Konfiguration `1.0` · 662 Wochen ab 2014-01-05 bis 2026-09-06 · Gebühr 0.5 % pro Transaktion · Kernposition 40 %
+Konfiguration `1.0` · 663 Wochen ab 2014-01-05 bis 2026-09-13 · Gebühr 0.5 % pro Transaktion · Kernposition 40 %
 
 > Startkapital: 1 BTC, kein Cash. Kauftranchen vor dem ersten Verkauf sind deshalb nicht finanzierbar – das betrifft das Tief 2015. Für Tiefs zählt daher vor allem der Zeitpunkt des Phaseneintritts.
 
@@ -10,10 +10,10 @@ Konfiguration `1.0` · 662 Wochen ab 2014-01-05 bis 2026-09-06 · Gebühr 0.5 % 
 
 | Strategie | BTC am Ende | Cash | Wert | Grösster Rückgang | Transaktionen |
 |---|---|---|---|---|---|
-| Halten | 1.0000 | – | 80'339 | – | 0 |
-| Ampel | 1.3277 | 207'481 | 314'146 | -76.6 % | 15 |
-| Sparplan | 52.6063 | 0 | 4'226'337 | – | 153 |
-| Sparplan mit Faktor | 57.7552 | 5'000 | 4'644'991 | – | 153 |
+| Halten | 1.0000 | – | 76'809 | – | 0 |
+| Ampel | 1.3277 | 207'481 | 309'459 | -76.6 % | 15 |
+| Sparplan | 52.6063 | 0 | 4'040'622 | – | 153 |
+| Sparplan mit Faktor | 57.7552 | 5'000 | 4'441'099 | – | 153 |
 
 Ampel gegen Halten: ✓ 1.3277 BTC statt 1,0000 BTC (plus 207'481 Cash).
 
@@ -122,7 +122,7 @@ Konvergenz in der nächstgelegenen Woche: 1 Indikatoren in Zone aus 1 Familien (
 | 2022-06-26 | 2023-01-15 | 1 Akkumulation | 30 | 21'029 | 20'885 |
 | 2023-01-22 | 2025-10-05 | 2 Aufwärtstrend | 142 | 22'717 | 123'519 |
 | 2025-10-12 | 2025-11-02 | 3 Verteilung | 4 | 115'090 | 110'530 |
-| 2025-11-09 | 2026-09-06 | 4 Abwärtstrend | 44 | 104'705 | 80'339 |
+| 2025-11-09 | 2026-09-13 | 4 Abwärtstrend | 45 | 104'705 | 76'809 |
 
 ## Transaktionen
 
@@ -174,22 +174,22 @@ Konvergenz in der nächstgelegenen Woche: 1 Indikatoren in Zone aus 1 Familien (
 
 ## Laufender Abschnitt
 
-Phase 4 Abwärtstrend seit 2025-11-09 (44 Wochen). Aktiver Motor: Kauf.
+Phase 4 Abwärtstrend seit 2025-11-09 (45 Wochen). Aktiver Motor: Kauf.
 
 | | Woche | Kurs | Score | Gates | Familien |
 |---|---|---|---|---|---|
 | stärkste Woche | 2026-06-28 | 59'473 | 78 | A=✗ B=✗ | {"bewertung":81,"halter_stimmung":null,"miner":84,"zeit":62} |
-| jetzt | 2026-09-06 | 80'339 | 42 | A=✗ B=✗ | {"bewertung":34,"halter_stimmung":null,"miner":50,"zeit":58} |
+| jetzt | 2026-09-13 | 76'809 | 47 | A=✗ B=✗ | {"bewertung":41,"halter_stimmung":null,"miner":51,"zeit":61} |
 
 Bedingungen für den nächsten Schritt:
 
 | Bedingung | aktuell | Ziel | |
 |---|---|---|---|
 | Gate A oder B erfüllt | keines | A oder B | ✗ |
-| Kauf-Score | 42 | 60 | ✗ |
+| Kauf-Score | 47 | 60 | ✗ |
 | Indikatoren in Zone | 2 | 4 | ✗ |
 | davon Familien | 2 | 3 | ✗ |
 
 ## Aktueller Stand
 
-Phase 4 Abwärtstrend seit 2025-11-09 · Kauf-Motor 42 · Verkauf-Motor 1 · Zähler 0 von 2
+Phase 4 Abwärtstrend seit 2025-11-09 · Kauf-Motor 47 · Verkauf-Motor 2 · Zähler 0 von 2
