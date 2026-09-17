@@ -7,9 +7,34 @@
     "rhodl": "https://charts.checkonchain.com/btconchain/supply/rhodl/rhodl_light.html",
     "lth_net_position_change": "https://charts.checkonchain.com/btconchain/supply/lthnetposchange_0/lthnetposchange_0_light.html  (Wert mit Vorzeichen, Einheit konsistent halten)"
   },
-  "sth_realized_price": [],
-  "supply_in_profit": [],
-  "reserve_risk": [],
-  "rhodl": [],
-  "lth_net_position_change": []
+  "sth_realized_price": [
+    {
+      "d": "2026-09-13",
+      "v": 71304
+    }
+  ],
+  "supply_in_profit": [
+    {
+      "d": "2026-09-13",
+      "v": 65.73
+    }
+  ],
+  "reserve_risk": [
+    {
+      "d": "2026-09-13",
+      "v": 0.00917
+    }
+  ],
+  "rhodl": [
+    {
+      "d": "2026-09-13",
+      "v": 0.0768
+    }
+  ],
+  "lth_net_position_change": [
+    {
+      "d": "2026-09-13",
+      "v": -89.504
+    }
+  ]
 }
