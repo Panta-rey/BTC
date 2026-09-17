@@ -2,8 +2,8 @@
   "schema": 1,
   "stage": "M2",
   "config_version": "1.0",
-  "mode": "daily",
-  "generated_at": "2026-09-17T11:36:21.119Z",
+  "mode": "weekly",
+  "generated_at": "2026-09-17T23:36:39.769Z",
   "week_id": "2026-09-13",
   "price": {
     "close": 76808.69,
@@ -37,9 +37,9 @@
     "days_since_last_halving": 876,
     "next_halving": {
       "height": 1050000,
-      "blocks_left": 82597,
+      "blocks_left": 82521,
       "estimate": "2028-03-22",
-      "tip_height": 967403,
+      "tip_height": 967479,
       "as_of": "2026-09-17"
     }
   },
@@ -58,9 +58,9 @@
   },
   "engines": {
     "buy": {
-      "score": 47,
+      "score": 41,
       "zone": "annaeherung",
-      "coverage": 0.8,
+      "coverage": 1,
       "families": {
         "bewertung": {
           "label": "Bewertung",
@@ -78,12 +78,12 @@
         "halter_stimmung": {
           "label": "Halter & Stimmung",
           "weight": 20,
-          "score": null,
-          "available": false,
-          "coverage": 0.3333333333333333,
+          "score": 18,
+          "available": true,
+          "coverage": 1,
           "members": {
-            "supply_loss": null,
-            "reserve_risk": null,
+            "supply_loss": 39,
+            "reserve_risk": 14,
             "fng_fear_weeks": 0
           }
         },
@@ -117,7 +117,7 @@
           "hash_ribbons",
           "months_since_ath"
         ],
-        "available_families": 3,
+        "available_families": 4,
         "need_indicators": 4,
         "need_families": 3,
         "ok": false,
@@ -211,7 +211,7 @@
       },
       {
         "label": "Kauf-Score",
-        "value": 47,
+        "value": 41,
         "target": 60,
         "met": false,
         "unit": ""
@@ -289,26 +289,26 @@
       "missing": false
     },
     "supply_loss": {
-      "value": null,
+      "value": 34.68000000000001,
       "pct": null,
       "pct_basis": null,
-      "score_buy": null,
+      "score_buy": 39,
       "score_sell": null,
-      "state_buy": "fehlt",
+      "state_buy": "neutral",
       "state_sell": "fehlt",
       "stale": false,
-      "missing": true
+      "missing": false
     },
     "reserve_risk": {
-      "value": null,
+      "value": 0.00917,
       "pct": null,
       "pct_basis": "zu_kurz",
-      "score_buy": null,
+      "score_buy": 14,
       "score_sell": null,
-      "state_buy": "fehlt",
+      "state_buy": "neutral",
       "state_sell": "fehlt",
       "stale": false,
-      "missing": true
+      "missing": false
     },
     "fng_fear_weeks": {
       "value": 0,
@@ -388,7 +388,7 @@
       "missing": false
     },
     "rhodl": {
-      "value": null,
+      "value": 0.0768,
       "pct": null,
       "pct_basis": "zu_kurz",
       "score_buy": null,
@@ -396,10 +396,10 @@
       "state_buy": "fehlt",
       "state_sell": "fehlt",
       "stale": false,
-      "missing": true
+      "missing": false
     },
     "lth_dist": {
-      "value": null,
+      "value": 89.504,
       "pct": null,
       "pct_basis": "zu_kurz",
       "score_buy": null,
@@ -407,7 +407,7 @@
       "state_buy": "fehlt",
       "state_sell": "fehlt",
       "stale": false,
-      "missing": true
+      "missing": false
     },
     "fng_4w": {
       "value": 64.9,
@@ -810,44 +810,44 @@
       }
     },
     "supply_loss": {
-      "value": null,
+      "value": 34.68,
       "unit": "%",
-      "as_of": null,
-      "age_days": null,
-      "source": "BGeometrics",
+      "as_of": "2026-09-13",
+      "age_days": 0,
+      "source": "manuell",
       "stale": false,
-      "missing": true,
-      "note": "Angebot im Verlust: Quelle ausstehend. Wert aus charts.checkonchain.com in data/manual.json eintragen."
+      "missing": false,
+      "note": "Manuell eingetragen."
     },
     "reserve_risk": {
-      "value": null,
+      "value": 0.0092,
       "unit": "",
-      "as_of": null,
-      "age_days": null,
-      "source": "BGeometrics",
+      "as_of": "2026-09-13",
+      "age_days": 0,
+      "source": "manuell",
       "stale": false,
-      "missing": true,
-      "note": "Reserve Risk: Quelle ausstehend. Wert aus charts.checkonchain.com in data/manual.json eintragen."
+      "missing": false,
+      "note": "Manuell eingetragen. Für den Score fehlt noch Historie (mindestens 26 Wochen)."
     },
     "rhodl": {
-      "value": null,
+      "value": 0.0768,
       "unit": "",
-      "as_of": null,
-      "age_days": null,
-      "source": "BGeometrics",
+      "as_of": "2026-09-13",
+      "age_days": 0,
+      "source": "manuell",
       "stale": false,
-      "missing": true,
-      "note": "RHODL-Ratio: Quelle ausstehend. Wert aus charts.checkonchain.com in data/manual.json eintragen."
+      "missing": false,
+      "note": "Manuell eingetragen. Für den Score fehlt noch Historie (mindestens 26 Wochen)."
     },
     "lth_dist": {
-      "value": null,
+      "value": 89.504,
       "unit": "BTC / 30 T",
-      "as_of": null,
-      "age_days": null,
-      "source": "BGeometrics",
+      "as_of": "2026-09-13",
+      "age_days": 0,
+      "source": "manuell",
       "stale": false,
-      "missing": true,
-      "note": "Abgabe der Langzeithalter: Quelle ausstehend. Wert aus charts.checkonchain.com in data/manual.json eintragen."
+      "missing": false,
+      "note": "Manuell eingetragen. Für den Score fehlt noch Historie (mindestens 26 Wochen)."
     },
     "cycle_clock": {
       "value": 876,
@@ -868,87 +868,107 @@
       "as_of": "2026-09-13"
     },
     "sth_rp": {
-      "value": null,
-      "as_of": null,
-      "age_days": null,
+      "value": 71304,
+      "as_of": "2026-09-13",
+      "age_days": 0,
       "stale": false,
-      "source": null,
-      "missing": true,
-      "note": "In data/manual.json eintragen"
+      "source": "manuell (Reihe)",
+      "missing": false,
+      "note": null
     }
   },
   "manual": {
     "readings": {
-      "sth_rp": 0,
-      "supply_loss": 0,
-      "reserve_risk": 0,
-      "rhodl": 0,
-      "lth_dist": 0
+      "sth_rp": 1,
+      "supply_loss": 1,
+      "reserve_risk": 1,
+      "rhodl": 1,
+      "lth_dist": 1
     },
     "max_age_days": 30,
     "series": {
-      "sth_realized_price": [],
-      "supply_in_profit": [],
-      "reserve_risk": [],
-      "rhodl": [],
-      "lth_net_position_change": []
+      "sth_realized_price": [
+        {
+          "d": "2026-09-13",
+          "v": 71304
+        }
+      ],
+      "supply_in_profit": [
+        {
+          "d": "2026-09-13",
+          "v": 65.32
+        }
+      ],
+      "reserve_risk": [
+        {
+          "d": "2026-09-13",
+          "v": 0.00917
+        }
+      ],
+      "rhodl": [
+        {
+          "d": "2026-09-13",
+          "v": 0.0768
+        }
+      ],
+      "lth_net_position_change": [
+        {
+          "d": "2026-09-13",
+          "v": -89.504
+        }
+      ]
     }
   },
-  "missing": [
-    "supply_loss",
-    "reserve_risk",
-    "rhodl",
-    "lth_dist"
-  ],
+  "missing": [],
   "stale": [],
   "sources": {
     "price_bitstamp": {
       "ok": true,
       "last": "2026-09-16",
       "error": null,
-      "at": "2026-09-17T11:36:19.075Z"
+      "at": "2026-09-17T23:36:36.792Z"
     },
     "price_coinbase": {
       "ok": true,
       "last": "2026-09-16",
       "error": null,
-      "at": "2026-09-17T11:36:19.132Z"
+      "at": "2026-09-17T23:36:36.917Z"
     },
     "coinmetrics": {
       "ok": true,
       "last": "2026-09-16",
       "error": null,
-      "at": "2026-09-17T11:36:19.272Z"
+      "at": "2026-09-17T23:36:37.426Z"
     },
     "fng": {
       "ok": true,
       "last": "2026-09-16",
       "error": null,
-      "at": "2026-09-17T11:36:19.386Z"
+      "at": "2026-09-17T23:36:37.672Z"
     },
     "wiki_en": {
       "ok": true,
       "last": "2026-09-16",
       "error": null,
-      "at": "2026-09-17T11:36:19.734Z"
+      "at": "2026-09-17T23:36:38.169Z"
     },
     "wiki_de": {
       "ok": true,
       "last": "2026-09-16",
       "error": null,
-      "at": "2026-09-17T11:36:19.911Z"
+      "at": "2026-09-17T23:36:38.664Z"
     },
     "funding_deribit": {
       "ok": true,
       "last": "2026-09-16",
       "error": null,
-      "at": "2026-09-17T11:36:20.435Z"
+      "at": "2026-09-17T23:36:39.237Z"
     },
     "network": {
       "ok": true,
       "last": "2026-09-17",
       "error": null,
-      "at": "2026-09-17T11:36:21.074Z"
+      "at": "2026-09-17T23:36:39.716Z"
     }
   },
   "attribution": [
