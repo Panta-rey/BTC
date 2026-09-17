@@ -1,6 +1,6 @@
 # Indikator-Prüfung
 
-Erstellt 2026-09-17 23:35 UTC · Konfiguration `1.0` · 844 Wochen bis 2026-09-13
+Erstellt 2026-09-17 23:37 UTC · Konfiguration `1.0` · 844 Wochen bis 2026-09-13
 
 Diese Prüfung ändert nichts. Sie misst, ob die Indikatoren noch unterscheiden, was sie unterscheiden sollen. Ein Befund ist ein Eintrag für die Neubewertung nach dem Zyklusende, keine Änderung an der laufenden Konfiguration (SPEC 10.5).
 
