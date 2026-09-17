@@ -1,0 +1,86 @@
+{
+  "erstellt": "2026-09-17T23:35:53.050Z",
+  "config_version": "1.0",
+  "wochen": 844,
+  "bis": "2026-09-13",
+  "auffaellig": [
+    {
+      "id": "retail_attention",
+      "seite": "sell",
+      "urteil": "verstummt",
+      "jetzt": 0,
+      "spanne": 34.21052631578947
+    },
+    {
+      "id": "pi_cycle",
+      "seite": "sell",
+      "urteil": "verstummt",
+      "jetzt": 0,
+      "spanne": 28.64864864864865
+    },
+    {
+      "id": "bmsb_ext",
+      "seite": "sell",
+      "urteil": "verstummt",
+      "jetzt": 0.5025125628140703,
+      "spanne": 27.404464181371978
+    },
+    {
+      "id": "mvrv_z",
+      "seite": "sell",
+      "urteil": "verstummt",
+      "jetzt": 0.5025125628140703,
+      "spanne": 26.712677310603652
+    },
+    {
+      "id": "funding_30d",
+      "seite": "sell",
+      "urteil": "verstummt",
+      "jetzt": 0,
+      "spanne": 10.326086956521738
+    }
+  ],
+  "wochen_ohne_signal": 844,
+  "rueckgang": [
+    {
+      "name": "bis 2015",
+      "tiefst": -92.18
+    },
+    {
+      "name": "bis 2018",
+      "tiefst": -81.6
+    },
+    {
+      "name": "bis 2022",
+      "tiefst": -83.36
+    },
+    {
+      "name": "seit 2022",
+      "tiefst": -75.69
+    }
+  ],
+  "timing": [
+    {
+      "tief": "2015-01-14",
+      "hoch": "2013-12-04",
+      "monate": 13.337713534822601,
+      "drin": true
+    },
+    {
+      "tief": "2018-12-15",
+      "hoch": "2017-12-17",
+      "monate": 11.925098554533507,
+      "drin": true
+    },
+    {
+      "tief": "2022-11-21",
+      "hoch": "2021-11-10",
+      "monate": 12.352168199737187,
+      "drin": true
+    }
+  ],
+  "gleichlauf": {
+    "hoch": 1,
+    "runter": 5
+  }
+}
