@@ -1,0 +1,73 @@
+name: Indikator-Prüfung
+
+# Einmal im Jahr, am 2. Januar, kurz nach dem Jahres-Review-Issue. Prüft, ob die
+# Indikatoren noch unterscheiden, was sie unterscheiden sollen, und ob das
+# Grundmodell noch trägt. Ändert nichts, schreibt nur reports/indikator-check.md.
+#
+# Hintergrund in HANDOFF §4a: Ein Indikator kann still unbrauchbar werden, indem
+# er verstummt oder indem er dauernd ruft. Der zweite Fall ist gefährlicher und
+# fiel bei Reserve Risk erst durch eine Sonderprüfung auf.
+
+on:
+  schedule:
+    - cron: "40 6 2 1 *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: data
+  cancel-in-progress: false
+
+jobs:
+  pruefen:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - name: Prüfen
+        run: node scripts/indikator-check.mjs
+
+      - name: Zusammenfassung
+        run: node -e "require('fs').appendFileSync(process.env.GITHUB_STEP_SUMMARY, require('fs').readFileSync('reports/indikator-check.md','utf8'))"
+
+      - name: Issue anlegen, wenn etwas auffällt
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          AUFF=$(node -p "require('./reports/indikator-check.json').auffaellig.length")
+          if [ "$AUFF" = "0" ]; then
+            echo "Nichts auffällig, kein Issue."
+            exit 0
+          fi
+          JAHR=$(date -u +%Y)
+          TITEL="Indikator-Prüfung $JAHR: $AUFF auffällige Indikatoren"
+          if gh issue list --state all --search "in:title Indikator-Prüfung $JAHR" --json title -q '.[].title' | grep -q "Indikator-Prüfung $JAHR"; then
+            echo "Issue für $JAHR existiert bereits."
+            exit 0
+          fi
+          {
+            node -p "require('./reports/indikator-check.json').auffaellig.map(a=>'- **'+a.id+'** ('+(a.seite==='buy'?'Kauf':'Verkauf')+'): '+a.urteil+', zuletzt '+(a.jetzt==null?'–':a.jetzt.toFixed(1)+' % der Wochen in Zone')).join('\n')"
+            echo ""
+            echo "Vollständiger Bericht: \`reports/indikator-check.md\`"
+            echo ""
+            echo "Das ist ein Befund für die Neubewertung nach dem Zyklusende, keine Änderung an der laufenden Konfiguration (SPEC 10.5)."
+          } > /tmp/body.md
+          gh issue create --title "$TITEL" --body-file /tmp/body.md --label technik
+
+      - name: Committen
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add reports/
+          if git diff --cached --quiet; then
+            echo "Keine Änderungen."
+          else
+            git commit -m "reports: Indikator-Prüfung $(date -u +%Y)"
+            git push
+          fi

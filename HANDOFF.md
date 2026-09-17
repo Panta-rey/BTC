@@ -47,6 +47,7 @@ Keine Anlageberatung. Das Modell beruht auf vier Zyklen und kann falsch liegen.
 ```
 index.html             die Seite, eine Datei, ohne Abhängigkeiten
 scripts/fetch.mjs      Quellen  → data/raw/          (Netzwerk, fehlertolerant)
+scripts/indikator-check.mjs  Frühwarnung → reports/indikator-check.md  (jährlich)
 scripts/build.mjs      data/raw → data/*.json        (Wochenauswertung + Wiedergabe)
 scripts/backtest.mjs   weekly   → reports/backtest.md
 scripts/notify.mjs     Benachrichtigungen (Issues, optional ntfy)
@@ -259,7 +260,11 @@ Position, erledigte Tranchen und Journal liegen ausschliesslich im Browser (`loc
 
 **Aktualisieren.** Ein Knopf oben rechts lädt die Daten mit Cache-Umgehung neu und zeichnet alles neu.
 
-**Erklär-Sheets an zwei Karten.** Neben „Motoren" und „Bis Phase …" steht ein Fragezeichen, das dasselbe Sheet öffnet wie die Indikator-Kacheln (`infoSheet()`, gemeinsame Hülle, gleiche Fokusfalle). Beide Karten zeigten vorher Zahlen, die ohne Vorwissen nichts sagen, vor allem die Konvergenzzeile und der Zähler „bestätigte Wochen". Vier Abschnitte je Sheet, ein bis drei Sätze, zusammen rund 240 Wörter; eine erste Fassung mit 700 war zu lang und wurde verworfen. Herleitungen und Zahlenbeispiele bleiben in der Spezifikation.
+**Erklär-Sheets an zwei Karten.** Neben „Motoren" und „Bis Phase …" steht ein Fragezeichen, das dasselbe Sheet öffnet wie die Indikator-Kacheln (`infoSheet()`, gemeinsame Hülle, gleiche Fokusfalle). Beide Karten zeigten vorher Zahlen, die ohne Vorwissen nichts sagen: Familien, Zonen, Tor A und B, die Konvergenzzeile, der Zähler „bestätigte Wochen".
+
+Drei Fassungen waren nötig, und die Lehre daraus steht hier, damit sie niemand wiederholt. Die erste mit 700 Wörtern war ein Aufsatz. Die zweite mit 240 Wörtern war kurz, aber weiterhin unverständlich, weil sie **definierte** statt zu zeigen. Erst die dritte funktioniert: Sie arbeitet mit den Zahlen, die gerade auf dem Schirm stehen. Das Motoren-Sheet listet die eigenen Familien mit Gewicht und aktuellem Wert, nennt namentlich die Indikatoren, die gerade in Zone stehen, und zeigt beide Tore mit ihrem Zustand. Das Checklisten-Sheet geht die Bedingungen der Karte einzeln durch und erklärt jede über einen Mustervergleich auf das Label. **Erklären heisst hier: mit den eigenen Daten arbeiten, nicht Begriffe definieren.**
+
+Zwei Fehler dabei gefunden: Die Sheets lasen `confluence.of`, das es nicht gibt (richtig ist `need_indicators`), und die Liste der Indikatoren „in Zone" wurde selbst nachgerechnet statt aus `confluence.ids` gelesen, was in einer Fixture 2 statt 6 ergab. Beides behoben. Gegenprobe war ein Harness, das beide Sheets gegen alle drei Fixtures durchspielt und auf `undefined` und `NaN` prüft.
 
 **Ungleich hohe Spalten, bewusst so gelassen.** Links stehen vier Karten, rechts zwei, unten rechts bleibt eine Lücke. Gemessen am 13.09.2026: links 707 px, rechts 528. Zwei Auswege wurden probiert und verworfen. Die rechte Spalte auf volle Höhe zu strecken erzeugt eine leere Karte, die wie ein Fehler aussieht. Eine Karte hinüberzuschieben dreht die Lücke nur um (Checkliste nach rechts: 531 zu 720). Die einzige Zuordnung, die heute fast aufgeht, wäre die Zyklusphase nach rechts über die Zyklus-Uhr (590 zu 645), aber die Kartenhöhen hängen vom Inhalt ab: Die Checkliste wächst mit der Zahl der Bedingungen, die Positionskarte mit den erledigten Tranchen. Jede feste Zuordnung driftet wieder weg. Die Lücke bleibt deshalb stehen.
 
@@ -428,14 +433,27 @@ Der 18. August 2011 ist die Wand: Davor gab es Bitstamp nicht. Für die Zeit von
 
 Beide lokalen Scripts laufen nie im Runner. Rohdaten bleiben in `data/private/`. Veröffentlicht wird nur der Bericht, also Kennzahlen über die Daten. Was ausdrücklich **nicht** gemacht wurde: die abgezogene Historie in die öffentliche `data/manual.json` schreiben. Das wäre Weiterverbreitung der Rohdaten und ist auch mit dem Zusatzmodul „Commercial Publishing" nicht gedeckt. Verlockend wäre es gewesen, weil es die Perzentil-Untergrenze von 26 Wochen sofort erfüllt hätte.
 
+## 11a. Frühwarnung: driften die Indikatoren?
+
+`scripts/indikator-check.mjs` misst, ob die Indikatoren noch unterscheiden. Er braucht keine bezahlten Quellen, liest nur `data/weekly.json` und läuft deshalb im Runner. Der Workflow **Indikator-Prüfung** startet ihn am 2. Januar, kurz nach dem Jahres-Review, und legt ein Issue an, wenn etwas auffällt. Von Hand über *Actions* auslösbar.
+
+**Ebene A, je Indikator.** Anteil der Wochen mit Score ≥ 70, gesamt und je Zyklus, gerechnet mit `scoreIndicators()`, also derselben Funktion wie im Live-Betrieb. Drei Urteile: **ruft dauernd** ab 60 % im laufenden Zyklus, **verstummt** bei höchstens 1 %, **driftet stark** ab 40 Punkten Unterschied zwischen den Zyklen. Der erste Fall ist der gefährlichste, weil er den Motor konstant anhebt, ohne noch etwas zu unterscheiden; genau so verhält sich Reserve Risk seit 2022, und ohne die Sonderprüfung vom September wäre es niemandem aufgefallen.
+
+**Ebene B, das Grundmodell.** Schwächer, weil die Zyklusgrenzen aus eben diesem Modell stammen. Vier Prüfungen messen aber Grössen, die auch sonst gelten: wie lange kein Signal mehr kam (ein voller Zyklus sind 208 Wochen), ob der tiefste Rückgang je Zyklus noch unter der Torschwelle von −40 % bleibt, ob die Tiefs weiterhin 9 bis 16 Monate nach dem Hoch liegen, und ob viele Indikatoren gleichzeitig in dieselbe Richtung driften.
+
+**Was er nicht kann, steht im Bericht selbst.** Er beweist nicht, dass der Zyklus zu Ende ist, und er warnt nicht rechtzeitig: Bei vier Zyklen ist ein abweichender fünfter statistisch bedeutungslos, erst der sechste wäre ein Muster. Sein Nutzen ist bescheidener und trotzdem real: Er verwandelt ein Unbehagen in datierte Zahlen.
+
+---
+
 ## 12. Nächste Schritte
 
 Das System ist betriebsbereit. Nichts davon ist dringend.
 
 1. **Monatlich zwei Zahlen eintragen.** Angebot im Gewinn und STH-Realized-Price. Die Erinnerung kommt am Monatsanfang von selbst als Issue. Das Angebot im Gewinn allein hebt die Abdeckung des Kauf-Motors von 80 auf 100 %. Reserve Risk, RHODL und LTH-Positionsänderung bleiben leer, Begründung in Abschnitt 4a.
 2. **Nach dem Zyklusende: Ankerpunkte von Reserve Risk neu schneiden.** Die vorhandene Historie liegt in `data/private/` und genügt dafür, ein zweites Abo ist nicht nötig. Ziel ist ein Anteil „in Zone" im einstelligen bis niedrigen zweistelligen Prozentbereich, wie ihn das Angebot im Gewinn mit 8,6 % im laufenden Zyklus erreicht.
-3. **M7, Härtung.** Barrierefreiheit, Grenzfälle der Oberfläche, Ladezeit. Der Grund für die Zurückstellung ist entfallen: Die Datenlage ist geklärt, die Abdeckung ändert sich nicht mehr überraschend. M7 ist damit der einzige noch offene Meilenstein und kann beginnen.
-4. **Nach dem Zyklusende: Weg E2 neu denken.** Drei unabhängige Prüfungen zeigen auf dieselbe Stelle (Abschnitt 5). Die Kopplung `score_min × Abdeckung` ist entweder zu grob oder die Schwelle von 40 zu hoch. Erst dann entscheidet sich auch, ob RHODL und LTH-Positionsänderung dazukommen.
-5. **Zweiter Abzug vor Ablauf des Zugangs**, etwa am 10. Oktober 2026: `node scripts/local/fetch-bgeometrics.mjs --probe --out=data/private-2` und danach derselbe Aufruf ohne `--probe`. Sichert die Reihen bis zum letzten Tag. Danach läuft der Zugang aus und wird nicht erneuert.
+3. **Erste Indikator-Prüfung ansehen**, spätestens im Januar. Sie läuft von selbst; interessant ist, ob ausser Reserve Risk noch etwas driftet.
+4. **M7, Härtung.** Barrierefreiheit, Grenzfälle der Oberfläche, Ladezeit. Der Grund für die Zurückstellung ist entfallen: Die Datenlage ist geklärt, die Abdeckung ändert sich nicht mehr überraschend. M7 ist damit der einzige noch offene Meilenstein und kann beginnen.
+5. **Nach dem Zyklusende: Weg E2 neu denken.** Drei unabhängige Prüfungen zeigen auf dieselbe Stelle (Abschnitt 5). Die Kopplung `score_min × Abdeckung` ist entweder zu grob oder die Schwelle von 40 zu hoch. Erst dann entscheidet sich auch, ob RHODL und LTH-Positionsänderung dazukommen.
+6. **Zweiter Abzug vor Ablauf des Zugangs**, etwa am 10. Oktober 2026: `node scripts/local/fetch-bgeometrics.mjs --probe --out=data/private-2` und danach derselbe Aufruf ohne `--probe`. Sichert die Reihen bis zum letzten Tag. Danach läuft der Zugang aus und wird nicht erneuert.
 
 **Was ausdrücklich nicht getan werden sollte:** an `config/engine.json` drehen. Die Konfiguration `1.0` hat vier Backtest-Läufe, die Empfindlichkeitsprüfung und jetzt zusätzlich den BGeometrics-Nachlauf hinter sich. Sie bleibt bis zum Ende des laufenden Zyklus unverändert (SPEC 10.5). Das gilt ausdrücklich auch für die Versuchung, Weg E2 jetzt zu entkoppeln: Das Ergebnis von 2025 wäre damit auf genau einen Zyklus optimiert.

@@ -798,39 +798,92 @@ function infoSheet(titel, unter, abschnitte){
   $("#sheet").classList.add("open"); openSheet(close);
 }
 
-// Kurz halten. Wer das Sheet öffnet, will eine Antwort, keinen Aufsatz.
+// Erklären heisst hier: mit den Zahlen arbeiten, die gerade auf dem Schirm stehen.
+// Eine Definition wie „Familie = Gruppe von Indikatoren" hilft niemandem; die Liste
+// der eigenen Familien mit ihren aktuellen Werten schon.
+
 function motorSheet(){
-  const b = D.engines.buy, v = D.engines.sell, cf = b.confluence||{};
-  const cov = Math.round((D.engines.active==="buy"?b:v).coverage*100);
-  infoSheet("Motoren", "Zwei Punktzahlen von 0 bis 100", [
-    ["Was der Balken sagt",
-     `<p>Kauf-Motor <b class="num">${b.score}</b>: wie günstig Bitcoin gerade ist. Verkaufs-Motor <b class="num">${v.score}</b>: wie überhitzt. Es zählt nur der zur Phase passende, der andere steht grau darunter.</p>
+  const seite = D.engines.active, e = D.engines[seite], cf = e.confluence||{};
+  const andere = seite==="buy" ? D.engines.sell : D.engines.buy;
+  const nam = seite==="buy" ? "Kauf" : "Verkauf";
+
+  // Familien mit echten Werten auflisten
+  const fam = Object.values(e.families||{}).map(f=>
+    `<div class="kv"><span>${esc(f.label)} · ${Object.keys(f.members||{}).length} Indikatoren</span>` +
+    `<span>Gewicht ${f.weight} · ${f.available?f.score:"fehlt"}</span></div>`).join("");
+
+  // Welche Indikatoren stehen gerade in Zone, und welcher ist am nächsten dran?
+  const alle = [];
+  for(const f of Object.values(e.families||{}))
+    for(const id of Object.keys(f.members||{})){
+      const sc = seite==="buy" ? D.scores?.[id]?.score_buy : D.scores?.[id]?.score_sell;
+      if(sc!=null) alle.push({ id, n: I[id]?.n||id, sc, f: f.label });
+    }
+  alle.sort((a,b)=>b.sc-a.sc);
+  // Welche in Zone stehen, sagen die Daten selbst (confluence.ids). Nicht nachrechnen:
+  // die Engine zählt auch Indikatoren mit, die keiner Familie dieser Seite angehören.
+  const inZoneIds = new Set(cf.ids||[]);
+  const drin = (cf.ids||[]).map(id=>({ n: I[id]?.n||id }));
+  const knapp = alle.filter(x=>!inZoneIds.has(x.id) && x.sc<70).slice(0,2);
+
+  infoSheet(`${nam}-Motor`, `${e.score} von 100`, [
+    ["Was die Zahl ist",
+     `<p>Ein Durchschnitt aus allen Indikatoren, von 0 bis 100. Hoch heisst: viele Anzeichen sprechen für ${seite==="buy"?"einen günstigen Einstieg":"ein Überhitzen"}. Der ${seite==="buy"?"Verkaufs":"Kauf"}-Motor darunter (${andere.score}) läuft nur mit und löst nichts aus, weil die Phase bestimmt, welcher gilt.</p>
       <div class="calc">
         <div class="kv"><span>0–39</span><span>ruhig</span></div>
         <div class="kv"><span>40–59</span><span>bereit machen</span></div>
         <div class="kv"><span>60–79</span><span>Zone erreicht</span></div>
         <div class="kv"><span>80–100</span><span>Extrem</span></div>
       </div>`],
-    ["Warum zwei getrennte",
-     "<p>Tiefs erkennt man an der Bewertung, Hochs eher an Zeit und Trendbruch. Zusammengerechnet würde beides stumpf.</p>"],
-    ["Die Zeile darunter",
-     `<p>„${cf.in_zone||0} von ${cf.of||0} in Zone · ${cf.families||0} Familien". Ein hoher Durchschnitt kann von einer einzigen Gruppe kommen. Deshalb müssen mehrere Indikatoren aus <b>verschiedenen</b> Gruppen gleichzeitig anschlagen. Ab Score 70 zählt einer als in Zone.</p>`],
-    ["Abdeckung und Tore",
-     `<p>Abdeckung <b class="num">${cov} %</b> heisst: so viel der nötigen Daten liegt vor. Unter 60 % wird die Woche nicht ausgewertet. Zusätzlich muss ein Tor offen sein, Tor A für die klassische Kapitulation oder Tor B für ein flaches Tief.</p>`],
+
+    ["Familien: die Gruppen darunter",
+     `<p>Indikatoren, die dasselbe messen, bilden eine Familie. Erst wird innerhalb einer Familie gemittelt, dann werden die Familien nach Gewicht zusammengezogen. So kann eine Gruppe mit vier Indikatoren die Sache nicht vierfach zählen. Deine Familien gerade:</p>
+      <div class="calc">${fam}</div>
+      <p>Fehlt eine Familie ganz, wird sie <b>herausgerechnet</b> und nicht als Null gewertet. Die anderen wiegen dann entsprechend schwerer.</p>`],
+
+    ["In Zone: ab 70 Punkten",
+     `<p>Jeder einzelne Indikator hat auch einen Wert von 0 bis 100. Ab 70 gilt er als „in Zone", also als deutliches Anzeichen. ` +
+      (drin.length ? `Gerade in Zone: <b>${drin.map(x=>esc(x.n)).join(", ")}</b>.` : `Gerade ist keiner in Zone.`) +
+      (knapp.length ? ` Am nächsten dran: ${knapp.map(x=>`${esc(x.n)} mit ${Math.round(x.sc)}`).join(", ")}.` : "") + `</p>`],
+
+    ["Warum der Durchschnitt allein nicht reicht",
+     `<p>Die Zeile <b>„${cf.in_zone??0} von ${cf.need_indicators??0} in Zone · ${cf.families??0} von ${cf.need_families??0} Familien"</b> ist eine eigene Bedingung. Ein hoher Durchschnitt könnte allein vom Preisverfall kommen. Gefordert sind deshalb mehrere Indikatoren aus <b>verschiedenen</b> Familien gleichzeitig. Erst wenn Preis, Halterverhalten und Miner dasselbe sagen, zählt es.</p>`],
+
+    ["Tor A und Tor B",
+     `<p>Zusätzlich muss ein Tor offen sein, sonst passiert nichts, egal wie hoch der Score steht. Die Tore sind Vorbedingungen, keine Punkte.</p>
+      <div class="calc">
+        <div class="kv"><span>Tor A · Kapitulation</span><span>${e.gates?.A?"offen ✓":"zu ✗"}</span></div>
+        <div class="kv"><span>Tor B · flaches Tief</span><span>${e.gates?.B?"offen ✓":"zu ✗"}</span></div>
+      </div>
+      <p><b>Tor A</b> ist der klassische Ausverkauf: Bitcoin notiert unter dem Durchschnittspreis aller Käufer. <b>Tor B</b> gibt es, weil die Tiefs flacher werden und Tor A zuletzt nie mehr aufging. Es verlangt stattdessen vier Dinge gleichzeitig: mindestens ein halbes Jahr seit dem Hoch, mindestens 40 % darunter, nahe am 200-Wochen-Schnitt, und viele Coins unter Wasser.</p>`],
   ]);
 }
 
 function checklistSheet(){
   const nt = D.next_transition||{};
+  const erklaerung = [
+    [/tor|gate/i, "Eine der beiden Vorbedingungen muss offen sein. Hier reicht <b>eine</b> von beiden, alle anderen Zeilen müssen alle erfüllt sein."],
+    [/score/i, "Der Motor muss diesen Wert erreichen. Für einen Phasenwechsel ist die Hürde höher als für die blosse Zone."],
+    [/indikatoren in zone/i, "So viele einzelne Indikatoren müssen mindestens 70 Punkte haben."],
+    [/famili/i, "Und sie müssen aus so vielen <b>verschiedenen</b> Gruppen stammen, damit nicht eine einzelne Ursache alles treibt."],
+    [/trend|band/i, "Der Preis muss die Trendlinie unterschritten haben."],
+    [/monate|tage|zeit/i, "Ein zeitlicher Mindestabstand, damit eine Phase nicht nach zwei Wochen wieder wechselt."],
+  ];
+  const zeilen = (nt.conditions||[]).map(c=>{
+    const t = erklaerung.find(([re])=>re.test(c.label||""));
+    return `<div class="kv"><span>${c.met?"✓":"✗"} ${esc(c.label)}</span></div>` +
+           (t ? `<p class="why">${t[1]}</p>` : "");
+  }).join("");
+
   infoSheet(`Bis Phase ${nt.to} · ${PHASES[nt.to]?.n||""}`, "Was noch fehlt", [
-    ["Was hier steht",
-     "<p>Jede Bedingung für den nächsten Phasenwechsel, mit aktuellem Wert und Zielwert. ✓ erfüllt, ✗ offen. <b>Alle</b> Punkte müssen gelten; nur bei den Toren reicht eines von beiden.</p>"],
+    ["Die Zeilen im Einzelnen",
+     `<p>Jede Zeile ist eine Bedingung für den nächsten Phasenwechsel, mit aktuellem Wert und Zielwert.</p>${zeilen}`],
     ["Zweimal hintereinander",
-     `<p>Geprüft wird nur am Wochenschluss, sonntags. Jede Bedingung muss <b>zwei Wochen in Folge</b> gelten, sonst springt die Ampel bei jedem Zucken um. Stand: ${nt.counter??0} von ${nt.needed??2}.</p>`],
+     `<p>Geprüft wird nur am Wochenschluss, sonntags. Alles muss <b>zwei Wochen in Folge</b> gleichzeitig gelten, sonst würde die Ampel bei jedem Zucken umspringen. Stand: ${nt.counter??0} von ${nt.needed??2}.</p>`],
     ["Der Zähler",
-     "<p>Verfehlt eine Woche, fällt er auf 0 und beginnt von vorn. Sind die Daten unvollständig, bleibt er stehen, statt zurückzufallen.</p>"],
+     "<p>Verfehlt eine Woche auch nur eine Bedingung, fällt er auf 0 und beginnt von vorn. Sind die Daten unvollständig, bleibt er stehen, statt zurückzufallen.</p>"],
     ["Nur vorwärts",
-     "<p>④ Abwärtstrend → ① Akkumulation → ② Aufwärtstrend → ③ Verteilung → ④. Es gibt keinen Rückweg.</p>"],
+     "<p>④ Abwärtstrend → ① Akkumulation → ② Aufwärtstrend → ③ Verteilung → ④. Es gibt keinen Rückweg und keine Abkürzung.</p>"],
   ]);
 }
 
