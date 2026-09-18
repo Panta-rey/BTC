@@ -3,7 +3,7 @@
   "stage": "M2",
   "config_version": "1.0",
   "mode": "weekly",
-  "generated_at": "2026-09-18T00:15:51.045Z",
+  "generated_at": "2026-09-18T00:18:01.002Z",
   "week_id": "2026-09-13",
   "price": {
     "close": 76808.69,
@@ -78,12 +78,12 @@
         "halter_stimmung": {
           "label": "Halter & Stimmung",
           "weight": 20,
-          "score": 18,
+          "score": 20,
           "available": true,
-          "coverage": 1,
+          "coverage": 0.6666666666666666,
           "members": {
             "supply_loss": 39,
-            "reserve_risk": 14,
+            "reserve_risk": null,
             "fng_fear_weeks": 0
           }
         },
@@ -300,15 +300,15 @@
       "missing": false
     },
     "reserve_risk": {
-      "value": 0.00917,
+      "value": null,
       "pct": null,
       "pct_basis": "zu_kurz",
-      "score_buy": 14,
+      "score_buy": null,
       "score_sell": null,
-      "state_buy": "neutral",
+      "state_buy": "fehlt",
       "state_sell": "fehlt",
       "stale": false,
-      "missing": false
+      "missing": true
     },
     "fng_fear_weeks": {
       "value": 0,
@@ -820,14 +820,14 @@
       "note": "Manuell eingetragen."
     },
     "reserve_risk": {
-      "value": 0.0092,
+      "value": null,
       "unit": "",
-      "as_of": "2026-09-13",
-      "age_days": 0,
-      "source": "manuell",
+      "as_of": null,
+      "age_days": null,
+      "source": "BGeometrics",
       "stale": false,
-      "missing": false,
-      "note": "Manuell eingetragen. Für den Score fehlt noch Historie (mindestens 26 Wochen)."
+      "missing": true,
+      "note": "Reserve Risk: Quelle ausstehend. Wert aus charts.checkonchain.com in data/manual.json eintragen."
     },
     "rhodl": {
       "value": 0.0768,
@@ -881,7 +881,7 @@
     "readings": {
       "sth_rp": 1,
       "supply_loss": 1,
-      "reserve_risk": 1,
+      "reserve_risk": 0,
       "rhodl": 1,
       "lth_dist": 1
     },
@@ -899,12 +899,7 @@
           "v": 65.32
         }
       ],
-      "reserve_risk": [
-        {
-          "d": "2026-09-13",
-          "v": 0.00917
-        }
-      ],
+      "reserve_risk": [],
       "rhodl": [
         {
           "d": "2026-09-13",
@@ -919,56 +914,58 @@
       ]
     }
   },
-  "missing": [],
+  "missing": [
+    "reserve_risk"
+  ],
   "stale": [],
   "sources": {
     "price_bitstamp": {
       "ok": true,
       "last": "2026-09-17",
       "error": null,
-      "at": "2026-09-18T00:15:48.280Z"
+      "at": "2026-09-18T00:17:58.713Z"
     },
     "price_coinbase": {
       "ok": true,
       "last": "2026-09-17",
       "error": null,
-      "at": "2026-09-18T00:15:48.325Z"
+      "at": "2026-09-18T00:17:58.770Z"
     },
     "coinmetrics": {
       "ok": true,
       "last": "2026-09-16",
       "error": null,
-      "at": "2026-09-18T00:15:48.500Z"
+      "at": "2026-09-18T00:17:58.886Z"
     },
     "fng": {
       "ok": true,
       "last": "2026-09-17",
       "error": null,
-      "at": "2026-09-18T00:15:48.835Z"
+      "at": "2026-09-18T00:17:59.013Z"
     },
     "wiki_en": {
       "ok": true,
       "last": "2026-09-16",
       "error": null,
-      "at": "2026-09-18T00:15:49.259Z"
+      "at": "2026-09-18T00:17:59.375Z"
     },
     "wiki_de": {
       "ok": true,
       "last": "2026-09-16",
       "error": null,
-      "at": "2026-09-18T00:15:49.731Z"
+      "at": "2026-09-18T00:17:59.565Z"
     },
     "funding_deribit": {
       "ok": true,
       "last": "2026-09-17",
       "error": null,
-      "at": "2026-09-18T00:15:50.238Z"
+      "at": "2026-09-18T00:18:00.111Z"
     },
     "network": {
       "ok": true,
       "last": "2026-09-18",
       "error": null,
-      "at": "2026-09-18T00:15:50.991Z"
+      "at": "2026-09-18T00:18:00.951Z"
     }
   },
   "attribution": [
