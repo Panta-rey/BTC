@@ -2,8 +2,8 @@
   "schema": 1,
   "stage": "M2",
   "config_version": "1.0",
-  "mode": "weekly",
-  "generated_at": "2026-09-18T00:24:14.769Z",
+  "mode": "daily",
+  "generated_at": "2026-09-18T11:09:02.561Z",
   "week_id": "2026-09-13",
   "price": {
     "close": 76808.69,
@@ -37,9 +37,9 @@
     "days_since_last_halving": 876,
     "next_halving": {
       "height": 1050000,
-      "blocks_left": 82519,
-      "estimate": "2028-03-23",
-      "tip_height": 967481,
+      "blocks_left": 82456,
+      "estimate": "2028-03-24",
+      "tip_height": 967544,
       "as_of": "2026-09-18"
     }
   },
@@ -923,49 +923,49 @@
       "ok": true,
       "last": "2026-09-17",
       "error": null,
-      "at": "2026-09-18T00:24:12.605Z"
+      "at": "2026-09-18T11:09:00.391Z"
     },
     "price_coinbase": {
       "ok": true,
       "last": "2026-09-17",
       "error": null,
-      "at": "2026-09-18T00:24:12.671Z"
+      "at": "2026-09-18T11:09:00.454Z"
     },
     "coinmetrics": {
       "ok": true,
-      "last": "2026-09-16",
+      "last": "2026-09-17",
       "error": null,
-      "at": "2026-09-18T00:24:12.810Z"
+      "at": "2026-09-18T11:09:00.604Z"
     },
     "fng": {
       "ok": true,
       "last": "2026-09-17",
       "error": null,
-      "at": "2026-09-18T00:24:12.940Z"
+      "at": "2026-09-18T11:09:00.734Z"
     },
     "wiki_en": {
       "ok": true,
-      "last": "2026-09-16",
+      "last": "2026-09-17",
       "error": null,
-      "at": "2026-09-18T00:24:13.278Z"
+      "at": "2026-09-18T11:09:00.974Z"
     },
     "wiki_de": {
       "ok": true,
-      "last": "2026-09-16",
+      "last": "2026-09-17",
       "error": null,
-      "at": "2026-09-18T00:24:13.443Z"
+      "at": "2026-09-18T11:09:01.136Z"
     },
     "funding_deribit": {
       "ok": true,
       "last": "2026-09-17",
       "error": null,
-      "at": "2026-09-18T00:24:13.908Z"
+      "at": "2026-09-18T11:09:01.686Z"
     },
     "network": {
       "ok": true,
       "last": "2026-09-18",
       "error": null,
-      "at": "2026-09-18T00:24:14.714Z"
+      "at": "2026-09-18T11:09:02.506Z"
     }
   },
   "attribution": [
