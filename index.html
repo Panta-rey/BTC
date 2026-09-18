@@ -229,6 +229,17 @@ svg.chart{width:100%;height:190px;display:block}
 .mtop .badge.later{color:var(--ready);border-color:rgba(240,180,41,.35)}
 .mrow.later{opacity:.72;background:#0C1018}
 .mrow .warn{margin-top:7px;font-size:11.5px;color:var(--ready);line-height:1.45}
+/* Begründung zu einer Tranche. Der wichtigste Ausfallmodus des Systems ist nicht
+   ein falscher Indikator, sondern eine nicht ausgeführte Entscheidung. Ohne Notiz
+   lässt sich beim Zyklusende nicht unterscheiden, ob das System falsch lag oder
+   ob ihm nicht gefolgt wurde. */
+.noteRow{margin-top:9px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.noteRow input{flex:1;min-width:180px;background:#0A111A;border:1px solid var(--edge);color:var(--ink);
+  border-radius:9px;padding:9px 11px;font-size:13px;font-family:inherit;min-height:44px}
+.noteRow .btn{min-height:44px;padding:9px 14px}
+.noteQ{margin-top:8px;font-size:11.5px;color:var(--mut);line-height:1.45}
+.noteShown{margin-top:7px;font-size:12px;color:var(--ink);line-height:1.5;
+  border-left:2px solid var(--edge);padding-left:9px}
 .mtop .sp{flex:1}
 .chartbtn{display:inline-flex;align-items:center;justify-content:center;gap:5px;min-height:44px;
   border:1px solid var(--edge);border-radius:8px;
@@ -501,9 +512,35 @@ function hero(){
     b2.onclick = ()=>markTranche(tr,"skip");
     row.append(b1,b2);
   } else if(tr && DONE[key(tr)]){
-    row.appendChild(el("span","chip ok",`${TR[tr]} erledigt am ${esc(dateDE(DONE[key(tr)].date))}`));
+    const st = DONE[key(tr)];
+    row.appendChild(el("span","chip "+(st.state==="skip"?"warn":"ok"),
+      `${TR[tr]} ${st.state==="skip"?"übersprungen":"erledigt"} am ${esc(dateDE(st.date))}`));
   }
   if(row.children.length) t.appendChild(row);
+
+  // Nach dem Markieren einmal nach dem Grund fragen. Nicht erzwungen: „Ohne Notiz"
+  // schliesst ab. Wer gar nichts einträgt, wird beim nächsten Mal wieder gefragt.
+  if(tr && DONE[key(tr)] && notizFuer === key(tr) && DONE[key(tr)].note == null){
+    const st = DONE[key(tr)];
+    t.appendChild(el("div","noteQ", st.state==="skip"
+      ? "Warum übersprungen? Ein Satz genügt. Beim Zyklusende ist das der einzige Weg, zu unterscheiden, ob das System falsch lag oder ob ihm nicht gefolgt wurde."
+      : "Etwas festzuhalten? Zum Beispiel der tatsächlich ausgeführte Betrag oder eine Abweichung vom Vorschlag."));
+    const nr = el("div","noteRow");
+    const inp = el("input");
+    inp.type="text"; inp.maxLength=300;
+    inp.placeholder = st.state==="skip" ? "z. B. Liquidität gebraucht, Signal nicht geglaubt …" : "z. B. nur halbe Tranche ausgeführt";
+    inp.setAttribute("aria-label","Begründung zur Tranche");
+    inp.onkeydown = (e)=>{ if(e.key==="Enter") saveNote(tr,inp.value); };
+    const ok = el("button","btn","Notieren");
+    ok.onclick = ()=>saveNote(tr,inp.value);
+    const no = el("button","btn ghost","Ohne Notiz");
+    no.onclick = ()=>saveNote(tr,"");
+    nr.append(inp,ok,no);
+    t.appendChild(nr);
+    setTimeout(()=>inp.focus(),0);
+  } else if(tr && DONE[key(tr)]?.note){
+    t.appendChild(el("div","noteShown",esc(DONE[key(tr)].note)));
+  }
   h.appendChild(t); c.appendChild(h);
   return c;
 }
@@ -692,12 +729,24 @@ function trancheAmount(t){
 function refreshAmounts(){ try{ render(); }catch(e){ console.error(e); } }
 const key=(t)=>`${D.phase.cycle_no||0}:${t}`;
 
+let notizFuer = null;   // welche Tranche gerade nach einer Begründung fragt
+
 function markTranche(t,state){
   DONE[key(t)] = {state,date:D.week_id,price:D.price.close};
   store.set("tranches",DONE);
   JOURNAL.unshift({date:new Date().toISOString().slice(0,10),week:D.week_id,
     text:`${TR[t]} ${state==="done"?"erledigt":"übersprungen"} bei ${usd(D.price.close)} USD`});
   store.set("journal",JOURNAL);
+  notizFuer = key(t);
+  render();
+}
+
+// Die Begründung wird an den Tranchen-Eintrag und an den Journaleintrag gehängt.
+function saveNote(t,text){
+  const k = key(t), notiz = (text||"").trim();
+  if(DONE[k]) { DONE[k].note = notiz; store.set("tranches",DONE); }
+  if(notiz && JOURNAL[0]) { JOURNAL[0].note = notiz; store.set("journal",JOURNAL); }
+  notizFuer = null;
   render();
 }
 
@@ -1012,8 +1061,10 @@ function drawChart(){
 function journalCard(){
   const c = el("div","card"); c.appendChild(el("h2",null,"Journal"));
   if(!JOURNAL.length) c.appendChild(el("div","why","Noch keine Einträge. Sobald du eine Tranche als erledigt markierst, erscheint sie hier."));
-  for(const j of JOURNAL.slice(0,12))
+  for(const j of JOURNAL.slice(0,12)){
     c.appendChild(el("div","kv",`<span>${esc(dateDE(j.date))}</span><span>${esc(j.text)}</span>`));
+    if(j.note) c.appendChild(el("div","noteShown",esc(j.note)));
+  }
   const row = el("div","btnrow");
   const ex = el("button","btn ghost","Backup exportieren"); ex.onclick=exportBackup;
   const im = el("button","btn ghost","Backup importieren"); im.onclick=importBackup;

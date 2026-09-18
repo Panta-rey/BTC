@@ -230,9 +230,43 @@ Die beiden Ausreisser sind `gates.sell_E2.halving_days_min` ×1,15 (480 → 552 
 
 **Bekannte Schwachstelle: das Signal von 2025 ist der wackeligste Teil des Systems.** Verkauf-Score 36 bei einer wirksamen Schwelle von 32. Das ist knapp. Wird E2 auch nur etwas strenger, oder fällt die Abdeckung des Verkaufs-Motors (dann steigt die gekoppelte Schwelle), verschwindet das Signal. Das ist kein Fehler, sondern spiegelt, dass 2025 ein wirklich leises Hoch war. Es ist bewusst nicht wegoptimiert, aber beim nächsten Zyklus im Auge zu behalten.
 
-**Am 13.09.2026 bestätigt, und zwar deutlicher als erwartet.** Der Nachlauf mit vollständiger Datenlage verliert nicht nur das Signal, sondern den gesamten Verkaufszyklus 2025 (Abschnitt 4a). Die Empfindlichkeitsprüfung hatte dasselbe Muster schon gezeigt: Beide Ausreisser von zehn Verschiebungen betrafen Weg E2. Drei unabhängige Prüfungen zeigen damit auf dieselbe Stelle. Nach dem Zyklusende gehört die Kopplung `score_min × Abdeckung` neu durchdacht, nicht die Datenlage künstlich klein gehalten.
+**Am 13.09.2026 bestätigt, und zwar deutlicher als erwartet.** Der Nachlauf mit vollständiger Datenlage verliert nicht nur das Signal, sondern den gesamten Verkaufszyklus 2025 (Abschnitt 4a). Die Empfindlichkeitsprüfung hatte dasselbe Muster schon gezeigt: Beide Ausreisser von zehn Verschiebungen betrafen Weg E2. Drei unabhängige Prüfungen zeigen damit auf dieselbe Stelle.
+
+**Am 18.09.2026 kam eine vierte dazu, auf einem anderen Rechenweg, und sie ist die deutlichste.** Die Indikator-Prüfung misst je Zyklus den höchsten Wert, den der Verkaufs-Motor überhaupt erreicht hat:
+
+| | bis 2015 | bis 2018 | bis 2022 | seit 2022 |
+|---|---|---|---|---|
+| höchster Wert Verkaufs-Motor | 58 | 100 | 59 | **37** |
+| Wochen in Zone (ab 60) | 0,0 % | 9,8 % | 0,0 % | 0,0 % |
+| höchster Wert Kauf-Motor | 79 | 94 | 96 | 92 |
+
+Zwei Dinge stehen damit fest. Erstens: **Der Kauf-Motor ist unauffällig**, seine Höchstwerte schwanken ohne Trend zwischen 79 und 96. Das Problem liegt ausschliesslich auf der Verkaufsseite. Zweitens: Der Höchstwert des laufenden Zyklus liegt bei **37**. Weg E2 verlangt 40 bei voller Datenlage und 32 bei der heutigen Abdeckung von 80 %. Mit vollständigen Daten hätte der Verkaufs-Motor also **im gesamten Zyklus an keiner einzigen Woche** ausgelöst; es fehlten nicht drei Punkte in einer Woche, sondern drei Punkte im ganzen Zyklus. Beim heutigen Stand hat er ausgelöst, aber **der Puffer beträgt fünf Punkte**.
+
+Dazu passen die fünf Indikatoren, die im laufenden Zyklus als verstummt gelten. Alle fünf gehören zum Verkaufs-Motor, keiner zum Kauf-Motor, und sie sinken über alle vier Zyklen gleichmässig: pi_cycle 28,6 → 8,3 → 6,8 → 0,0 %, bmsb_ext 27,9 → 11,8 → 9,2 → 0,5 %, mvrv_z (Verkauf) 27,2 → 15,7 → 6,8 → 0,5 %. In die Gegenrichtung geht nur `p_200w` auf der Kaufseite, von 0,0 auf 27,1 %. Beides beschreibt dasselbe: **Die Ausschläge werden kleiner, oben schneller als unten.**
+
+Nach dem Zyklusende gehört deshalb nicht nur die Kopplung `score_min × Abdeckung` neu durchdacht, sondern die Frage, ob der Verkaufs-Motor in seiner heutigen Form beim nächsten Hoch überhaupt noch auslösen kann. Die Datenlage künstlich klein zu halten löst das nicht.
 
 **Konfiguration `1.0` ist eingefroren** und wird erst nach dem Ende des laufenden Zyklus neu bewertet (SPEC 10.5). Eine Ausnahme: Kommen die BGeometrics-Kennzahlen dazu, ändern sich Abdeckung und die gekoppelte E2-Schwelle, dann muss der Backtest neu bewertet werden.
+
+---
+
+## 5a. Was die Buchauswertung beigetragen hat
+
+Am 18.09.2026 wurden sechs Zusammenfassungen von 17 Büchern durchgesehen (Bitcoin-Fundamentals, Geldsystem, Trading-Psychologie, Trading-Systeme, Market Wizards und Spekulationsgeschichte, Zyklen und Ungewissheit). Ergebnis: **Der grösste Teil überträgt sich nicht**, und das ist eine Feststellung, keine Bescheidenheit. Dreizehn der Bücher behandeln Trading mit Stops, Positionsgrössen je Trade und Einstiegstiming. Die Ampel hat keinen Hebel, keinen Stop-Loss und handelt sechsmal je Zyklus. Van Tharps R-Multiple setzt einen definierten Stop voraus und mindestens 50 Trades; hier gibt es 15 in zwölf Jahren. Das zu übertragen wäre genau die Narrative Fallacy, vor der Taleb warnt.
+
+Vier Beiträge bleiben.
+
+**1. Die Frage nach dem Ausstieg** (Jim Paul: erst bestimmen, wo man aussteigt, dann wo man einsteigt). Sie führte direkt zum Befund über die Verkaufsseite in Abschnitt 5. Das ist der wertvollste Ertrag der Auswertung, und er kam nicht aus einem Buch, sondern aus einer Frage, die ein Buch gestellt hat.
+
+**2. Silent Evidence im Backtest** (Taleb). Alle vier Zyklen der Stichprobe sind Zyklen, in denen Bitcoin sich wieder erholt hat. Die Abnahmekriterien messen durchweg gegen Tiefs, auf die ein Anstieg folgte. Kein Fall im Sample ist einer, in dem es nicht weiterging. Das macht die Kriterien nicht falsch, aber es ist eine benannte Grenze: **Die Ampel ist auf einem Sample kalibriert, das auf Überleben bedingt ist.** Sie kann prinzipiell nicht messen, wie sie sich verhielte, wenn ein Zyklus nicht zurückkehrt.
+
+**3. Bitcoin-Dominanz als vorab festgelegter Kandidat für 2.0** (Chancellor). In jeder Blase wandert Kapital in immer schlechtere Objekte: von Semper Augustus zu breeder bulbs, von Blue Chips zu Penny Stocks. In Krypto ist das als Bitcoin-Dominanz messbar (BTC-Marktkapitalisierung geteilt durch die des Gesamtmarkts), und die Reihe ist gratis und rückwirkend erhältlich. Sie gehörte in die Familie „Euphorie" des **Verkaufs**-Motors, also genau in die Familie, die laut Indikator-Prüfung verstummt ist (`retail_attention` 0,0 %, `funding_30d` 0,0 %, `fng_4w` 6,5 %).
+
+*Vorab festgehalten, damit es später keine Rückschau wird:* Getestet wird, ob die Dominanz an den vier bekannten Zyklushochs im oberen Bereich ihrer eigenen Vier-Jahres-Verteilung liegt und an den Tiefs nicht. Als Ergebnis gilt eine Trennschärfe über 40 Punkten nach der Methode aus `compare.mjs`. Wird sie verfehlt, ist der Kandidat erledigt und wird **nicht** durch einen anderen ersetzt, der im Rückblick besser aussieht.
+
+**4. Die Auflösung der zentralen Spannung.** Durch alle sechs Dateien zieht sich derselbe ungelöste Widerspruch: Ammous und Boyapati sagen halten, Tharp und die Turtles sagen Stops setzen und Risiko managen. Die Ampel beantwortet das bereits, nur stand es nirgends: **Die Kernposition ist der HODL-Teil, die Tranchen sind der gesteuerte Teil.** Strukturell ist das Talebs Barbell — ein unangetasteter Kern plus ein begrenzter, regelgebundener Anteil, und bewusst nichts dazwischen. Das ist auch die Antwort auf die naheliegendste Kritik am System, das Fehlen eines Stop-Loss: Ein Stop-Loss wäre hier falsch, weil die Kernposition gar nicht verkauft werden soll und der gesteuerte Teil über Phasen statt über Preisschwellen arbeitet.
+
+**Nicht übernommen:** R-Multiples und Expectancy (kein Stop, zu wenige Trades), Positionsgrössen je Trade (durch die Tranchenlogik ersetzt), Zeitstop auf Wochenebene (die zwei bestätigten Wochen leisten dasselbe), sämtliche Intraday-Technik.
 
 ---
 
@@ -439,7 +473,11 @@ Beide lokalen Scripts laufen nie im Runner. Rohdaten bleiben in `data/private/`.
 
 **Ebene A, je Indikator.** Anteil der Wochen mit Score ≥ 70, gesamt und je Zyklus, gerechnet mit `scoreIndicators()`, also derselben Funktion wie im Live-Betrieb. Drei Urteile: **ruft dauernd** ab 60 % im laufenden Zyklus, **verstummt** bei höchstens 1 %, **driftet stark** ab 40 Punkten Unterschied zwischen den Zyklen. Der erste Fall ist der gefährlichste, weil er den Motor konstant anhebt, ohne noch etwas zu unterscheiden; genau so verhält sich Reserve Risk seit 2022, und ohne die Sonderprüfung vom September wäre es niemandem aufgefallen.
 
+**Überblick je Motor.** Vor der Einzelliste steht der höchste je Zyklus erreichte Motorwert und der Anteil der Wochen in Zone, getrennt nach Kauf und Verkauf, dazu der Vergleich gegen die Schwelle von Weg E2. Das ist die Zahl, auf die es ankommt: nicht ob ein einzelner Indikator schwächelt, sondern ob der Motor als Ganzes seine Zone noch erreicht. Der Befund daraus steht in Abschnitt 5.
+
 **Ebene B, das Grundmodell.** Schwächer, weil die Zyklusgrenzen aus eben diesem Modell stammen. Vier Prüfungen messen aber Grössen, die auch sonst gelten: wie lange kein Signal mehr kam (ein voller Zyklus sind 208 Wochen), ob der tiefste Rückgang je Zyklus noch unter der Torschwelle von −40 % bleibt, ob die Tiefs weiterhin 9 bis 16 Monate nach dem Hoch liegen, und ob viele Indikatoren gleichzeitig in dieselbe Richtung driften.
+
+**Zwei Fehler beim Bauen, beide behoben und hier notiert.** Die Signalerkennung suchte nach Ereignissen vom Typ `BUY` oder `SELL`; sie heissen `TRANCHE_DUE`. Der Bericht behauptete dadurch „seit 844 Wochen kein Signal", richtig sind 190. Und die Aussage über fallende Höchstwerte prüfte nur den letzten gegen den ersten Zyklus und formulierte daraus eine Monotonie, die es nicht gibt (58 → 100 → 59 → 37 steigt zuerst). An ihrer Stelle steht jetzt die Rechnung gegen die E2-Schwelle, die ohnehin aussagekräftiger ist.
 
 **Was er nicht kann, steht im Bericht selbst.** Er beweist nicht, dass der Zyklus zu Ende ist, und er warnt nicht rechtzeitig: Bei vier Zyklen ist ein abweichender fünfter statistisch bedeutungslos, erst der sechste wäre ein Muster. Sein Nutzen ist bescheidener und trotzdem real: Er verwandelt ein Unbehagen in datierte Zahlen.
 
@@ -451,9 +489,10 @@ Das System ist betriebsbereit. Nichts davon ist dringend.
 
 1. **Monatlich zwei Zahlen eintragen.** Angebot im Gewinn und STH-Realized-Price. Die Erinnerung kommt am Monatsanfang von selbst als Issue. Das Angebot im Gewinn allein hebt die Abdeckung des Kauf-Motors von 80 auf 100 %. Reserve Risk, RHODL und LTH-Positionsänderung bleiben leer, Begründung in Abschnitt 4a.
 2. **Nach dem Zyklusende: Ankerpunkte von Reserve Risk neu schneiden.** Die vorhandene Historie liegt in `data/private/` und genügt dafür, ein zweites Abo ist nicht nötig. Ziel ist ein Anteil „in Zone" im einstelligen bis niedrigen zweistelligen Prozentbereich, wie ihn das Angebot im Gewinn mit 8,6 % im laufenden Zyklus erreicht.
-3. **Erste Indikator-Prüfung ansehen**, spätestens im Januar. Sie läuft von selbst; interessant ist, ob ausser Reserve Risk noch etwas driftet.
-4. **M7, Härtung.** Barrierefreiheit, Grenzfälle der Oberfläche, Ladezeit. Der Grund für die Zurückstellung ist entfallen: Die Datenlage ist geklärt, die Abdeckung ändert sich nicht mehr überraschend. M7 ist damit der einzige noch offene Meilenstein und kann beginnen.
-5. **Nach dem Zyklusende: Weg E2 neu denken.** Drei unabhängige Prüfungen zeigen auf dieselbe Stelle (Abschnitt 5). Die Kopplung `score_min × Abdeckung` ist entweder zu grob oder die Schwelle von 40 zu hoch. Erst dann entscheidet sich auch, ob RHODL und LTH-Positionsänderung dazukommen.
-6. **Zweiter Abzug vor Ablauf des Zugangs**, etwa am 10. Oktober 2026: `node scripts/local/fetch-bgeometrics.mjs --probe --out=data/private-2` und danach derselbe Aufruf ohne `--probe`. Sichert die Reihen bis zum letzten Tag. Danach läuft der Zugang aus und wird nicht erneuert.
+3. **Bitcoin-Dominanz beschaffen und einmal messen.** Gratis und rückwirkend erhältlich, die Prüfvorschrift steht in Abschnitt 5a. Nur messen, nicht einbauen: Die Konfiguration bleibt eingefroren.
+4. **Erste Indikator-Prüfung ansehen**, spätestens im Januar. Sie läuft von selbst; interessant ist, ob ausser Reserve Risk noch etwas driftet.
+5. **M7, Härtung.** Barrierefreiheit, Grenzfälle der Oberfläche, Ladezeit. Der Grund für die Zurückstellung ist entfallen: Die Datenlage ist geklärt, die Abdeckung ändert sich nicht mehr überraschend. M7 ist damit der einzige noch offene Meilenstein und kann beginnen.
+6. **Nach dem Zyklusende: Weg E2 und die Verkaufsseite neu denken.** Vier unabhängige Prüfungen zeigen auf dieselbe Stelle (Abschnitt 5). Die Kopplung `score_min × Abdeckung` ist entweder zu grob oder die Schwelle von 40 zu hoch. Erst dann entscheidet sich auch, ob RHODL und LTH-Positionsänderung dazukommen.
+7. **Zweiter Abzug vor Ablauf des Zugangs**, etwa am 10. Oktober 2026: `node scripts/local/fetch-bgeometrics.mjs --probe --out=data/private-2` und danach derselbe Aufruf ohne `--probe`. Sichert die Reihen bis zum letzten Tag. Danach läuft der Zugang aus und wird nicht erneuert.
 
 **Was ausdrücklich nicht getan werden sollte:** an `config/engine.json` drehen. Die Konfiguration `1.0` hat vier Backtest-Läufe, die Empfindlichkeitsprüfung und jetzt zusätzlich den BGeometrics-Nachlauf hinter sich. Sie bleibt bis zum Ende des laufenden Zyklus unverändert (SPEC 10.5). Das gilt ausdrücklich auch für die Versuchung, Weg E2 jetzt zu entkoppeln: Das Ergebnis von 2025 wäre damit auf genau einen Zyklus optimiert.

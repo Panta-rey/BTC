@@ -68,6 +68,20 @@ function anteil(id, seite, von, bis) {
   return rel.length ? { n: rel.length, pct: (rel.filter(x => x >= IN_ZONE).length / rel.length) * 100 } : null;
 }
 
+// Überblick je Motor. Die Einzeltabelle zeigt Bäume, diese Zeilen den Wald:
+// Erreicht ein Motor seine Zone überhaupt noch?
+const ZONE_MIN = { buy: cfg.engines.buy.score_min ?? 60, sell: cfg.engines.sell.score_min ?? 60 };
+const motorUeberblick = ["buy", "sell"].map(seite => {
+  const je = ZYKLEN.map(z => {
+    const rel = run.weeks.filter(w => w.w >= z.von && w.w <= z.bis)
+      .map(w => (seite === "buy" ? w.buy : w.sell)).filter(x => x != null);
+    if (!rel.length) return { ...z, a: null };
+    return { ...z, a: { n: rel.length, max: Math.max(...rel),
+      inZone: (rel.filter(x => x >= ZONE_MIN[seite]).length / rel.length) * 100 } };
+  });
+  return { seite, je };
+});
+
 const ebeneA = [];
 for (const seite of ["buy", "sell"]) {
   for (const id of ids) {
@@ -93,7 +107,8 @@ ebeneA.sort((a, b) => b.schwere - a.schwere || b.spanne - a.spanne);
 
 const letzte = rows.at(-1);
 const ereignisse = run.events ?? [];
-const letztesSignal = [...ereignisse].reverse().find(e => /BUY|SELL|KAUF|VERKAUF/i.test(e.type ?? ""));
+// Signale heissen im Ereignisstrom TRANCHE_DUE, nicht BUY oder SELL.
+const letztesSignal = [...ereignisse].reverse().find(e => e.type === "TRANCHE_DUE");
 const wochenOhneSignal = letztesSignal ? Math.round(daysBetween(letztesSignal.week_id ?? letztesSignal.w, letzte.w) / 7) : rows.length;
 
 // Tiefster Rückgang je Zyklus gegen die Torschwelle von Tor B
@@ -131,7 +146,47 @@ L.push(auffaellig.length
   : `Keine der ${ebeneA.length} Indikatorrollen ist auffällig.`, "");
 L.push(`Letztes Kauf- oder Verkaufssignal vor ${wochenOhneSignal} Wochen. Gleichlauf: ${hoch} Indikatoren driften nach oben, ${runter} nach unten.`, "");
 
-L.push("## A. Einzelne Indikatoren", "");
+L.push("## A. Überblick: erreichen die Motoren ihre Zone noch?", "");
+L.push(`Bevor es um einzelne Indikatoren geht, die Gesamtsicht. Gezeigt wird je Zyklus der höchste erreichte Motorwert und der Anteil der Wochen, in denen der Motor seine Zone erreicht hat. Ein Motor, dessen Höchstwert von Zyklus zu Zyklus fällt, verliert seine Fähigkeit, überhaupt auszulösen.`, "");
+L.push("| Motor | Wert | " + ZYKLEN.map(z => z.name).join(" | ") + " |");
+L.push("|---|---|" + ZYKLEN.map(() => "---|").join(""));
+for (const m of motorUeberblick) {
+  const nam = m.seite === "buy" ? "Kauf" : "Verkauf";
+  L.push(`| ${nam} | höchster Wert | ` + m.je.map(z => (z.a ? Math.round(z.a.max) : "–")).join(" | ") + " |");
+  L.push(`| ${nam} | Wochen in Zone (ab ${ZONE_MIN[m.seite]}) | ` + m.je.map(z => (z.a ? f1(z.a.inZone) + " %" : "–")).join(" | ") + " |");
+}
+L.push("");
+// Die entscheidende Rechnung: Reicht der höchste Motorwert des laufenden Zyklus
+// überhaupt noch über die Schwelle von Weg E2? Die ist an die Abdeckung gekoppelt,
+// also einmal bei voller Datenlage und einmal beim heutigen Stand prüfen.
+const sellMax = motorUeberblick.find(m => m.seite === "sell").je.filter(z => z.a).map(z => z.a.max);
+const e2 = cfg.gates.sell_E2;
+const cov = run.weeks.at(-1)?.sell_cov ?? null;
+if (sellMax.length >= 2) {
+  const jetzt = sellMax.at(-1), vorher = Math.max(...sellMax.slice(0, -1));
+  L.push(`Höchstwerte des Verkaufs-Motors über die Zyklen: ${sellMax.map(x => Math.round(x)).join(" → ")}. ` +
+    (jetzt < vorher * 0.75
+      ? `Der laufende Zyklus bleibt deutlich unter dem besten früheren Wert (${Math.round(vorher)}).`
+      : `Der laufende Zyklus liegt im Rahmen der früheren.`), "");
+
+  const voll = e2.score_min;
+  const heute = e2.scale_by_coverage && cov != null ? voll * cov : voll;
+  L.push("| Weg E2 verlangt | Schwelle | höchster Wert ${Y} | reicht? |".replace("${Y}", "im laufenden Zyklus"),
+         "|---|---|---|---|");
+  L.push(`| bei voller Datenlage | ${voll} | ${Math.round(jetzt)} | ${jetzt >= voll ? "✓" : "**✗**"} |`);
+  if (cov != null && Math.abs(heute - voll) > 0.5)
+    L.push(`| bei heutiger Abdeckung (${Math.round(cov * 100)} %) | ${Math.round(heute)} | ${Math.round(jetzt)} | ${jetzt >= heute ? "✓" : "**✗**"} |`);
+  L.push("");
+  if (jetzt < voll) {
+    L.push(`**Das ist der wichtigste Befund dieser Prüfung.** Mit vollständigen Daten hätte der Verkaufs-Motor im gesamten laufenden Zyklus an keiner einzigen Woche ausgelöst: Sein Höchstwert von ${Math.round(jetzt)} lag nie über der Schwelle von ${voll}. Es fehlten also nicht ein paar Punkte in einer Woche, sondern im ganzen Zyklus.` +
+      (cov == null || heute >= voll ? ""
+        : jetzt >= heute
+          ? ` Bei der heutigen Abdeckung liegt die Schwelle bei ${Math.round(heute)}, es hat also ausgelöst. Der Puffer beträgt aber nur ${Math.round(jetzt - heute)} Punkte: Fällt das nächste Hoch noch etwas flacher aus, meldet die Verkaufsseite nichts mehr.`
+          : ` Auch bei der heutigen, abgesenkten Schwelle von ${Math.round(heute)} reicht es nicht.`), "");
+  }
+}
+
+L.push("## B. Einzelne Indikatoren", "");
 L.push(`Anteil der Wochen, in denen ein Indikator mindestens Score ${IN_ZONE} erreicht, also „in Zone" steht. **Ruft dauernd** heisst 60 % oder mehr im laufenden Zyklus: Der Indikator hebt den Motor konstant an, ohne noch zu unterscheiden. **Verstummt** heisst 1 % oder weniger. **Driftet stark** heisst über 40 Prozentpunkte Unterschied zwischen den Zyklen.`, "");
 L.push("| Indikator | Rolle | Familie | gesamt | " + ZYKLEN.map(z => z.name).join(" | ") + " | Urteil |");
 L.push("|---|---|---|---|" + ZYKLEN.map(() => "---|").join("") + "---|");
@@ -142,13 +197,17 @@ for (const x of ebeneA) {
 }
 L.push("");
 
-L.push("## B. Trägt das Grundmodell noch?", "");
-L.push("Diese Prüfungen sind schwächer als Teil A, weil die Zyklusgrenzen selbst aus dem Modell stammen. Sie messen aber Grössen, die auch dann noch aussagen, wenn der Zyklus nicht mehr greift.", "");
+L.push("## C. Trägt das Grundmodell noch?", "");
+L.push("Diese Prüfungen sind schwächer als die Teile A und B, weil die Zyklusgrenzen selbst aus dem Modell stammen. Sie messen aber Grössen, die auch dann noch aussagen, wenn der Zyklus nicht mehr greift.", "");
 
 L.push("**1. Schweigen.**", "");
-L.push(wochenOhneSignal > 208
+L.push(!ereignisse.length
+  ? "Der Lauf hat überhaupt keine Ereignisse erzeugt. Das deutet auf unvollständige Eingangsdaten hin, nicht auf Schweigen des Systems."
+  : !letztesSignal
+  ? `In der gesamten Historie (${rows.length} Wochen) wurde nie eine Tranche fällig. **Das wäre ein Befund, der das ganze Modell in Frage stellt.**`
+  : wochenOhneSignal > 208
   ? `Seit ${wochenOhneSignal} Wochen kein Kauf- oder Verkaufssignal, also über einen vollen Zyklus hinweg. **Das ist für sich schon eine Aussage.**`
-  : `Letztes Signal vor ${wochenOhneSignal} Wochen. Unauffällig, ein voller Zyklus wären 208.`, "");
+  : `Letztes Signal vor ${wochenOhneSignal} Wochen (${letztesSignal.week_id}). Unauffällig, ein voller Zyklus wären 208.`, "");
 
 L.push("**2. Wird der Rückgang zu flach?** Tor B verlangt mindestens " + schwelle + " % unter dem Hoch. Bleibt ein Bärenmarkt darüber, öffnet kein Tor, egal wie gut die Indikatoren sind.", "");
 L.push("| Zyklus | tiefster Rückgang | Abstand zur Torschwelle |", "|---|---|---|");

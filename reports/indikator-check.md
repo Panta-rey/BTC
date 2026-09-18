@@ -1,6 +1,10 @@
 # Indikator-Prüfung
 
+<<<<<<< HEAD
 Erstellt 2026-09-17 23:37 UTC · Konfiguration `1.0` · 844 Wochen bis 2026-09-13
+=======
+Erstellt 2026-09-17 23:45 UTC · Konfiguration `1.0` · 844 Wochen bis 2026-09-13
+>>>>>>> 59cb0b3 (Indikator-Pruefung: E2-Vergleich statt falscher Monotonie, Befund im Handoff)
 
 Diese Prüfung ändert nichts. Sie misst, ob die Indikatoren noch unterscheiden, was sie unterscheiden sollen. Ein Befund ist ein Eintrag für die Neubewertung nach dem Zyklusende, keine Änderung an der laufenden Konfiguration (SPEC 10.5).
 
@@ -8,9 +12,28 @@ Diese Prüfung ändert nichts. Sie misst, ob die Indikatoren noch unterscheiden,
 
 5 von 16 Indikatorrollen sind auffällig: 0 rufen dauernd, 5 sind verstummt, 0 driften stark.
 
+<<<<<<< HEAD
 Letztes Kauf- oder Verkaufssignal vor 844 Wochen. Gleichlauf: 1 Indikatoren driften nach oben, 5 nach unten.
 
 ## A. Einzelne Indikatoren
+=======
+Letztes Kauf- oder Verkaufssignal vor 190 Wochen. Gleichlauf: 1 Indikatoren driften nach oben, 5 nach unten.
+
+## A. Überblick: erreichen die Motoren ihre Zone noch?
+
+Bevor es um einzelne Indikatoren geht, die Gesamtsicht. Gezeigt wird je Zyklus der höchste erreichte Motorwert und der Anteil der Wochen, in denen der Motor seine Zone erreicht hat. Ein Motor, dessen Höchstwert von Zyklus zu Zyklus fällt, verliert seine Fähigkeit, überhaupt auszulösen.
+
+| Motor | Wert | bis 2015 | bis 2018 | bis 2022 | seit 2022 |
+|---|---|---|---|---|---|
+| Kauf | höchster Wert | 79 | 94 | 96 | 92 |
+| Kauf | Wochen in Zone (ab 60) | 25.9 % | 18.1 % | 20.9 % | 16.1 % |
+| Verkauf | höchster Wert | 58 | 100 | 59 | 37 |
+| Verkauf | Wochen in Zone (ab 60) | 0.0 % | 9.8 % | 0.0 % | 0.0 % |
+
+**Der Verkaufs-Motor erreicht immer tiefere Höchstwerte:** 58 → 100 → 59 → 37. Das ist kein Zufall einzelner Indikatoren, sondern ein Muster über die ganze Seite. Es erklärt, warum das Signal von 2025 so knapp ausfiel, und es ist der wichtigste Hinweis auf flacher werdende Zyklen.
+
+## B. Einzelne Indikatoren
+>>>>>>> 59cb0b3 (Indikator-Pruefung: E2-Vergleich statt falscher Monotonie, Befund im Handoff)
 
 Anteil der Wochen, in denen ein Indikator mindestens Score 70 erreicht, also „in Zone" steht. **Ruft dauernd** heisst 60 % oder mehr im laufenden Zyklus: Der Indikator hebt den Motor konstant an, ohne noch zu unterscheiden. **Verstummt** heisst 1 % oder weniger. **Driftet stark** heisst über 40 Prozentpunkte Unterschied zwischen den Zyklen.
 
@@ -33,6 +56,7 @@ Anteil der Wochen, in denen ein Indikator mindestens Score 70 erreicht, also „
 | fng_4w | Verkauf | Euphorie | 7.4 % | – | 0.0 % | 9.7 % | 6.5 % | unauffällig |
 | months_since_ath | Kauf | Zeit | 18.4 % | 23.4 % | 14.7 % | 18.9 % | 15.6 % | unauffällig |
 
+<<<<<<< HEAD
 ## B. Trägt das Grundmodell noch?
 
 Diese Prüfungen sind schwächer als Teil A, weil die Zyklusgrenzen selbst aus dem Modell stammen. Sie messen aber Grössen, die auch dann noch aussagen, wenn der Zyklus nicht mehr greift.
@@ -40,6 +64,15 @@ Diese Prüfungen sind schwächer als Teil A, weil die Zyklusgrenzen selbst aus d
 **1. Schweigen.**
 
 Seit 844 Wochen kein Kauf- oder Verkaufssignal, also über einen vollen Zyklus hinweg. **Das ist für sich schon eine Aussage.**
+=======
+## C. Trägt das Grundmodell noch?
+
+Diese Prüfungen sind schwächer als die Teile A und B, weil die Zyklusgrenzen selbst aus dem Modell stammen. Sie messen aber Grössen, die auch dann noch aussagen, wenn der Zyklus nicht mehr greift.
+
+**1. Schweigen.**
+
+Letztes Signal vor 190 Wochen (2023-01-22). Unauffällig, ein voller Zyklus wären 208.
+>>>>>>> 59cb0b3 (Indikator-Pruefung: E2-Vergleich statt falscher Monotonie, Befund im Handoff)
 
 **2. Wird der Rückgang zu flach?** Tor B verlangt mindestens -40 % unter dem Hoch. Bleibt ein Bärenmarkt darüber, öffnet kein Tor, egal wie gut die Indikatoren sind.
 

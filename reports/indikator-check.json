@@ -1,5 +1,9 @@
 {
+<<<<<<< HEAD
   "erstellt": "2026-09-17T23:37:03.821Z",
+=======
+  "erstellt": "2026-09-17T23:45:20.602Z",
+>>>>>>> 59cb0b3 (Indikator-Pruefung: E2-Vergleich statt falscher Monotonie, Befund im Handoff)
   "config_version": "1.0",
   "wochen": 844,
   "bis": "2026-09-13",
@@ -40,7 +44,11 @@
       "spanne": 10.326086956521738
     }
   ],
+<<<<<<< HEAD
   "wochen_ohne_signal": 844,
+=======
+  "wochen_ohne_signal": 190,
+>>>>>>> 59cb0b3 (Indikator-Pruefung: E2-Vergleich statt falscher Monotonie, Befund im Handoff)
   "rueckgang": [
     {
       "name": "bis 2015",
