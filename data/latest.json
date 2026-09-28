@@ -2,15 +2,15 @@
   "schema": 1,
   "stage": "M2",
   "config_version": "1.0",
-  "mode": "daily",
-  "generated_at": "2026-09-27T11:57:48.190Z",
-  "week_id": "2026-09-20",
+  "mode": "weekly",
+  "generated_at": "2026-09-28T09:39:59.562Z",
+  "week_id": "2026-09-27",
   "price": {
-    "close": 81151.65,
-    "date": "2026-09-20",
+    "close": 84457.2,
+    "date": "2026-09-27",
     "source": "Bitstamp",
     "provenance": {
-      "bitstamp": 5519,
+      "bitstamp": 5520,
       "coinbase": 0,
       "coinmetrics_seed": 396,
       "aufgefuellt": 0,
@@ -18,15 +18,15 @@
     }
   },
   "today": {
-    "date": "2026-09-26",
-    "close": 84433.05,
-    "fng": 74,
+    "date": "2026-09-27",
+    "close": 84457.2,
+    "fng": 70,
     "note": "Tageswert, vorläufig, löst nichts aus"
   },
   "cycle_clock": {
     "ath": 124728,
     "ath_date": "2025-10-06",
-    "days_since_ath": 349,
+    "days_since_ath": 356,
     "halvings": [
       "2012-11-28",
       "2016-07-09",
@@ -34,20 +34,20 @@
       "2024-04-20"
     ],
     "last_halving": "2024-04-20",
-    "days_since_last_halving": 883,
+    "days_since_last_halving": 890,
     "next_halving": {
       "height": 1050000,
-      "blocks_left": 81163,
-      "estimate": "2028-04-24",
-      "tip_height": 968837,
-      "as_of": "2026-09-27"
+      "blocks_left": 81025,
+      "estimate": "2028-04-20",
+      "tip_height": 968975,
+      "as_of": "2026-09-28"
     }
   },
   "phase": {
     "id": 4,
     "name": "Abwärtstrend",
     "since": "2025-11-09",
-    "weeks": 45,
+    "weeks": 46,
     "cycle_no": 3
   },
   "lamp": "aus",
@@ -58,21 +58,21 @@
   },
   "engines": {
     "buy": {
-      "score": 37,
+      "score": 34,
       "zone": "ruhig",
       "coverage": 1,
       "families": {
         "bewertung": {
           "label": "Bewertung",
           "weight": 50,
-          "score": 34,
+          "score": 29,
           "available": true,
           "coverage": 1,
           "members": {
-            "mvrv_z": 44,
-            "p_rp": 28,
-            "p_200w": 56,
-            "mayer": 7
+            "mvrv_z": 40,
+            "p_rp": 22,
+            "p_200w": 52,
+            "mayer": 2
           }
         },
         "halter_stimmung": {
@@ -101,11 +101,11 @@
         "zeit": {
           "label": "Zeit",
           "weight": 15,
-          "score": 57,
+          "score": 53,
           "available": true,
           "coverage": 1,
           "members": {
-            "drawdown": 13,
+            "drawdown": 6,
             "months_since_ath": 100
           }
         }
@@ -129,19 +129,19 @@
       }
     },
     "sell": {
-      "score": 3,
+      "score": 4,
       "zone": "ruhig",
       "coverage": 0.8,
       "families": {
         "zeit_trend": {
           "label": "Zeit & Trend",
           "weight": 40,
-          "score": 2,
+          "score": 3,
           "available": true,
           "coverage": 1,
           "members": {
             "cycle_clock": 0,
-            "bmsb_ext": 4
+            "bmsb_ext": 9
           }
         },
         "rel_bewertung": {
@@ -170,11 +170,11 @@
         "euphorie": {
           "label": "Euphorie",
           "weight": 15,
-          "score": 12,
+          "score": 13,
           "available": true,
           "coverage": 1,
           "members": {
-            "fng_4w": 37,
+            "fng_4w": 39,
             "funding_30d": 0,
             "retail_attention": 0
           }
@@ -211,7 +211,7 @@
       },
       {
         "label": "Kauf-Score",
-        "value": 37,
+        "value": 34,
         "target": 60,
         "met": false,
         "unit": ""
@@ -245,10 +245,10 @@
   },
   "scores": {
     "mvrv_z": {
-      "value": 0.9143,
-      "pct": 42.78846153846153,
+      "value": 1.0083,
+      "pct": 44.230769230769226,
       "pct_basis": "voll",
-      "score_buy": 44,
+      "score_buy": 40,
       "score_sell": 0,
       "state_buy": "neutral",
       "state_sell": "neutral",
@@ -256,10 +256,10 @@
       "missing": false
     },
     "p_rp": {
-      "value": 1.5234,
+      "value": 1.5774,
       "pct": null,
       "pct_basis": null,
-      "score_buy": 28,
+      "score_buy": 22,
       "score_sell": null,
       "state_buy": "neutral",
       "state_sell": "fehlt",
@@ -267,10 +267,10 @@
       "missing": false
     },
     "p_200w": {
-      "value": 1.239,
+      "value": 1.2828,
       "pct": null,
       "pct_basis": null,
-      "score_buy": 56,
+      "score_buy": 52,
       "score_sell": null,
       "state_buy": "nahe",
       "state_sell": "fehlt",
@@ -278,10 +278,10 @@
       "missing": false
     },
     "mayer": {
-      "value": 1.151,
-      "pct": 62.019230769230774,
+      "value": 1.1883,
+      "pct": 67.3076923076923,
       "pct_basis": "voll",
-      "score_buy": 7,
+      "score_buy": 2,
       "score_sell": 0,
       "state_buy": "neutral",
       "state_sell": "neutral",
@@ -322,7 +322,7 @@
       "missing": false
     },
     "puell": {
-      "value": 1.0834,
+      "value": 1.0757,
       "pct": null,
       "pct_basis": null,
       "score_buy": 0,
@@ -333,10 +333,10 @@
       "missing": false
     },
     "drawdown": {
-      "value": -34.94,
+      "value": -32.29,
       "pct": null,
       "pct_basis": null,
-      "score_buy": 13,
+      "score_buy": 6,
       "score_sell": null,
       "state_buy": "neutral",
       "state_sell": "fehlt",
@@ -344,7 +344,7 @@
       "missing": false
     },
     "months_since_ath": {
-      "value": 11.47,
+      "value": 11.7,
       "pct": null,
       "pct_basis": null,
       "score_buy": 100,
@@ -355,7 +355,7 @@
       "missing": false
     },
     "cycle_clock": {
-      "value": 883,
+      "value": 890,
       "pct": null,
       "pct_basis": null,
       "score_buy": null,
@@ -366,18 +366,18 @@
       "missing": false
     },
     "bmsb_ext": {
-      "value": 1.1181,
+      "value": 1.1466,
       "pct": null,
       "pct_basis": null,
       "score_buy": null,
-      "score_sell": 4,
+      "score_sell": 9,
       "state_buy": "fehlt",
       "state_sell": "neutral",
       "stale": false,
       "missing": false
     },
     "pi_cycle": {
-      "value": 0.4284,
+      "value": 0.4408,
       "pct": null,
       "pct_basis": null,
       "score_buy": null,
@@ -410,18 +410,18 @@
       "missing": false
     },
     "fng_4w": {
-      "value": 66.1,
+      "value": 66.6,
       "pct": null,
       "pct_basis": null,
       "score_buy": null,
-      "score_sell": 37,
+      "score_sell": 39,
       "state_buy": "fehlt",
       "state_sell": "neutral",
       "stale": false,
       "missing": false
     },
     "funding_30d": {
-      "value": 0.00353,
+      "value": 0.00384,
       "pct": null,
       "pct_basis": null,
       "score_buy": null,
@@ -432,8 +432,8 @@
       "missing": false
     },
     "retail_attention": {
-      "value": 3399,
-      "pct": 5.288461538461538,
+      "value": 3782,
+      "pct": 9.134615384615383,
       "pct_basis": "voll",
       "score_buy": null,
       "score_sell": 0,
@@ -456,9 +456,9 @@
   },
   "indicators": {
     "mvrv_z": {
-      "value": 0.9143,
+      "value": 1.0083,
       "unit": "σ",
-      "as_of": "2026-09-20",
+      "as_of": "2026-09-27",
       "age_days": 0,
       "source": "Coin Metrics (berechnet)",
       "stale": false,
@@ -469,27 +469,27 @@
         "parts": [
           {
             "label": "Marktkapitalisierung",
-            "value": 1630968303348,
+            "value": 1695462798671,
             "unit": "USD"
           },
           {
             "label": "Realized Cap",
-            "value": 1070056004392,
+            "value": 1075665069779,
             "unit": "USD"
           },
           {
             "label": "σ (ganze Historie)",
-            "value": 613501582780,
+            "value": 614712278270,
             "unit": "USD"
           }
         ],
-        "compact": "(1.63 Bio. − 1.07 Bio.) / 613.50 Mrd."
+        "compact": "(1.70 Bio. − 1.08 Bio.) / 614.71 Mrd."
       }
     },
     "realized_price": {
-      "value": 53270.76,
+      "value": 53541.74,
       "unit": "USD",
-      "as_of": "2026-09-20",
+      "as_of": "2026-09-27",
       "age_days": 0,
       "source": "Coin Metrics (berechnet)",
       "stale": false,
@@ -497,9 +497,9 @@
       "note": "Preis ÷ MVRV-Verhältnis"
     },
     "p_rp": {
-      "value": 1.5234,
+      "value": 1.5774,
       "unit": "×",
-      "as_of": "2026-09-20",
+      "as_of": "2026-09-27",
       "age_days": 0,
       "source": "Coin Metrics (berechnet)",
       "stale": false,
@@ -510,76 +510,76 @@
         "parts": [
           {
             "label": "Wochenschluss",
-            "value": 81152,
+            "value": 84457,
             "unit": "USD"
           },
           {
             "label": "Realized Price",
-            "value": 53271,
+            "value": 53542,
             "unit": "USD"
           }
         ],
-        "compact": "81'152 / 53'271"
+        "compact": "84'457 / 53'542"
       }
     },
     "p_200w": {
-      "value": 1.239,
+      "value": 1.2828,
       "unit": "×",
-      "as_of": "2026-09-20",
+      "as_of": "2026-09-27",
       "age_days": 0,
       "source": "Bitstamp",
       "stale": false,
       "missing": false,
       "note": null,
-      "sma200w": 65496.05,
+      "sma200w": 65836.22,
       "source_calc": {
         "formula": "Wochenschluss ÷ Schnitt der letzten 200 Wochenschlüsse",
         "parts": [
           {
             "label": "Wochenschluss",
-            "value": 81152,
+            "value": 84457,
             "unit": "USD"
           },
           {
             "label": "200-Wochen-Schnitt",
-            "value": 65496,
+            "value": 65836,
             "unit": "USD"
           }
         ],
-        "compact": "81'152 / 65'496"
+        "compact": "84'457 / 65'836"
       }
     },
     "mayer": {
-      "value": 1.151,
+      "value": 1.1883,
       "unit": "×",
-      "as_of": "2026-09-20",
+      "as_of": "2026-09-27",
       "age_days": 0,
       "source": "Bitstamp",
       "stale": false,
       "missing": false,
       "note": null,
-      "sma200d": 70506.23,
+      "sma200d": 71074.58,
       "source_calc": {
         "formula": "Wochenschluss ÷ Schnitt der letzten 200 Tagesschlüsse",
         "parts": [
           {
             "label": "Wochenschluss",
-            "value": 81152,
+            "value": 84457,
             "unit": "USD"
           },
           {
             "label": "200-Tage-Schnitt",
-            "value": 70506,
+            "value": 71075,
             "unit": "USD"
           }
         ],
-        "compact": "81'152 / 70'506"
+        "compact": "84'457 / 71'075"
       }
     },
     "puell": {
-      "value": 1.0834,
+      "value": 1.0757,
       "unit": "×",
-      "as_of": "2026-09-20",
+      "as_of": "2026-09-27",
       "age_days": 0,
       "source": "Coin Metrics (berechnet)",
       "stale": false,
@@ -590,22 +590,22 @@
         "parts": [
           {
             "label": "Tageserlös",
-            "value": 39074971,
+            "value": 38504066,
             "unit": "USD"
           },
           {
             "label": "365-Tage-Schnitt",
-            "value": 36066767,
+            "value": 35794764,
             "unit": "USD"
           }
         ],
-        "compact": "39.07 Mio. / 36.07 Mio."
+        "compact": "38.50 Mio. / 35.79 Mio."
       }
     },
     "hash_ribbons": {
       "value": "normal",
       "unit": "Zustand",
-      "as_of": "2026-09-20",
+      "as_of": "2026-09-27",
       "age_days": 0,
       "source": "Coin Metrics (berechnet)",
       "stale": false,
@@ -617,22 +617,22 @@
         "parts": [
           {
             "label": "30-Tage-Schnitt",
-            "value": 929008549,
+            "value": 938562725,
             "unit": "TH/s"
           },
           {
             "label": "60-Tage-Schnitt",
-            "value": 916996235,
+            "value": 923389212,
             "unit": "TH/s"
           }
         ],
-        "compact": "30 T 929.01 Mio. gegen 60 T 917.00 Mio."
+        "compact": "30 T 938.56 Mio. gegen 60 T 923.39 Mio."
       }
     },
     "drawdown": {
-      "value": -34.94,
+      "value": -32.29,
       "unit": "%",
-      "as_of": "2026-09-20",
+      "as_of": "2026-09-27",
       "age_days": 0,
       "source": "Bitstamp",
       "stale": false,
@@ -643,7 +643,7 @@
         "parts": [
           {
             "label": "Wochenschluss",
-            "value": 81152,
+            "value": 84457,
             "unit": "USD"
           },
           {
@@ -652,13 +652,13 @@
             "unit": "USD"
           }
         ],
-        "compact": "81'152 / 124'728 − 1"
+        "compact": "84'457 / 124'728 − 1"
       }
     },
     "months_since_ath": {
-      "value": 11.47,
+      "value": 11.7,
       "unit": "Monate",
-      "as_of": "2026-09-20",
+      "as_of": "2026-09-27",
       "age_days": 0,
       "source": "Bitstamp",
       "stale": false,
@@ -674,17 +674,17 @@
           },
           {
             "label": "Tage seither",
-            "value": 349,
+            "value": 356,
             "unit": "Tage"
           }
         ],
-        "compact": "349 Tage / 30,44"
+        "compact": "356 Tage / 30,44"
       }
     },
     "days_since_halving": {
-      "value": 883,
+      "value": 890,
       "unit": "Tage",
-      "as_of": "2026-09-20",
+      "as_of": "2026-09-27",
       "age_days": 0,
       "source": "Halving-Tabelle",
       "stale": false,
@@ -696,9 +696,9 @@
       }
     },
     "bmsb_ext": {
-      "value": 1.1181,
+      "value": 1.1466,
       "unit": "×",
-      "as_of": "2026-09-20",
+      "as_of": "2026-09-27",
       "age_days": 0,
       "source": "Bitstamp",
       "stale": false,
@@ -709,22 +709,22 @@
         "parts": [
           {
             "label": "Wochenschluss",
-            "value": 81152,
+            "value": 84457,
             "unit": "USD"
           },
           {
             "label": "Oberkante (max aus SMA 20 W und EMA 21 W)",
-            "value": 72582,
+            "value": 73662,
             "unit": "USD"
           }
         ],
-        "compact": "81'152 / 72'582"
+        "compact": "84'457 / 73'662"
       }
     },
     "pi_cycle": {
-      "value": 0.4284,
+      "value": 0.4408,
       "unit": "×",
-      "as_of": "2026-09-20",
+      "as_of": "2026-09-27",
       "age_days": 0,
       "source": "Bitstamp",
       "stale": false,
@@ -735,22 +735,22 @@
         "parts": [
           {
             "label": "111-Tage-Schnitt",
-            "value": 67762,
+            "value": 69129,
             "unit": "USD"
           },
           {
             "label": "350-Tage-Schnitt",
-            "value": 79088,
+            "value": 78416,
             "unit": "USD"
           }
         ],
-        "compact": "67'762 / (2 × 79'088)"
+        "compact": "69'129 / (2 × 78'416)"
       }
     },
     "fng_fear_weeks": {
       "value": 0,
       "unit": "Wochen",
-      "as_of": "2026-09-20",
+      "as_of": "2026-09-27",
       "age_days": 0,
       "source": "alternative.me",
       "stale": false,
@@ -762,9 +762,9 @@
       }
     },
     "fng_4w": {
-      "value": 66.1,
+      "value": 66.6,
       "unit": "0–100",
-      "as_of": "2026-09-20",
+      "as_of": "2026-09-27",
       "age_days": 0,
       "source": "alternative.me",
       "stale": false,
@@ -775,16 +775,16 @@
         "parts": [
           {
             "label": "Tageswert",
-            "value": 74,
+            "value": 70,
             "unit": "0–100"
           }
         ]
       }
     },
     "funding_30d": {
-      "value": 0.00353,
+      "value": 0.00384,
       "unit": "% / 8 h",
-      "as_of": "2026-09-20",
+      "as_of": "2026-09-27",
       "age_days": 0,
       "source": "Deribit",
       "stale": false,
@@ -796,9 +796,9 @@
       }
     },
     "retail_attention": {
-      "value": 3399,
+      "value": 3782,
       "unit": "Aufrufe/Tag",
-      "as_of": "2026-09-20",
+      "as_of": "2026-09-27",
       "age_days": 0,
       "source": "Wikimedia",
       "stale": false,
@@ -812,7 +812,7 @@
     "supply_loss": {
       "value": 34.68,
       "unit": "%",
-      "as_of": "2026-09-20",
+      "as_of": "2026-09-27",
       "age_days": 0,
       "source": "manuell",
       "stale": false,
@@ -832,7 +832,7 @@
     "rhodl": {
       "value": 0.0768,
       "unit": "",
-      "as_of": "2026-09-20",
+      "as_of": "2026-09-27",
       "age_days": 0,
       "source": "manuell",
       "stale": false,
@@ -842,7 +842,7 @@
     "lth_dist": {
       "value": 89.504,
       "unit": "BTC / 30 T",
-      "as_of": "2026-09-20",
+      "as_of": "2026-09-27",
       "age_days": 0,
       "source": "manuell",
       "stale": false,
@@ -850,9 +850,9 @@
       "note": "Manuell eingetragen. Für den Score fehlt noch Historie (mindestens 26 Wochen)."
     },
     "cycle_clock": {
-      "value": 883,
+      "value": 890,
       "unit": "Tage",
-      "as_of": "2026-09-20",
+      "as_of": "2026-09-27",
       "age_days": 0,
       "source": "Halving-Tabelle",
       "stale": false,
@@ -863,14 +863,14 @@
   },
   "filters": {
     "bmsb": {
-      "lower": 70207.2,
-      "upper": 72582.36,
-      "as_of": "2026-09-20"
+      "lower": 70320.41,
+      "upper": 73661.89,
+      "as_of": "2026-09-27"
     },
     "sth_rp": {
       "value": 71304,
       "as_of": "2026-09-13",
-      "age_days": 7,
+      "age_days": 14,
       "stale": false,
       "source": "manuell (Reihe)",
       "missing": false,
@@ -879,11 +879,11 @@
   },
   "manual": {
     "readings": {
-      "sth_rp": 2,
-      "supply_loss": 2,
+      "sth_rp": 3,
+      "supply_loss": 3,
       "reserve_risk": 0,
-      "rhodl": 2,
-      "lth_dist": 2
+      "rhodl": 3,
+      "lth_dist": 3
     },
     "max_age_days": 30,
     "series": {
@@ -921,51 +921,51 @@
   "sources": {
     "price_bitstamp": {
       "ok": true,
-      "last": "2026-09-26",
+      "last": "2026-09-27",
       "error": null,
-      "at": "2026-09-27T11:57:45.097Z"
+      "at": "2026-09-28T09:39:57.355Z"
     },
     "price_coinbase": {
       "ok": true,
-      "last": "2026-09-26",
+      "last": "2026-09-27",
       "error": null,
-      "at": "2026-09-27T11:57:45.210Z"
+      "at": "2026-09-28T09:39:57.416Z"
     },
     "coinmetrics": {
       "ok": true,
-      "last": "2026-09-26",
+      "last": "2026-09-27",
       "error": null,
-      "at": "2026-09-27T11:57:45.431Z"
+      "at": "2026-09-28T09:39:57.636Z"
     },
     "fng": {
       "ok": true,
-      "last": "2026-09-26",
+      "last": "2026-09-27",
       "error": null,
-      "at": "2026-09-27T11:57:45.681Z"
+      "at": "2026-09-28T09:39:57.743Z"
     },
     "wiki_en": {
       "ok": true,
-      "last": "2026-09-26",
+      "last": "2026-09-27",
       "error": null,
-      "at": "2026-09-27T11:57:46.321Z"
+      "at": "2026-09-28T09:39:58.075Z"
     },
     "wiki_de": {
       "ok": true,
-      "last": "2026-09-26",
+      "last": "2026-09-27",
       "error": null,
-      "at": "2026-09-27T11:57:46.867Z"
+      "at": "2026-09-28T09:39:58.245Z"
     },
     "funding_deribit": {
       "ok": true,
-      "last": "2026-09-26",
+      "last": "2026-09-27",
       "error": null,
-      "at": "2026-09-27T11:57:47.467Z"
+      "at": "2026-09-28T09:39:58.732Z"
     },
     "network": {
       "ok": true,
-      "last": "2026-09-27",
+      "last": "2026-09-28",
       "error": null,
-      "at": "2026-09-27T11:57:48.129Z"
+      "at": "2026-09-28T09:39:59.505Z"
     }
   },
   "attribution": [
