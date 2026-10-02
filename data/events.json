@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "generated_at": "2026-10-01T13:06:28.819Z",
+  "generated_at": "2026-10-02T12:27:56.274Z",
   "config_version": "1.0",
   "events": [
     {
@@ -466,14 +466,14 @@
     },
     {
       "id": "2026-10:MONTHLY_MANUAL",
-      "week_id": "2026-10-01",
+      "week_id": "2026-10-02",
       "type": "MONTHLY_MANUAL",
       "text": "Monatliche Handeingabe: Angebot im Gewinn und STH-Realized-Price ablesen und eintragen. In den Einstellungen der Seite je Kennzahl auf „↗ Chart öffnen“, Wert eintragen, „✓ Speichern“ tippen und das vorbereitete Issue mit „Create“ abschicken. Das hebt die Abdeckung des Kauf-Motors von 80 auf 100 Prozent.",
       "offen": [
         "supply_in_profit",
         "sth_realized_price"
       ],
-      "notified_at": "2026-10-01T13:06:28.819Z"
+      "notified_at": "2026-10-02T12:27:56.274Z"
     }
   ]
 }
