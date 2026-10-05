@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "generated_at": "2026-10-05T10:19:13.132Z",
+  "generated_at": "2026-10-05T14:29:28.738Z",
   "config_version": "1.0",
   "events": [
     {
@@ -473,7 +473,7 @@
         "supply_in_profit",
         "sth_realized_price"
       ],
-      "notified_at": "2026-10-05T10:19:13.132Z"
+      "notified_at": "2026-10-05T14:29:28.738Z"
     }
   ]
 }
