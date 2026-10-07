@@ -2,8 +2,8 @@
   "schema": 1,
   "stage": "M2",
   "config_version": "1.0",
-  "mode": "daily",
-  "generated_at": "2026-10-07T13:15:54.527Z",
+  "mode": "weekly",
+  "generated_at": "2026-10-07T16:41:47.477Z",
   "week_id": "2026-10-04",
   "price": {
     "close": 86510.16,
@@ -37,9 +37,9 @@
     "days_since_last_halving": 897,
     "next_halving": {
       "height": 1050000,
-      "blocks_left": 79658,
+      "blocks_left": 79636,
       "estimate": "2028-03-14",
-      "tip_height": 970342,
+      "tip_height": 970364,
       "as_of": "2026-10-07"
     }
   },
@@ -58,7 +58,7 @@
   },
   "engines": {
     "buy": {
-      "score": 32,
+      "score": 36,
       "zone": "ruhig",
       "coverage": 1,
       "families": {
@@ -78,12 +78,12 @@
         "halter_stimmung": {
           "label": "Halter & Stimmung",
           "weight": 20,
-          "score": 20,
+          "score": 37,
           "available": true,
-          "coverage": 0.6666666666666666,
+          "coverage": 1,
           "members": {
-            "supply_loss": 39,
-            "reserve_risk": null,
+            "supply_loss": 27,
+            "reserve_risk": 85,
             "fng_fear_weeks": 0
           }
         },
@@ -111,9 +111,10 @@
         }
       },
       "confluence": {
-        "in_zone": 2,
-        "families": 2,
+        "in_zone": 3,
+        "families": 3,
         "ids": [
+          "reserve_risk",
           "hash_ribbons",
           "months_since_ath"
         ],
@@ -211,23 +212,23 @@
       },
       {
         "label": "Kauf-Score",
-        "value": 32,
+        "value": 36,
         "target": 60,
         "met": false,
         "unit": ""
       },
       {
         "label": "Indikatoren in Zone",
-        "value": 2,
+        "value": 3,
         "target": 4,
         "met": false,
         "unit": ""
       },
       {
         "label": "davon Familien",
-        "value": 2,
+        "value": 3,
         "target": 3,
-        "met": false,
+        "met": true,
         "unit": ""
       }
     ]
@@ -289,10 +290,10 @@
       "missing": false
     },
     "supply_loss": {
-      "value": 34.68000000000001,
+      "value": 30.260000000000005,
       "pct": null,
       "pct_basis": null,
-      "score_buy": 39,
+      "score_buy": 27,
       "score_sell": null,
       "state_buy": "neutral",
       "state_sell": "fehlt",
@@ -300,15 +301,15 @@
       "missing": false
     },
     "reserve_risk": {
-      "value": null,
+      "value": 0.00175,
       "pct": null,
       "pct_basis": "zu_kurz",
-      "score_buy": null,
+      "score_buy": 85,
       "score_sell": null,
-      "state_buy": "fehlt",
+      "state_buy": "in_zone",
       "state_sell": "fehlt",
       "stale": false,
-      "missing": true
+      "missing": false
     },
     "fng_fear_weeks": {
       "value": 0,
@@ -388,7 +389,7 @@
       "missing": false
     },
     "rhodl": {
-      "value": 0.0768,
+      "value": 0.11749,
       "pct": null,
       "pct_basis": "zu_kurz",
       "score_buy": null,
@@ -399,7 +400,7 @@
       "missing": false
     },
     "lth_dist": {
-      "value": 89.504,
+      "value": 23442,
       "pct": null,
       "pct_basis": "zu_kurz",
       "score_buy": null,
@@ -421,7 +422,7 @@
       "missing": false
     },
     "funding_30d": {
-      "value": 0.00333,
+      "value": 0.00332,
       "pct": null,
       "pct_basis": null,
       "score_buy": null,
@@ -782,7 +783,7 @@
       }
     },
     "funding_30d": {
-      "value": 0.00333,
+      "value": 0.00332,
       "unit": "% / 8 h",
       "as_of": "2026-10-04",
       "age_days": 0,
@@ -810,7 +811,7 @@
       }
     },
     "supply_loss": {
-      "value": 34.68,
+      "value": 30.26,
       "unit": "%",
       "as_of": "2026-10-04",
       "age_days": 0,
@@ -820,17 +821,17 @@
       "note": "Manuell eingetragen."
     },
     "reserve_risk": {
-      "value": null,
+      "value": 0.0018,
       "unit": "",
-      "as_of": null,
-      "age_days": null,
-      "source": "BGeometrics",
+      "as_of": "2026-10-04",
+      "age_days": 0,
+      "source": "manuell",
       "stale": false,
-      "missing": true,
-      "note": "Reserve Risk: Quelle ausstehend. Wert aus charts.checkonchain.com in data/manual.json eintragen."
+      "missing": false,
+      "note": "Manuell eingetragen. Für den Score fehlt noch Historie (mindestens 26 Wochen)."
     },
     "rhodl": {
-      "value": 0.0768,
+      "value": 0.1175,
       "unit": "",
       "as_of": "2026-10-04",
       "age_days": 0,
@@ -840,7 +841,7 @@
       "note": "Manuell eingetragen. Für den Score fehlt noch Historie (mindestens 26 Wochen)."
     },
     "lth_dist": {
-      "value": 89.504,
+      "value": 23442,
       "unit": "BTC / 30 T",
       "as_of": "2026-10-04",
       "age_days": 0,
@@ -868,9 +869,9 @@
       "as_of": "2026-10-04"
     },
     "sth_rp": {
-      "value": 71304,
-      "as_of": "2026-09-13",
-      "age_days": 21,
+      "value": 74154,
+      "as_of": "2026-10-04",
+      "age_days": 0,
       "stale": false,
       "source": "manuell (Reihe)",
       "missing": false,
@@ -881,7 +882,7 @@
     "readings": {
       "sth_rp": 4,
       "supply_loss": 4,
-      "reserve_risk": 0,
+      "reserve_risk": 1,
       "rhodl": 4,
       "lth_dist": 4
     },
@@ -891,81 +892,100 @@
         {
           "d": "2026-09-13",
           "v": 71304
+        },
+        {
+          "d": "2026-10-04",
+          "v": 74154
         }
       ],
       "supply_in_profit": [
         {
           "d": "2026-09-13",
           "v": 65.32
+        },
+        {
+          "d": "2026-10-04",
+          "v": 69.74
         }
       ],
-      "reserve_risk": [],
+      "reserve_risk": [
+        {
+          "d": "2026-10-04",
+          "v": 0.00175
+        }
+      ],
       "rhodl": [
         {
           "d": "2026-09-13",
           "v": 0.0768
+        },
+        {
+          "d": "2026-10-04",
+          "v": 0.11749
         }
       ],
       "lth_net_position_change": [
         {
           "d": "2026-09-13",
           "v": -89.504
+        },
+        {
+          "d": "2026-10-04",
+          "v": -23442
         }
       ]
     }
   },
-  "missing": [
-    "reserve_risk"
-  ],
+  "missing": [],
   "stale": [],
   "sources": {
     "price_bitstamp": {
       "ok": true,
       "last": "2026-10-06",
       "error": null,
-      "at": "2026-10-07T13:15:45.275Z"
+      "at": "2026-10-07T16:41:45.228Z"
     },
     "price_coinbase": {
       "ok": true,
       "last": "2026-10-06",
       "error": null,
-      "at": "2026-10-07T13:15:45.338Z"
+      "at": "2026-10-07T16:41:45.296Z"
     },
     "coinmetrics": {
       "ok": true,
       "last": "2026-10-06",
       "error": null,
-      "at": "2026-10-07T13:15:51.182Z"
+      "at": "2026-10-07T16:41:45.478Z"
     },
     "fng": {
       "ok": true,
       "last": "2026-10-06",
       "error": null,
-      "at": "2026-10-07T13:15:51.658Z"
+      "at": "2026-10-07T16:41:45.601Z"
     },
     "wiki_en": {
       "ok": true,
       "last": "2026-10-06",
       "error": null,
-      "at": "2026-10-07T13:15:52.869Z"
+      "at": "2026-10-07T16:41:45.840Z"
     },
     "wiki_de": {
       "ok": true,
       "last": "2026-10-06",
       "error": null,
-      "at": "2026-10-07T13:15:53.378Z"
+      "at": "2026-10-07T16:41:45.997Z"
     },
     "funding_deribit": {
       "ok": true,
       "last": "2026-10-06",
       "error": null,
-      "at": "2026-10-07T13:15:53.922Z"
+      "at": "2026-10-07T16:41:46.641Z"
     },
     "network": {
       "ok": true,
       "last": "2026-10-07",
       "error": null,
-      "at": "2026-10-07T13:15:54.467Z"
+      "at": "2026-10-07T16:41:47.418Z"
     }
   },
   "attribution": [
