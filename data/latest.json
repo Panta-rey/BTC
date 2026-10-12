@@ -2,8 +2,8 @@
   "schema": 1,
   "stage": "M2",
   "config_version": "1.0",
-  "mode": "weekly",
-  "generated_at": "2026-10-12T10:39:53.977Z",
+  "mode": "daily",
+  "generated_at": "2026-10-12T15:15:15.715Z",
   "week_id": "2026-10-11",
   "price": {
     "close": 83679.01,
@@ -37,9 +37,9 @@
     "days_since_last_halving": 904,
     "next_halving": {
       "height": 1050000,
-      "blocks_left": 78918,
-      "estimate": "2028-03-15",
-      "tip_height": 971082,
+      "blocks_left": 78891,
+      "estimate": "2028-03-16",
+      "tip_height": 971109,
       "as_of": "2026-10-12"
     }
   },
@@ -422,7 +422,7 @@
       "missing": false
     },
     "funding_30d": {
-      "value": 0.00401,
+      "value": 0.00402,
       "pct": null,
       "pct_basis": null,
       "score_buy": null,
@@ -783,7 +783,7 @@
       }
     },
     "funding_30d": {
-      "value": 0.00401,
+      "value": 0.00402,
       "unit": "% / 8 h",
       "as_of": "2026-10-11",
       "age_days": 0,
@@ -943,49 +943,49 @@
       "ok": true,
       "last": "2026-10-11",
       "error": null,
-      "at": "2026-10-12T10:39:51.818Z"
+      "at": "2026-10-12T15:15:13.189Z"
     },
     "price_coinbase": {
       "ok": true,
       "last": "2026-10-11",
       "error": null,
-      "at": "2026-10-12T10:39:51.877Z"
+      "at": "2026-10-12T15:15:13.254Z"
     },
     "coinmetrics": {
       "ok": true,
       "last": "2026-10-11",
       "error": null,
-      "at": "2026-10-12T10:39:52.166Z"
+      "at": "2026-10-12T15:15:13.591Z"
     },
     "fng": {
       "ok": true,
       "last": "2026-10-11",
       "error": null,
-      "at": "2026-10-12T10:39:52.375Z"
+      "at": "2026-10-12T15:15:13.948Z"
     },
     "wiki_en": {
       "ok": true,
       "last": "2026-10-11",
       "error": null,
-      "at": "2026-10-12T10:39:52.477Z"
+      "at": "2026-10-12T15:15:14.177Z"
     },
     "wiki_de": {
       "ok": true,
       "last": "2026-10-11",
       "error": null,
-      "at": "2026-10-12T10:39:52.733Z"
+      "at": "2026-10-12T15:15:14.441Z"
     },
     "funding_deribit": {
       "ok": true,
       "last": "2026-10-11",
       "error": null,
-      "at": "2026-10-12T10:39:53.293Z"
+      "at": "2026-10-12T15:15:15.043Z"
     },
     "network": {
       "ok": true,
       "last": "2026-10-12",
       "error": null,
-      "at": "2026-10-12T10:39:53.917Z"
+      "at": "2026-10-12T15:15:15.655Z"
     }
   },
   "attribution": [
