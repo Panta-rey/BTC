@@ -2,8 +2,8 @@
   "schema": 1,
   "stage": "M2",
   "config_version": "1.0",
-  "mode": "weekly",
-  "generated_at": "2026-10-19T08:45:44.666Z",
+  "mode": "daily",
+  "generated_at": "2026-10-19T13:03:56.572Z",
   "week_id": "2026-10-18",
   "price": {
     "close": 82001.58,
@@ -37,9 +37,9 @@
     "days_since_last_halving": 911,
     "next_halving": {
       "height": 1050000,
-      "blocks_left": 77877,
-      "estimate": "2028-04-09",
-      "tip_height": 972123,
+      "blocks_left": 77854,
+      "estimate": "2028-04-12",
+      "tip_height": 972146,
       "as_of": "2026-10-19"
     }
   },
@@ -943,49 +943,49 @@
       "ok": true,
       "last": "2026-10-18",
       "error": null,
-      "at": "2026-10-19T08:45:30.231Z"
+      "at": "2026-10-19T13:03:53.666Z"
     },
     "price_coinbase": {
       "ok": true,
       "last": "2026-10-18",
       "error": null,
-      "at": "2026-10-19T08:45:30.325Z"
+      "at": "2026-10-19T13:03:53.721Z"
     },
     "coinmetrics": {
       "ok": true,
       "last": "2026-10-18",
       "error": null,
-      "at": "2026-10-19T08:45:34.048Z"
+      "at": "2026-10-19T13:03:54.022Z"
     },
     "fng": {
       "ok": true,
       "last": "2026-10-18",
       "error": null,
-      "at": "2026-10-19T08:45:37.792Z"
+      "at": "2026-10-19T13:03:54.341Z"
     },
     "wiki_en": {
       "ok": true,
       "last": "2026-10-15",
       "error": null,
-      "at": "2026-10-19T08:45:43.143Z"
+      "at": "2026-10-19T13:03:54.808Z"
     },
     "wiki_de": {
       "ok": true,
-      "last": "2026-10-16",
+      "last": "2026-10-18",
       "error": null,
-      "at": "2026-10-19T08:45:43.502Z"
+      "at": "2026-10-19T13:03:55.322Z"
     },
     "funding_deribit": {
       "ok": true,
       "last": "2026-10-18",
       "error": null,
-      "at": "2026-10-19T08:45:44.073Z"
+      "at": "2026-10-19T13:03:55.865Z"
     },
     "network": {
       "ok": true,
       "last": "2026-10-19",
       "error": null,
-      "at": "2026-10-19T08:45:44.624Z"
+      "at": "2026-10-19T13:03:56.510Z"
     }
   },
   "attribution": [
