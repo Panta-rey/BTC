@@ -3,14 +3,14 @@
   "stage": "M2",
   "config_version": "1.0",
   "mode": "daily",
-  "generated_at": "2026-11-03T14:04:26.576Z",
+  "generated_at": "2026-11-04T14:25:10.180Z",
   "week_id": "2026-11-01",
   "price": {
     "close": 78233.25,
     "date": "2026-11-01",
     "source": "Bitstamp",
     "provenance": {
-      "bitstamp": 5556,
+      "bitstamp": 5557,
       "coinbase": 0,
       "coinmetrics_seed": 396,
       "aufgefuellt": 0,
@@ -18,9 +18,9 @@
     }
   },
   "today": {
-    "date": "2026-11-02",
-    "close": 76674.25,
-    "fng": 37,
+    "date": "2026-11-03",
+    "close": 77345,
+    "fng": 26,
     "note": "Tageswert, vorläufig, löst nichts aus"
   },
   "cycle_clock": {
@@ -37,10 +37,10 @@
     "days_since_last_halving": 925,
     "next_halving": {
       "height": 1050000,
-      "blocks_left": 75609,
-      "estimate": "2028-05-02",
-      "tip_height": 974391,
-      "as_of": "2026-11-03"
+      "blocks_left": 75464,
+      "estimate": "2028-04-29",
+      "tip_height": 974536,
+      "as_of": "2026-11-04"
     }
   },
   "phase": {
@@ -58,7 +58,7 @@
   },
   "engines": {
     "buy": {
-      "score": 38,
+      "score": 39,
       "zone": "ruhig",
       "coverage": 1,
       "families": {
@@ -78,11 +78,11 @@
         "halter_stimmung": {
           "label": "Halter & Stimmung",
           "weight": 20,
-          "score": 37,
+          "score": 44,
           "available": true,
           "coverage": 1,
           "members": {
-            "supply_loss": 27,
+            "supply_loss": 48,
             "reserve_risk": 85,
             "fng_fear_weeks": 0
           }
@@ -211,7 +211,7 @@
       },
       {
         "label": "Kauf-Score",
-        "value": 38,
+        "value": 39,
         "target": 60,
         "met": false,
         "unit": ""
@@ -289,10 +289,10 @@
       "missing": false
     },
     "supply_loss": {
-      "value": 30.260000000000005,
+      "value": 37.83,
       "pct": null,
       "pct_basis": null,
-      "score_buy": 27,
+      "score_buy": 48,
       "score_sell": null,
       "state_buy": "neutral",
       "state_sell": "fehlt",
@@ -388,7 +388,7 @@
       "missing": false
     },
     "rhodl": {
-      "value": 0.11749,
+      "value": 0.1169,
       "pct": null,
       "pct_basis": "zu_kurz",
       "score_buy": null,
@@ -399,7 +399,7 @@
       "missing": false
     },
     "lth_dist": {
-      "value": 23442,
+      "value": 262832,
       "pct": null,
       "pct_basis": "zu_kurz",
       "score_buy": null,
@@ -775,7 +775,7 @@
         "parts": [
           {
             "label": "Tageswert",
-            "value": 37,
+            "value": 26,
             "unit": "0–100"
           }
         ]
@@ -810,7 +810,7 @@
       }
     },
     "supply_loss": {
-      "value": 30.26,
+      "value": 37.83,
       "unit": "%",
       "as_of": "2026-11-01",
       "age_days": 0,
@@ -830,7 +830,7 @@
       "note": "Manuell eingetragen. Für den Score fehlt noch Historie (mindestens 26 Wochen)."
     },
     "rhodl": {
-      "value": 0.1175,
+      "value": 0.1169,
       "unit": "",
       "as_of": "2026-11-01",
       "age_days": 0,
@@ -840,7 +840,7 @@
       "note": "Manuell eingetragen. Für den Score fehlt noch Historie (mindestens 26 Wochen)."
     },
     "lth_dist": {
-      "value": 23442,
+      "value": 262832,
       "unit": "BTC / 30 T",
       "as_of": "2026-11-01",
       "age_days": 0,
@@ -868,9 +868,9 @@
       "as_of": "2026-11-01"
     },
     "sth_rp": {
-      "value": 74154,
-      "as_of": "2026-10-04",
-      "age_days": 28,
+      "value": 758549,
+      "as_of": "2026-11-01",
+      "age_days": 0,
       "stale": false,
       "source": "manuell (Reihe)",
       "missing": false,
@@ -895,6 +895,10 @@
         {
           "d": "2026-10-04",
           "v": 74154
+        },
+        {
+          "d": "2026-11-01",
+          "v": 758549
         }
       ],
       "supply_in_profit": [
@@ -905,11 +909,19 @@
         {
           "d": "2026-10-04",
           "v": 69.74
+        },
+        {
+          "d": "2026-11-01",
+          "v": 62.17
         }
       ],
       "reserve_risk": [
         {
           "d": "2026-10-04",
+          "v": 0.00175
+        },
+        {
+          "d": "2026-11-01",
           "v": 0.00175
         }
       ],
@@ -921,6 +933,10 @@
         {
           "d": "2026-10-04",
           "v": 0.11749
+        },
+        {
+          "d": "2026-11-01",
+          "v": 0.1169
         }
       ],
       "lth_net_position_change": [
@@ -931,6 +947,10 @@
         {
           "d": "2026-10-04",
           "v": -23442
+        },
+        {
+          "d": "2026-11-01",
+          "v": -262832
         }
       ]
     }
@@ -940,51 +960,51 @@
   "sources": {
     "price_bitstamp": {
       "ok": true,
-      "last": "2026-11-02",
+      "last": "2026-11-03",
       "error": null,
-      "at": "2026-11-03T14:04:23.137Z"
+      "at": "2026-11-04T14:25:07.861Z"
     },
     "price_coinbase": {
       "ok": true,
-      "last": "2026-11-02",
+      "last": "2026-11-03",
       "error": null,
-      "at": "2026-11-03T14:04:23.195Z"
+      "at": "2026-11-04T14:25:07.915Z"
     },
     "coinmetrics": {
       "ok": true,
-      "last": "2026-11-02",
+      "last": "2026-11-03",
       "error": null,
-      "at": "2026-11-03T14:04:23.653Z"
+      "at": "2026-11-04T14:25:08.359Z"
     },
     "fng": {
       "ok": true,
-      "last": "2026-11-02",
+      "last": "2026-11-03",
       "error": null,
-      "at": "2026-11-03T14:04:23.967Z"
+      "at": "2026-11-04T14:25:08.467Z"
     },
     "wiki_en": {
       "ok": true,
-      "last": "2026-11-02",
+      "last": "2026-11-03",
       "error": null,
-      "at": "2026-11-03T14:04:24.675Z"
+      "at": "2026-11-04T14:25:08.640Z"
     },
     "wiki_de": {
       "ok": true,
-      "last": "2026-11-02",
+      "last": "2026-11-03",
       "error": null,
-      "at": "2026-11-03T14:04:25.341Z"
+      "at": "2026-11-04T14:25:08.816Z"
     },
     "funding_deribit": {
       "ok": true,
-      "last": "2026-11-02",
+      "last": "2026-11-03",
       "error": null,
-      "at": "2026-11-03T14:04:25.948Z"
+      "at": "2026-11-04T14:25:09.323Z"
     },
     "network": {
       "ok": true,
-      "last": "2026-11-03",
+      "last": "2026-11-04",
       "error": null,
-      "at": "2026-11-03T14:04:26.521Z"
+      "at": "2026-11-04T14:25:10.121Z"
     }
   },
   "attribution": [
