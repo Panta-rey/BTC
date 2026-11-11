@@ -3,14 +3,14 @@
   "stage": "M2",
   "config_version": "1.0",
   "mode": "daily",
-  "generated_at": "2026-11-10T14:47:30.641Z",
+  "generated_at": "2026-11-11T14:11:42.420Z",
   "week_id": "2026-11-08",
   "price": {
     "close": 74742.52,
     "date": "2026-11-08",
     "source": "Bitstamp",
     "provenance": {
-      "bitstamp": 5563,
+      "bitstamp": 5564,
       "coinbase": 0,
       "coinmetrics_seed": 396,
       "aufgefuellt": 0,
@@ -18,9 +18,9 @@
     }
   },
   "today": {
-    "date": "2026-11-09",
-    "close": 75266.85,
-    "fng": 29,
+    "date": "2026-11-10",
+    "close": 73697.92,
+    "fng": 32,
     "note": "Tageswert, vorläufig, löst nichts aus"
   },
   "cycle_clock": {
@@ -37,10 +37,10 @@
     "days_since_last_halving": 932,
     "next_halving": {
       "height": 1050000,
-      "blocks_left": 74692,
-      "estimate": "2028-05-22",
-      "tip_height": 975308,
-      "as_of": "2026-11-10"
+      "blocks_left": 74558,
+      "estimate": "2028-05-20",
+      "tip_height": 975442,
+      "as_of": "2026-11-11"
     }
   },
   "phase": {
@@ -422,7 +422,7 @@
       "missing": false
     },
     "funding_30d": {
-      "value": 0.00462,
+      "value": 0.00461,
       "pct": null,
       "pct_basis": null,
       "score_buy": null,
@@ -776,14 +776,14 @@
         "parts": [
           {
             "label": "Tageswert",
-            "value": 29,
+            "value": 32,
             "unit": "0–100"
           }
         ]
       }
     },
     "funding_30d": {
-      "value": 0.00462,
+      "value": 0.00461,
       "unit": "% / 8 h",
       "as_of": "2026-11-08",
       "age_days": 0,
@@ -961,51 +961,51 @@
   "sources": {
     "price_bitstamp": {
       "ok": true,
-      "last": "2026-11-09",
+      "last": "2026-11-10",
       "error": null,
-      "at": "2026-11-10T14:47:28.273Z"
+      "at": "2026-11-11T14:11:39.027Z"
     },
     "price_coinbase": {
       "ok": true,
-      "last": "2026-11-09",
+      "last": "2026-11-10",
       "error": null,
-      "at": "2026-11-10T14:47:28.356Z"
+      "at": "2026-11-11T14:11:39.081Z"
     },
     "coinmetrics": {
       "ok": true,
-      "last": "2026-11-09",
+      "last": "2026-11-10",
       "error": null,
-      "at": "2026-11-10T14:47:28.752Z"
+      "at": "2026-11-11T14:11:39.546Z"
     },
     "fng": {
       "ok": true,
-      "last": "2026-11-09",
+      "last": "2026-11-10",
       "error": null,
-      "at": "2026-11-10T14:47:28.944Z"
+      "at": "2026-11-11T14:11:39.782Z"
     },
     "wiki_en": {
       "ok": true,
-      "last": "2026-11-09",
+      "last": "2026-11-10",
       "error": null,
-      "at": "2026-11-10T14:47:29.054Z"
+      "at": "2026-11-11T14:11:40.110Z"
     },
     "wiki_de": {
       "ok": true,
-      "last": "2026-11-09",
+      "last": "2026-11-10",
       "error": null,
-      "at": "2026-11-10T14:47:29.319Z"
+      "at": "2026-11-11T14:11:40.370Z"
     },
     "funding_deribit": {
       "ok": true,
-      "last": "2026-11-09",
+      "last": "2026-11-10",
       "error": null,
-      "at": "2026-11-10T14:47:29.969Z"
+      "at": "2026-11-11T14:11:40.868Z"
     },
     "network": {
       "ok": true,
-      "last": "2026-11-10",
+      "last": "2026-11-11",
       "error": null,
-      "at": "2026-11-10T14:47:30.583Z"
+      "at": "2026-11-11T14:11:42.363Z"
     }
   },
   "attribution": [
