@@ -2,8 +2,8 @@
   "schema": 1,
   "stage": "M2",
   "config_version": "1.0",
-  "mode": "weekly",
-  "generated_at": "2026-11-16T11:02:47.780Z",
+  "mode": "daily",
+  "generated_at": "2026-11-16T15:36:27.591Z",
   "week_id": "2026-11-15",
   "price": {
     "close": 65312.48,
@@ -37,9 +37,9 @@
     "days_since_last_halving": 939,
     "next_halving": {
       "height": 1050000,
-      "blocks_left": 73890,
-      "estimate": "2028-02-13",
-      "tip_height": 976110,
+      "blocks_left": 73854,
+      "estimate": "2028-02-07",
+      "tip_height": 976146,
       "as_of": "2026-11-16"
     }
   },
@@ -964,49 +964,49 @@
       "ok": true,
       "last": "2026-11-15",
       "error": null,
-      "at": "2026-11-16T11:02:45.307Z"
+      "at": "2026-11-16T15:36:25.256Z"
     },
     "price_coinbase": {
       "ok": true,
       "last": "2026-11-15",
       "error": null,
-      "at": "2026-11-16T11:02:45.377Z"
+      "at": "2026-11-16T15:36:25.290Z"
     },
     "coinmetrics": {
       "ok": true,
       "last": "2026-11-15",
       "error": null,
-      "at": "2026-11-16T11:02:45.803Z"
+      "at": "2026-11-16T15:36:25.479Z"
     },
     "fng": {
       "ok": true,
       "last": "2026-11-15",
       "error": null,
-      "at": "2026-11-16T11:02:45.989Z"
+      "at": "2026-11-16T15:36:25.582Z"
     },
     "wiki_en": {
       "ok": true,
       "last": "2026-11-15",
       "error": null,
-      "at": "2026-11-16T11:02:46.092Z"
+      "at": "2026-11-16T15:36:25.603Z"
     },
     "wiki_de": {
       "ok": true,
       "last": "2026-11-15",
       "error": null,
-      "at": "2026-11-16T11:02:46.361Z"
+      "at": "2026-11-16T15:36:25.796Z"
     },
     "funding_deribit": {
       "ok": true,
       "last": "2026-11-15",
       "error": null,
-      "at": "2026-11-16T11:02:46.912Z"
+      "at": "2026-11-16T15:36:26.213Z"
     },
     "network": {
       "ok": true,
       "last": "2026-11-16",
       "error": null,
-      "at": "2026-11-16T11:02:47.736Z"
+      "at": "2026-11-16T15:36:27.552Z"
     }
   },
   "attribution": [
