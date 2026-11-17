@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "generated_at": "2026-11-17T15:54:55.481Z",
+  "generated_at": "2026-11-17T20:43:25.923Z",
   "config_version": "1.0",
   "events": [
     {
@@ -463,6 +463,85 @@
         "S3"
       ],
       "notified_at": "backfill"
+    },
+    {
+      "id": "2026-07-05:COUNTER",
+      "week_id": "2026-07-05",
+      "type": "COUNTER",
+      "text": "Kaufzone diese Woche erreicht. Bestätigt sie sich am nächsten Wochenschluss, wechselt die Phase.",
+      "phase": 4,
+      "config_version": "1.0",
+      "notified_at": "backfill"
+    },
+    {
+      "id": "2026-07-12:PHASE_CHANGE",
+      "week_id": "2026-07-12",
+      "type": "PHASE_CHANGE",
+      "text": "Phase 1 Akkumulation hat begonnen.",
+      "phase": 1,
+      "config_version": "1.0",
+      "from": 4,
+      "to": 1,
+      "notified_at": "backfill"
+    },
+    {
+      "id": "2026-07-12:TRANCHE_DUE:B1",
+      "week_id": "2026-07-12",
+      "type": "TRANCHE_DUE",
+      "text": "Kauftranche 1 von 3 fällig.",
+      "phase": 1,
+      "config_version": "1.0",
+      "tranche": "B1",
+      "notified_at": "backfill"
+    },
+    {
+      "id": "2026-08-09:TRANCHE_DUE:B2",
+      "week_id": "2026-08-09",
+      "type": "TRANCHE_DUE",
+      "text": "Kauftranche 2 von 3 fällig.",
+      "phase": 1,
+      "config_version": "1.0",
+      "tranche": "B2",
+      "notified_at": "backfill"
+    },
+    {
+      "id": "2026-08-23:COUNTER",
+      "week_id": "2026-08-23",
+      "type": "COUNTER",
+      "text": "Tief bestätigt diese Woche erreicht. Bestätigt sie sich am nächsten Wochenschluss, wechselt die Phase.",
+      "phase": 1,
+      "config_version": "1.0",
+      "notified_at": "backfill"
+    },
+    {
+      "id": "2026-08-30:PHASE_CHANGE",
+      "week_id": "2026-08-30",
+      "type": "PHASE_CHANGE",
+      "text": "Phase 2 Aufwärtstrend hat begonnen.",
+      "phase": 2,
+      "config_version": "1.0",
+      "from": 1,
+      "to": 2,
+      "notified_at": "backfill"
+    },
+    {
+      "id": "2026-08-30:TRANCHE_DUE:B3",
+      "week_id": "2026-08-30",
+      "type": "TRANCHE_DUE",
+      "text": "Kauftranche 3 von 3 fällig. Tief bestätigt.",
+      "phase": 2,
+      "config_version": "1.0",
+      "tranche": "B3",
+      "notified_at": "backfill"
+    },
+    {
+      "id": "2026-11-15:RESERVE",
+      "week_id": "2026-11-15",
+      "type": "RESERVE",
+      "text": "Nachkauf-Chance im Aufwärtstrend: halbe Reserve einsetzbar.",
+      "phase": 2,
+      "config_version": "1.0",
+      "notified_at": "2026-11-17T20:43:25.923Z"
     }
   ]
 }
