@@ -48,6 +48,7 @@ Keine Anlageberatung. Das Modell beruht auf vier Zyklen und kann falsch liegen.
 
 ```
 index.html             die Seite, eine Datei, ohne Abhängigkeiten
+UNTERHALT.md           Kurzanleitung für den Alltag, Quelle von "Ampel Unterhalt.pdf"
 scripts/fetch.mjs      Quellen  → data/raw/          (Netzwerk, fehlertolerant)
 scripts/indikator-check.mjs  Frühwarnung → reports/indikator-check.md  (jährlich)
 scripts/build.mjs      data/raw → data/*.json        (Wochenauswertung + Wiedergabe)
@@ -655,7 +656,13 @@ Bisher fünf Fälle: drei im März 2020 (5'344 bis 5'871 USD, Kauf-Motor 76 bis 
 
 ### Das Repo heisst jetzt `BTC`
 
-Beim Hochladen am 17.11.2026 meldete GitHub, dass das Repo von `Panta-Rey-BTC-Ampel` zu `BTC` umbenannt ist. Die Seite liegt damit unter https://panta-rey.github.io/BTC/, die alte Adresse funktioniert nicht mehr. GitHub leitet Zugriffe auf das alte Repo um, verlassen sollte man sich darauf nicht: Die Links in `index.html` (Speichern-Knopf, Datei bearbeiten, Quellcode), der Rückfallwert in `notify.mjs` und die Kennung der Abrufe sind umgestellt, der lokale Ordner zeigt über `git remote set-url` auf den neuen Namen. Die Meldungen der Pipeline nennen die richtige Adresse von selbst, weil sie den Repo-Namen vom Runner bekommen. `Ampel Unterhalt.pdf` nennt keine Adresse und ist nicht betroffen.
+Beim Hochladen am 17.11.2026 meldete GitHub, dass das Repo von `Panta-Rey-BTC-Ampel` zu `BTC` umbenannt ist. Die Seite liegt damit unter https://panta-rey.github.io/BTC/, die alte Adresse funktioniert nicht mehr. GitHub leitet Zugriffe auf das alte Repo um, verlassen sollte man sich darauf nicht: Die Links in `index.html` (Speichern-Knopf, Datei bearbeiten, Quellcode), der Rückfallwert in `notify.mjs` und die Kennung der Abrufe sind umgestellt, der lokale Ordner zeigt über `git remote set-url` auf den neuen Namen. Die Meldungen der Pipeline nennen die richtige Adresse von selbst, weil sie den Repo-Namen vom Runner bekommen. `Ampel Unterhalt.pdf` nennt seit seiner Neufassung die neue Adresse.
+
+### Ampel Unterhalt neu gefasst
+
+`Ampel Unterhalt.pdf` ist die Kurzanleitung für den Alltag: was von selbst läuft, die monatliche Eingabe, was jede Meldung bedeutet, was bei einer Störung zu tun ist. Die Fassung vom 18.09.2026 hatte sieben Seiten und beschrieb noch den alten Speicherweg von Hand. Die Fassung vom 17.11.2026 hat zwei Seiten und kennt die gesperrten Felder, die Journal-Arten, die neue Adresse und den absichtlichen Abbruch des Wochenlaufs bei beschädigten Handwerten. Die Git-Sonderfälle (stehengebliebener Rebase, Editor nach `git commit`) stehen nur noch hier in Abschnitt 9.
+
+**Die Quelle ist `UNTERHALT.md`**, mit demselben Wortlaut. Vorher gab es keine Quelle im Repo, das PDF liess sich deshalb nicht nachführen. Wer etwas ändert, ändert `UNTERHALT.md` und setzt das PDF daraus neu (zuletzt mit ReportLab, A4, zwei Seiten). Neu gibt es `.gitattributes` mit `*.pdf binary`: Git hielt das PDF für Text und wandelte unter Windows die Zeilenenden um, was die Datei in der Arbeitskopie beschädigen kann.
 
 ### Aufgeräumt
 

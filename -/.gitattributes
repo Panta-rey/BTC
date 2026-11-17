@@ -1,0 +1,3 @@
+# PDF nie als Text behandeln. Sonst wandelt Git unter Windows die Zeilenenden um
+# und beschädigt die Datei in der Arbeitskopie.
+*.pdf binary
