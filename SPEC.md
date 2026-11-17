@@ -14,9 +14,9 @@ Diese Spezifikation beschreibt vollständig, was gebaut werden soll: Datenquelle
 
 **Nicht-Ziele.** Kein Handel unterhalb der 4-Jahres-Ebene, keine Kursziele, keine Orderausführung, keine Tagessignale. Tageswerte werden angezeigt, lösen aber nie etwas aus.
 
-**Verhältnis zum bestehenden Cockpit.** Beide Seiten teilen die Designsprache, beantworten aber verschiedene Fragen. Deshalb ein eigenes Repo mit gegenseitigem Link statt eines dritten Tabs im Cockpit.
+**Verhältnis zum bestehenden Dashboard.** Beide Seiten teilen die Designsprache, beantworten aber verschiedene Fragen. Deshalb ein eigenes Repo mit gegenseitigem Link statt eines dritten Tabs im Dashboard.
 
-| | Panta Rey · Cockpit (bestehend) | Panta Rey · Ampel (neu) |
+| | Panta Rey · Dashboard (bestehend) | Panta Rey · Ampel (neu) |
 |---|---|---|
 | Frage | Wie ist die Lage heute? | Was ist in diesem Zyklus zu tun? |
 | Zeithorizont | Tage bis Wochen | Monate bis Jahre |
@@ -33,7 +33,7 @@ Diese Spezifikation beschreibt vollständig, was gebaut werden soll: Datenquelle
 
 Eine GitHub Action holt die Daten, rechnet die Signale und legt JSON-Dateien ins Repo. Die Seite liest nur noch diese Dateien. Das bringt vier Vorteile:
 
-- On-Chain-Kennzahlen wie Realized Price, MVRV und Puell kommen automatisch, das manuelle Nachtragen aus dem Cockpit entfällt weitgehend (Ausnahme je nach Lizenzlage: STH-Realized-Price, siehe 3.4).
+- On-Chain-Kennzahlen wie Realized Price, MVRV und Puell kommen automatisch, das manuelle Nachtragen aus dem Dashboard entfällt weitgehend (Ausnahme je nach Lizenzlage: STH-Realized-Price, siehe 3.4).
 - API-Schlüssel bleiben als GitHub-Secret geheim, Rate-Limits und CORS spielen im Browser keine Rolle mehr.
 - Git wird zur Zeitreihen-Datenbank: jede Woche ein Commit, jede Entscheidung nachvollziehbar.
 - Benachrichtigungen funktionieren, ohne dass jemand die Seite offen hat.
@@ -46,7 +46,7 @@ Neu gibt es daher auch für Käufe einen Pfad A (klassische Kapitulation) und ei
 
 ### 1.3 Öffentliche Signale, private Position
 
-GitHub-Pages-Repos sind öffentlich. Bestände, Kaufpreise und Tranchengrössen gehören deshalb **nie** ins Repo. Die Pipeline erzeugt nur allgemeine Signale („Kauftranche 2 von 3 fällig"). Die persönliche Position liegt ausschliesslich im Browser (`localStorage`, mit Export/Import wie im Cockpit). Der konkrete Handlungssatz („≈ 0,21 BTC verkaufen") wird im Browser aus Signal und Position berechnet.
+GitHub-Pages-Repos sind öffentlich. Bestände, Kaufpreise und Tranchengrössen gehören deshalb **nie** ins Repo. Die Pipeline erzeugt nur allgemeine Signale („Kauftranche 2 von 3 fällig"). Die persönliche Position liegt ausschliesslich im Browser (`localStorage`, mit Export/Import wie im Dashboard). Der konkrete Handlungssatz („≈ 0,21 BTC verkaufen") wird im Browser aus Signal und Position berechnet.
 
 ---
 
@@ -72,7 +72,7 @@ GitHub-Pages-Repos sind öffentlich. Bestände, Kaufpreise und Tranchengrössen 
 
 ```
 BTC/
-├── index.html                 Oberfläche (eine Datei, wie Cockpit)
+├── index.html                 Oberfläche (eine Datei, wie Dashboard)
 ├── engine/                    reine Logik, keine Netzwerkzugriffe
 │   ├── normalize.mjs          Ankerpunkte, Perzentile
 │   ├── indicators.mjs         Indikator-Definitionen
@@ -126,7 +126,7 @@ Die Wochenauswertung ist zweigeteilt, weil die freie BGeometrics-API höchstens 
 | Thema | Regel |
 |---|---|
 | Zeitzone | Cron läuft in UTC. Verzögerungen von Minuten bis zu einer Stunde sind normal. |
-| Geo-Blocking | GitHub-Runner stehen in US-Rechenzentren. `api.binance.com` und `fapi.binance.com` antworten dort mit HTTP 451. Das Cockpit funktioniert, weil dein Browser in der Schweiz abruft. **In der Pipeline deshalb kein Binance** (Ersatz siehe 3.1). |
+| Geo-Blocking | GitHub-Runner stehen in US-Rechenzentren. `api.binance.com` und `fapi.binance.com` antworten dort mit HTTP 451. Das Dashboard funktioniert, weil dein Browser in der Schweiz abruft. **In der Pipeline deshalb kein Binance** (Ersatz siehe 3.1). |
 | Inaktivität | In öffentlichen Repos deaktiviert GitHub geplante Workflows nach 60 Tagen ohne Aktivität. Die wöchentlichen Daten-Commits sollten das verhindern. Falls nicht, kommt eine E-Mail von GitHub, und der Health-Check (9.3) meldet sich zusätzlich. |
 | Parallelität | `concurrency: { group: data, cancel-in-progress: false }`, damit sich zwei Läufe nicht gegenseitig die Commits zerschiessen. |
 | Rechte | `permissions: contents: write, issues: write`. |
@@ -176,7 +176,7 @@ Jede Signalbedingung wird ausschliesslich auf Wochenschlüssen geprüft. **Jeder
 | Eine Reihe stammt immer aus **einer** Quelle. Beim Wechsel auf den Fallback wird die ganze Historie aus dem Fallback neu gerechnet, nie zusammengestückelt. | Anbieter rechnen z. B. den MVRV-Z-Score mit unterschiedlicher Standardabweichung. Ein Bruch in der Reihe verfälscht jedes Perzentil. |
 | Der Wochenwert einer Tageskennzahl ist der Wert vom Sonntag. Fehlt er, wird bis zu 10 Tage zurückgegriffen, danach gilt er als „fehlt". Ab 4 Tagen Alter wird er zusätzlich als „alt" gekennzeichnet. | Einheitlicher Stichtag, aber Toleranz für Anbieter, die ein paar Tage nachhinken. |
 | Fehlende Werte werden für Signale nie interpoliert. | Lieber eine Lücke zeigen als eine erfundene Zahl. |
-| Überschreitet ein Wert sein Höchstalter, gilt er als „alt": Er wird angezeigt, zählt ab M2 aber nicht in den Score. | Wie beim Cockpit mit `ANCHOR_MAX_AGE_DAYS`. |
+| Überschreitet ein Wert sein Höchstalter, gilt er als „alt": Er wird angezeigt, zählt ab M2 aber nicht in den Score. | Wie beim Dashboard mit `ANCHOR_MAX_AGE_DAYS`. |
 | Rohdaten bleiben in `data/raw/` erhalten. | Jede Auswertung ist reproduzierbar. |
 
 ### 3.5 Manuelle Werte aus Checkonchain
@@ -258,7 +258,7 @@ Beim Quellen-Check (M0) zeigte sich: Die Gratis-Stufe von BGeometrics ist für p
 | Wikimedia Pageviews | offene Daten | ohne Einschränkung |
 | Bitstamp, Deribit, mempool.space, Blockchain.com | öffentliche Schnittstellen mit Rate-Limits | ein Abruf pro Tag oder Woche ist unkritisch |
 
-Ohne BGeometrics fehlen STH-Realized-Price, Angebot im Verlust, Reserve Risk, RHODL-Ratio und LTH-Abgabe. Dann gilt: STH-Realized-Price kommt monatlich aus `manual.json` (wie im Cockpit), die übrigen werden nach 5.2 herausgerechnet. Betroffen sind vor allem Gate B (Angebot im Verlust) und die Familie „Halterverhalten" des Verkaufs-Motors. Die Anpassung erfolgt nach dem Quellen-Check in Meilenstein M2, falls BGeometrics nicht zusagt.
+Ohne BGeometrics fehlen STH-Realized-Price, Angebot im Verlust, Reserve Risk, RHODL-Ratio und LTH-Abgabe. Dann gilt: STH-Realized-Price kommt monatlich aus `manual.json` (wie im Dashboard), die übrigen werden nach 5.2 herausgerechnet. Betroffen sind vor allem Gate B (Angebot im Verlust) und die Familie „Halterverhalten" des Verkaufs-Motors. Die Anpassung erfolgt nach dem Quellen-Check in Meilenstein M2, falls BGeometrics nicht zusagt.
 
 ---
 
@@ -579,32 +579,32 @@ Die Positionskarte bietet drei Arten, die Ampel zu nutzen: **Tranchen** (7.1 bis
 
 ### 8.1 Gestaltungsidee
 
-Die Seite gehört sichtbar zur Panta-Rey-Familie: gleiche Farben, gleiche Schrift, gleiche Karten, gleiche Erklär-Sheets. Sie unterscheidet sich durch **ein** lautes Element: eine echte, senkrechte Ampel. Das Cockpit zeigt mit dem Tacho die Stimmung von heute, die Ampel zeigt die Entscheidung dieses Zyklus. Name und Hauptelement sind damit dasselbe. Alles andere bleibt ruhig.
+Die Seite gehört sichtbar zur Panta-Rey-Familie: gleiche Farben, gleiche Schrift, gleiche Karten, gleiche Erklär-Sheets. Sie unterscheidet sich durch **ein** lautes Element: eine echte, senkrechte Ampel. Das Dashboard zeigt mit dem Tacho die Stimmung von heute, die Ampel zeigt die Entscheidung dieses Zyklus. Name und Hauptelement sind damit dasselbe. Alles andere bleibt ruhig.
 
 | Token | Wert | Rolle |
 |---|---|---|
-| `--bg` | `#0A0E16` | Hintergrund (wie Cockpit) |
+| `--bg` | `#0A0E16` | Hintergrund (wie Dashboard) |
 | `--card` | `#141C28` | Karten |
 | `--line` | `#222D3C` | Linien, Rahmen |
 | `--ink` | `#E8EDF2` | Text |
 | `--mut` | `#7E8B9C` | Nebentext |
-| `--buy` | `#2DD4A7` | Kaufen, Kauf-Motor (Cockpit-Teal) |
-| `--ready` | `#F0B429` | Bereit machen, Annäherung (Cockpit-Amber) |
-| `--sell` | `#F0656A` | Verkaufen, Verkaufs-Motor (Cockpit-Coral) |
+| `--buy` | `#2DD4A7` | Kaufen, Kauf-Motor (Dashboard-Teal) |
+| `--ready` | `#F0B429` | Bereit machen, Annäherung (Dashboard-Amber) |
+| `--sell` | `#F0656A` | Verkaufen, Verkaufs-Motor (Dashboard-Coral) |
 | `--info` | `#5B9DF0` | Kontext, Hinweise |
 | `--lamp-off` | `#111925` | ausgeschaltete Lampe |
 
-Schrift: Space Grotesk für Zahlen, Handlungssatz und Phasennamen, Systemschrift für Fliesstext (wie Cockpit). Zahlen mit `font-variant-numeric: tabular-nums` und Schweizer Tausendertrennung (`126'000`).
+Schrift: Space Grotesk für Zahlen, Handlungssatz und Phasennamen, Systemschrift für Fliesstext (wie Dashboard). Zahlen mit `font-variant-numeric: tabular-nums` und Schweizer Tausendertrennung (`126'000`).
 
-Zwei bewusste Abweichungen vom Cockpit: Abschnittstitel in normaler Satzschreibung statt Versalien, damit die Ampel das einzige laute Element bleibt. Und keine Tacho-Grafik, damit die beiden Seiten auf den ersten Blick unterscheidbar sind.
+Zwei bewusste Abweichungen vom Dashboard: Abschnittstitel in normaler Satzschreibung statt Versalien, damit die Ampel das einzige laute Element bleibt. Und keine Tacho-Grafik, damit die beiden Seiten auf den ersten Blick unterscheidbar sind.
 
 ### 8.2 Layout
 
-**Mobil (bis 440 px breit, zentriert wie das Cockpit)**
+**Mobil (bis 440 px breit, zentriert wie das Dashboard)**
 
 ```
 ┌──────────────────────────────────────┐
-│ ⬡ PANTA REY  Ampel           ⚙   ↗  │ Kopf, ↗ = zum Cockpit
+│ ⬡ PANTA REY  Ampel           ⚙   ↗  │ Kopf, ↗ = zum Dashboard
 │ Wochenschluss 6. Sep. 2026           │
 ├──────────────────────────────────────┤
 │  ┌────┐                              │
@@ -652,7 +652,7 @@ Ausrichtung: linksbündig, nur die Ampel sitzt frei links neben dem Text. Keine 
 
 ### 8.3 Bausteine
 
-**Kopf.** Wortmarke wie im Cockpit plus „Ampel". Seitentitel im Browser: „Panta Rey · Ampel". Darunter der Stand der Auswertung („Wochenschluss 6. Sep. 2026"). Kommt der Tageslauf dazu, erscheint dezent „Tageswerte vom 11. Sep., vorläufig". Rechts Einstellungen und Link zum Cockpit.
+**Kopf.** Wortmarke wie im Dashboard plus „Ampel". Seitentitel im Browser: „Panta Rey · Ampel". Darunter der Stand der Auswertung („Wochenschluss 6. Sep. 2026"). Kommt der Tageslauf dazu, erscheint dezent „Tageswerte vom 11. Sep., vorläufig". Rechts Einstellungen und Link zum Dashboard.
 
 **Ampel (Held).** Gehäuse etwa 72 × 188 px, dunkel mit feinem Rand, drei runde Lampen von 48 px Durchmesser. Von oben nach unten wie im Strassenverkehr: Rot (Verkaufen), Gelb (Bereit machen), Grün (Kaufen). Es leuchtet höchstens eine Lampe. Eine leuchtende Lampe hat einen weichen Schein, das ist der einzige Glow der Seite. Ausgeschaltete Lampen sind dunkles Glas (`--lamp-off`) mit einem schwachen Ring. Die Bedeutung steckt dreifach drin: Position der Lampe, Farbe und Text daneben. Das hilft bei Farbsehschwäche.
 
@@ -683,11 +683,11 @@ Einzige automatische Bewegung: Öffnet man die Seite zum ersten Mal nach einem P
 
 Tippen öffnet das Erklär-Sheet.
 
-**Erklär-Sheet.** Bottom-Sheet wie im Cockpit mit fünf Abschnitten: Was es misst. Was der Wert gerade bedeutet (aus Vorlage, z. B. „0,41 liegt im untersten 18 % der letzten vier Jahre"). Wie es zählt (Ankerpunkte, Gewicht, Familie). Frühere Extreme (von der Pipeline berechnet: die letzten drei Phasen in Zone mit Datum). Grenzen. Texte in Anhang B.
+**Erklär-Sheet.** Bottom-Sheet wie im Dashboard mit fünf Abschnitten: Was es misst. Was der Wert gerade bedeutet (aus Vorlage, z. B. „0,41 liegt im untersten 18 % der letzten vier Jahre"). Wie es zählt (Ankerpunkte, Gewicht, Familie). Frühere Extreme (von der Pipeline berechnet: die letzten drei Phasen in Zone mit Datum). Grenzen. Texte in Anhang B.
 
-**Verlauf.** Logarithmischer BTC-Chart seit 2014. Im Hintergrund die Phasen als Farbbänder (④ `--line`, ① teal mit 12 % Deckkraft, ② ohne Band, ③ coral mit 12 %). Kauftranchen als Dreieck ▲ unter der Kurve, Verkaufstranchen als ▼ darüber. Die Marken stammen aus `events.json` und zeigen deshalb **alle** Transaktionen der Historie, nicht nur die des laufenden Zyklus. Mehrere Tranchen in derselben Woche werden zu einer Marke zusammengefasst. Unter dem Chart schaltbar die beiden Motorscores. Umschalter „Dieser Zyklus" und „Seit 2014". Antippen zeigt Woche, Preis, Phase und Scores. Umsetzung als eigenes SVG (wie der Cockpit-Tacho) oder mit uPlot (~50 KB, cdnjs). Keine schwere Chart-Bibliothek.
+**Verlauf.** Logarithmischer BTC-Chart seit 2014. Im Hintergrund die Phasen als Farbbänder (④ `--line`, ① teal mit 12 % Deckkraft, ② ohne Band, ③ coral mit 12 %). Kauftranchen als Dreieck ▲ unter der Kurve, Verkaufstranchen als ▼ darüber. Die Marken stammen aus `events.json` und zeigen deshalb **alle** Transaktionen der Historie, nicht nur die des laufenden Zyklus. Mehrere Tranchen in derselben Woche werden zu einer Marke zusammengefasst. Unter dem Chart schaltbar die beiden Motorscores. Umschalter „Dieser Zyklus" und „Seit 2014". Antippen zeigt Woche, Preis, Phase und Scores. Umsetzung als eigenes SVG (wie der Dashboard-Tacho) oder mit uPlot (~50 KB, cdnjs). Keine schwere Chart-Bibliothek.
 
-**Journal.** Zwei Reiter: „Meine Entscheidungen" (lokal) und „Systemsignale" (aus `events.json`). Knöpfe „Backup exportieren" und „Backup importieren" wie im Cockpit.
+**Journal.** Zwei Reiter: „Meine Entscheidungen" (lokal) und „Systemsignale" (aus `events.json`). Knöpfe „Backup exportieren" und „Backup importieren" wie im Dashboard.
 
 **Einstellungen.** Bestand und Cash, Währung (CHF oder USD), Kernposition, Reserve, Tranchenaufteilung, Sparplan-Modul an oder aus mit Monatsbetrag, Backup, Hinweis zu Benachrichtigungen, Anzeige der Konfigurationsversion mit Link auf `config/engine.json`.
 
@@ -825,7 +825,7 @@ Vier Zyklen sind wenig. Deshalb gilt: Schwellen werden **vor** dem ersten Backte
 
 Reihenfolge begründet: Erst wenn M2 zeigt, dass die Regeln historisch tragen, lohnt sich die Oberfläche.
 
-Aus dem Cockpit direkt übernehmbar: CSS-Variablen, Karten- und Bottom-Sheet-Stile, der `store`-Helfer mit Fehlerabfang, Export und Import, das Zahlenformat `fmtUSD` und die Muster für „alt"-Markierungen.
+Aus dem Dashboard direkt übernehmbar: CSS-Variablen, Karten- und Bottom-Sheet-Stile, der `store`-Helfer mit Fehlerabfang, Export und Import, das Zahlenformat `fmtUSD` und die Muster für „alt"-Markierungen.
 
 ---
 

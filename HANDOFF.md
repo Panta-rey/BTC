@@ -288,7 +288,7 @@ Vier Beiträge bleiben.
 
 ## 6. Die Oberfläche
 
-`index.html` ist eine einzelne Datei ohne Abhängigkeiten, in der Gestaltung des Cockpits, mit einer senkrechten Ampel als einzigem lautem Element.
+`index.html` ist eine einzelne Datei ohne Abhängigkeiten, in der Gestaltung des Dashboards, mit einer senkrechten Ampel als einzigem lautem Element.
 
 **Aufbau auf dem Desktop (ab 960 px), drei Bereiche:**
 
@@ -391,7 +391,7 @@ Alle sind in `SPEC.md` eingearbeitet. Hier die Begründungen:
 | PowerShell | Mehrere Zeilen auf einmal einfügen kann die Reihenfolge umdrehen. Jede Zeile einzeln abschicken. |
 | Archiv aus `Downloads` | Der Browser legt gleichnamige Dateien als `… (1).zip` ab. Altes Archiv vorher löschen oder den Dateinamen versionieren. |
 | Zeitzone | Alles UTC. Die Woche endet Sonntag 24:00 UTC, ein Wochenschluss ist erst ab Montag 00:00 UTC gültig. |
-| Binance | In der Pipeline nicht verwendbar (HTTP 451 aus US-Rechenzentren). Im Cockpit funktioniert es, weil der Browser abruft. |
+| Binance | In der Pipeline nicht verwendbar (HTTP 451 aus US-Rechenzentren). Im Dashboard funktioniert es, weil der Browser abruft. |
 | Kein Blick in die Zukunft | Perzentile und Standardabweichungen dürfen nur Vergangenheit sehen. Dafür gibt es je einen Test in `engine.test.mjs` und `engines.test.mjs`. Bei Änderungen an `series.mjs` oder `engines.mjs` nicht entfernen. |
 | Abdeckung vor 2018 | Ohne Fear & Greed (ab Feb. 2018) und Funding (ab 2019) erreicht der Verkaufs-Motor nur 65 %. Die Schwelle von 60 % darf nicht ohne Not angehoben werden. |
 | Startkapital im Backtest | 1 BTC, kein Cash. Käufe vor dem ersten Verkauf sind nicht finanzierbar. Für Tiefs zählt der Zeitpunkt des Phaseneintritts, nicht der Kaufpreis. |
@@ -401,6 +401,7 @@ Alle sind in `SPEC.md` eingearbeitet. Hier die Begründungen:
 | Handwerte haben eine Vergangenheit | Die Wiedergabe spielt die ganze Historie ab. Eine Kennzahl, die erst ab heute eingetragen wird, fehlt ihr für alle Wochen davor, und weil Phasen nur vorwärts laufen, kann der Zustand daran hängen. Genau das ist bis zum 17.11.2026 passiert (Abschnitt 13). Wer eine Kennzahl neu aufnimmt, trägt mindestens die laufende Phase nach. |
 | `data/manual.json` | Die Datei bestimmt den Phasenverlauf mit. Lesungen aus Juni bis September 2026 nie löschen oder ändern. Ein Test bricht den Wochenlauf ab, wenn die Phasenwechsel vom 12.07. und 30.08.2026 verschwinden; das ist Absicht. |
 | Wochenlauf bricht bei „Tests" ab | Die Meldung des fehlgeschlagenen Tests lesen, sie nennt die Ursache. Meist `data/manual.json`. Der Tageslauf läuft weiter, Signale kommen aber erst wieder, wenn der Wochenlauf durchläuft. |
+| `data/latest.json` wird mitgelesen | Das Dashboard (`https://panta-rey.github.io/Dashboard/dashboard.html`) kann seit 17.11.2026 zwei Werte aus dieser Datei lesen: `indicators.realized_price` und `filters.sth_rp` (jeweils `value`, `as_of`, `missing`). Wer diese Felder umbenennt, die Datei verschiebt oder das Repo erneut umbenennt, bricht dort die automatische Quelle; das Dashboard fällt dann auf seine Handwerte zurück. |
 | Archive im Projektordner | `*.zip`, `*.7z` und `*.msi` sind von Git ausgeschlossen. Ein gepacktes `data/private/` gehört trotzdem nicht in den Ordner. |
 
 ---
@@ -653,6 +654,12 @@ Bisher fünf Fälle: drei im März 2020 (5'344 bis 5'871 USD, Kauf-Motor 76 bis 
 - **Eigene Käufe als Punkte im Verlauf**, um sie neben den Signalen der Ampel zu sehen. Der Verlauf zeigt heute ausschliesslich die Signale der Maschine aus `data/phases.json` und `data/events.json`; das Journal fliesst nicht ein.
 
 **Zur Lesart des Verlaufs:** Die Dreiecke bis 2025 sind Rückschau auf Zyklen, an denen die Ampel eingestellt wurde. Die drei Kauf-Dreiecke von 2026 sind am 17.11.2026 rückwirkend durch den Nachtrag entstanden. Als Gradmesser taugt die Grafik erst für Signale, die ab jetzt im laufenden Betrieb kommen.
+
+### Schwesterprojekt heisst „Dashboard"
+
+Das Schwesterprojekt hiess früher „Cockpit" und liegt neu unter `https://panta-rey.github.io/Dashboard/dashboard.html` (Repo `Panta-rey/Dashboard`). Der Pfeil-Knopf oben rechts in der Ampel zeigte noch auf die alte Adresse und führte ins Leere; er ist korrigiert. In Handoff, Spezifikation und README steht jetzt überall „Dashboard". Das Dashboard verlinkt seit seiner Fassung vom 17.11.2026 zurück auf die Ampel und kann Realized Price und STH-Einstand von hier lesen (Abschnitt 9, Zeile „`data/latest.json` wird mitgelesen").
+
+Beim Einspielen des fünften Pakets war ausserdem ein Ordner namens `-` mit Kopien von vier Dateien ins Repo geraten. Er ist wieder entfernt; die Dateien an ihrem richtigen Ort waren korrekt.
 
 ### Das Repo heisst jetzt `BTC`
 

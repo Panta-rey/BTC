@@ -6,7 +6,7 @@ Das Ziel ist minimales Handeln. Die Seite wertet einmal pro Woche aus, in welche
 
 **Keine Anlageberatung.** Das Modell beruht auf vier Zyklen und kann falsch liegen.
 
-Schwesterprojekt: [Panta Rey · BTC Cockpit](https://github.com/Panta-rey/Panta-Rey-BTC-Dashboard) für die Lage von heute.
+Schwesterprojekt: [Panta Rey · BTC-Dashboard](https://github.com/Panta-rey/Dashboard) für die Lage von heute.
 
 ## Stand
 
