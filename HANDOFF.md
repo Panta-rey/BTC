@@ -36,7 +36,9 @@ Keine Anlageberatung. Das Modell beruht auf vier Zyklen und kann falsch liegen.
 | M6 | Verlauf und Zyklus-Uhr als Grafik | ✅ eigenes SVG, ohne Bibliothek |
 | M7 | Härtung, Barrierefreiheit, Grenzfälle | 🔶 Prüfliste 8.5 abgearbeitet, Rest offen |
 
-**Aktueller Marktstand laut Ampel:** Phase 4 Abwärtstrend seit 9. November 2025. Kauf-Motor 42, Verkaufs-Motor 1, Ampel gelb, „Bereit machen. Die Kaufzone rückt näher, noch nicht kaufen." Es fehlen 18 Punkte zur Kaufzone, kein Tor ist offen, 2 von 4 Indikatoren in Zone aus 2 von 3 Familien.
+**Aktueller Marktstand laut Ampel (Wochenschluss 13.09.2026, 76'809 USD):** Phase 4 Abwärtstrend seit 9. November 2025, also 44 Wochen. Kauf-Motor 41 von 60, Verkaufs-Motor 2, **Abdeckung 100 %**, Ampel gelb, „Bereit machen. Die Kaufzone rückt näher, noch nicht kaufen." Kein Tor ist offen, 2 von 4 Indikatoren in Zone aus 2 von 3 Familien. Es fehlen also drei Bedingungen gleichzeitig, nicht nur Punkte.
+
+Familienstand: Bewertung 41, Halter & Stimmung 20, Miner 51, Zeit 61. Zeitlich passt es langsam, preislich noch nicht: 11,2 Monate seit dem Hoch bei einem historischen Tief-Fenster von 9 bis 16 Monaten, aber 38,4 % unter dem Hoch bei einer Torschwelle von 40 %, und MVRV-Z bei 0,77 statt unter null.
 
 **Die BGeometrics-Frage ist am 13. September 2026 abschliessend beantwortet.** Ein Monatsabo Advanced, ein vollständiger Datenabzug und ein Dreifach-Nachlauf haben ergeben: Ein dauerhaftes Abo verbessert das System nicht. Einzelheiten in Abschnitt 11, die Zahlen in `reports/bgeometrics-vergleich.md`. Daraus folgt die neue Regel für die Handeingabe in Abschnitt 4a.
 
@@ -166,7 +168,15 @@ Der Dreifach-Nachlauf (Abschnitt 11) hat eine Unterscheidung sichtbar gemacht, d
 | RHODL-Ratio | Halterverhalten | **Verkauf** | **zurückgestellt**, nachlassend |
 | LTH-Positionsänderung 30 T | Halterverhalten | **Verkauf** | **zurückgestellt**, nachlassend |
 
-**Das Angebot im Gewinn allein genügt.** Die Familie „Halter & Stimmung" braucht zwei ihrer drei Mitglieder, und Fear & Greed ist ohnehin da. Eine einzige eingetragene Kennzahl hebt die Abdeckung des Kauf-Motors damit von 80 auf 100 %. Reserve Risk wird dafür nicht gebraucht.
+**Das Angebot im Gewinn allein genügt.** Die Familie „Halter & Stimmung" braucht zwei ihrer drei Mitglieder, und Fear & Greed ist ohnehin da. Eine einzige eingetragene Kennzahl hebt die Abdeckung des Kauf-Motors damit von 80 auf 100 %. Reserve Risk wird dafür nicht gebraucht. **Am 18.09.2026 in der Praxis bestätigt:** Mit Angebot im Verlust 34,68 % und Fear & Greed 0 steht die Familie bei 20, die Abdeckung bei 100 %, der Kauf-Motor bei 41.
+
+### Zwischenfall vom 18.09.2026: Reserve Risk falsch abgelesen
+
+Reserve Risk wurde trotz der Regel oben eingetragen, und zwar mit **0,00917**. Die API meldete am selben Tag **0,000597**, ein Faktor von 15. Vermutlich eine Nachbarlinie oder eine andere Skala. Die Ableseprobe war nur für Angebot im Gewinn und STH-Einstand gemacht worden, für Reserve Risk nicht, weil es ohnehin nicht eingetragen werden sollte.
+
+Die Pointe ist lehrreich: **Der falsche Wert hat das bekannte Problem zufällig verhindert.** 0,00917 ergibt Score 14 und zieht die Familie nach unten. Der richtige Wert 0,000597 läge unterhalb des Ankers für Score 100 und stünde damit in Zone — „Indikatoren in Zone" wäre von 2 auf 3 gesprungen und „davon Familien" von 2 auf 3, also eine der beiden noch fehlenden Bedingungen für die Kaufzone, dauerhaft. Korrigieren wäre schlimmer gewesen als der Fehler.
+
+Der Eintrag wurde ersatzlos gelöscht. Abdeckung, Kauf-Score und Familienzahl blieben unverändert. **Lehre:** Wer eine von Hand eingetragene Kennzahl prüfen will, hält sie gegen `fetch-bgeometrics.mjs --check`, solange der Zugang läuft. Danach bleibt als Skalenprobe nur die Summenregel für das Angebot (Gewinn plus Verlust ergibt die Umlaufmenge) und der Vergleich des STH-Einstands mit dem Preis.
 
 **Warum Reserve Risk zurückgestellt ist (Prüfung vom 13.09.2026, `reports/anker-check.md`).** Die absoluten Ankerpunkte stammen aus veröffentlichten Bändern und wurden nie gegen Daten gehalten. Gegen die volle Historie gemessen liegt der Anteil der Wochen „in Zone" bei 37,7 % bis zum Tief 2015, dann 75,5 %, dann 90,8 %, und **im laufenden Zyklus bei 100 % aller 198 Wochen**. Score am Median der Gesamthistorie: 91,8. Die Kennzahl bestätigt an den Extremen zwar zuverlässig (Score 100 an allen drei Tiefs), unterscheidet aber nichts mehr. Eingetragen würde sie den Kauf-Motor dauerhaft anheben und der Konvergenzbedingung permanent eine dritte Familie in Zone liefern.
 
@@ -370,6 +380,7 @@ Alle sind in `SPEC.md` eingearbeitet. Hier die Begründungen:
 |---|---|
 | `latest.json` nach Engine-Änderungen | Die Datei entsteht **nur** im Wochenlauf. Nach jedem Push, der die Ausgabestruktur ändert, den Workflow einmal von Hand starten, sonst zeigt die Seite den alten Stand. Genau das ist einmal passiert. |
 | Push wird abgelehnt | Die Pipeline committet jeden Montag selbst. Immer erst `git pull --rebase`, dann `git push`. |
+| `git status -sb` zeigt `## HEAD (no branch)` | Ein `git pull --rebase` ist stehengeblieben, der Commit hängt an keinem Zweig und lässt sich nicht pushen. Nicht abbrechen, erst `git status` lesen. Steht dort `No commands remaining`, genügt `git rebase --continue`; der Commit bleibt erhalten. Vorher zur Sicherheit `git branch rettung <commit>`. Am 18.09.2026 einmal passiert. |
 | PowerShell | Mehrere Zeilen auf einmal einfügen kann die Reihenfolge umdrehen. Jede Zeile einzeln abschicken. |
 | Archiv aus `Downloads` | Der Browser legt gleichnamige Dateien als `… (1).zip` ab. Altes Archiv vorher löschen oder den Dateinamen versionieren. |
 | Zeitzone | Alles UTC. Die Woche endet Sonntag 24:00 UTC, ein Wochenschluss ist erst ab Montag 00:00 UTC gültig. |
