@@ -1,6 +1,6 @@
 # Panta Rey · Ampel — Spezifikation v1.0
 
-Stand: 11. September 2026 · Status: bereit zur Umsetzung · Repo: `Panta-Rey-BTC-Ampel`
+Stand: 11. September 2026 · Status: bereit zur Umsetzung · Repo: `BTC` (bis November 2026 `Panta-Rey-BTC-Ampel`)
 
 Diese Spezifikation beschreibt vollständig, was gebaut werden soll: Datenquellen, Rechenregeln, Zustandsmaschine, Oberfläche, Benachrichtigungen, Backtest und Umsetzungsreihenfolge. Alle Schwellen sind **Startwerte**. Sie werden in Meilenstein M2 per Backtest geprüft und danach als Konfiguration `v1.0` eingefroren.
 
@@ -71,7 +71,7 @@ GitHub-Pages-Repos sind öffentlich. Bestände, Kaufpreise und Tranchengrössen 
 ### 2.1 Repo-Struktur
 
 ```
-Panta-Rey-BTC-Ampel/
+BTC/
 ├── index.html                 Oberfläche (eine Datei, wie Cockpit)
 ├── engine/                    reine Logik, keine Netzwerkzugriffe
 │   ├── normalize.mjs          Ankerpunkte, Perzentile

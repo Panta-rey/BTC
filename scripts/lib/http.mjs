@@ -1,6 +1,6 @@
 // HTTP-Helfer für die Pipeline: Zeitlimit, Wiederholung bei 429/5xx, keine Wiederholung bei 4xx.
 
-export const UA = "Panta-Rey-BTC-Ampel/0.2 (+https://github.com/Panta-rey/Panta-Rey-BTC-Ampel)";
+export const UA = "Panta-Rey-BTC-Ampel/0.2 (+https://github.com/Panta-rey/BTC)";
 export const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 export class HttpError extends Error {

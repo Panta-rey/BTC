@@ -20,7 +20,7 @@ const DRY = process.argv.includes("--dry-run");
 const TEST = process.argv.includes("--test");
 const NOW = Date.now();
 
-const REPO = process.env.GITHUB_REPOSITORY || "Panta-rey/Panta-Rey-BTC-Ampel";
+const REPO = process.env.GITHUB_REPOSITORY || "Panta-rey/BTC";
 const TOKEN = process.env.GITHUB_TOKEN || "";
 const NTFY = process.env.NTFY_TOPIC || "";
 const SITE = `https://${REPO.split("/")[0].toLowerCase()}.github.io/${REPO.split("/")[1]}/`;

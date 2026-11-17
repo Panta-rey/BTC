@@ -14,7 +14,7 @@
 
 import { mkdir, writeFile, appendFile } from "node:fs/promises";
 
-const UA = "Panta-Rey-BTC-Ampel/0.1 (+https://github.com/Panta-rey/Panta-Rey-BTC-Ampel)";
+const UA = "Panta-Rey-BTC-Ampel/0.1 (+https://github.com/Panta-rey/BTC)";
 const TIMEOUT_MS = 20_000;
 const DAY = 86_400_000;
 const NOW = Date.now();

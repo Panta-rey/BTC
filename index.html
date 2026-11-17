@@ -1185,7 +1185,7 @@ function manualPanel(){
   cp.onclick = async ()=>{ try{ await navigator.clipboard.writeText(out.textContent); cp.textContent="Kopiert"; setTimeout(()=>cp.textContent="Block kopieren",1600); }
     catch{ cp.textContent="Kopieren nicht erlaubt"; } };
   const ed = el("a","btn ghost","Datei von Hand bearbeiten");
-  ed.href="https://github.com/Panta-rey/Panta-Rey-BTC-Ampel/edit/main/data/manual.json";
+  ed.href="https://github.com/Panta-rey/BTC/edit/main/data/manual.json";
   ed.target="_blank"; ed.rel="noopener"; ed.style.textDecoration="none";
   // Nach dem Speichern den Entwurf leeren. Sonst bleibt die Zahl im Feld stehen und wird
   // im nächsten Monat unbemerkt mit neuem Datum wieder eingereicht.
@@ -1237,7 +1237,7 @@ function manualPanel(){
     save.style.opacity = go ? "1" : ".45";
     save.style.pointerEvents = go ? "auto" : "none";
     const issueBody = `Manuelle Kennzahlen, abgelesen bei Checkonchain.\n\n\`\`\`json\n${out.textContent}\n\`\`\`\n`;
-    save.href = "https://github.com/Panta-rey/Panta-Rey-BTC-Ampel/issues/new?"
+    save.href = "https://github.com/Panta-rey/BTC/issues/new?"
       + new URLSearchParams({ title: `manual: ${week}`, body: issueBody, labels: "manual" }).toString();
   }
   snippet();
@@ -1274,7 +1274,7 @@ function foot(){
   $("#foot").innerHTML =
     `<p>${(D.attribution||[]).map(esc).join(" · ")}</p>
      <p>Konfiguration ${esc(D.config_version||"–")} · Stand ${esc(dateDE(D.week_id))} ·
-     <a href="https://github.com/Panta-rey/Panta-Rey-BTC-Ampel">Quellcode</a></p>
+     <a href="https://github.com/Panta-rey/BTC">Quellcode</a></p>
      <p>Keine Anlageberatung. Das Modell beruht auf vier Zyklen und kann falsch liegen.</p>`;
 }
 </script>

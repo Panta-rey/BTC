@@ -4,7 +4,7 @@ Zustandsbericht des Projekts. Wer hier einsteigt, liest zuerst dieses Dokument, 
 
 **Stand:** 17. November 2026 · Konfiguration `1.0` (eingefroren) · Node 22, keine Abhängigkeiten · 68 Tests grün
 **Status:** betriebsbereit. M0 bis M6 abgeschlossen, nur M7 (Härtung) offen.
-**Seite:** https://panta-rey.github.io/Panta-Rey-BTC-Ampel/ · **Repo:** https://github.com/Panta-rey/Panta-Rey-BTC-Ampel
+**Seite:** https://panta-rey.github.io/BTC/ · **Repo:** https://github.com/Panta-rey/BTC
 
 **Neu am 17.11.2026, zuerst lesen: Abschnitt 13.** Die Ampel steht seit dem Nachtrag der Handwerte in Phase ② statt ④. Die Abschnitte 4 und 4a beschreiben den Weg dorthin und sind an den markierten Stellen überholt.
 
@@ -611,6 +611,10 @@ Schritt 7 der alten Liste (zweiter Abzug um den 10.10.2026) wurde verpasst, der 
 2. **Die Verkaufstranchen kommen nicht mehr aus dem Score.** 2021 und 2025 wurden alle drei Tranchen vom Trendbruch ausgelöst, keine von den Schwellen 70, 80 und 90; der Verkaufs-Motor erreichte seit 2018 höchstens 59 und 37. Er ist faktisch nur noch der Schalter, der den Trendbruch scharf stellt. Kandidat: ein rein zeitlich scharfgestellter Trendbruch (Zyklus-Uhr im Fenster, ohne Score). Dazu gehört eine Regel für den Fall, dass Phase ③ nie erreicht wird; heute gibt es dafür nur das Flag `cycle_anomaly`.
 3. **Regel für neue Handwerte:** Wer eine Kennzahl neu aufnimmt, trägt mindestens die laufende Phase nach oder lässt sie erst ab dem nächsten Phasenwechsel wirken. Sonst entsteht wieder ein Mischzustand.
 4. **Das Formular schickt die ganze Reihe im Issue-Link mit.** Bei zwei Lesungen im Monat wird die Adresse in einigen Jahren zu lang. `mergeReadings()` führt ohnehin zusammen, es genügte, nur die neuen Lesungen zu schicken.
+
+### Das Repo heisst jetzt `BTC`
+
+Beim Hochladen am 17.11.2026 meldete GitHub, dass das Repo von `Panta-Rey-BTC-Ampel` zu `BTC` umbenannt ist. Die Seite liegt damit unter https://panta-rey.github.io/BTC/, die alte Adresse funktioniert nicht mehr. GitHub leitet Zugriffe auf das alte Repo um, verlassen sollte man sich darauf nicht: Die Links in `index.html` (Speichern-Knopf, Datei bearbeiten, Quellcode), der Rückfallwert in `notify.mjs` und die Kennung der Abrufe sind umgestellt, der lokale Ordner zeigt über `git remote set-url` auf den neuen Namen. Die Meldungen der Pipeline nennen die richtige Adresse von selbst, weil sie den Repo-Namen vom Runner bekommen. `Ampel Unterhalt.pdf` nennt keine Adresse und ist nicht betroffen.
 
 ### Aufgeräumt
 
