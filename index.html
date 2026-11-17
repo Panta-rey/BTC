@@ -202,6 +202,32 @@ details.group[open]>summary::after{transform:rotate(90deg)}
 .tr.due{border-color:var(--ready);color:var(--ready)}
 .tr.done{border-color:rgba(45,212,167,.4);color:var(--buy)}
 .tr.skip{opacity:.5;text-decoration:line-through}
+/* Journal-Arten: Auswahl, Eingaben und Einträge */
+.seg{display:flex;gap:6px;margin-bottom:10px}
+.seg button{flex:1;min-height:44px;border:1px solid var(--edge);border-radius:10px;background:none;
+  color:var(--mut);font-size:13.5px;font-weight:500;cursor:pointer;font-family:inherit}
+.seg button[aria-pressed=true]{border-color:var(--buy);color:var(--buy);background:rgba(45,212,167,.08)}
+.modeText{margin-bottom:8px}
+.field input{border-color:var(--edge)}
+.field.txt{flex-wrap:wrap}
+.field.txt input{flex:1 1 180px;width:auto;text-align:left;font-family:inherit}
+.field select{background:#0A111A;border:1px solid var(--edge);color:var(--ink);border-radius:8px;
+  padding:7px 6px;font-size:13px;min-height:36px;font-family:inherit}
+.check{display:flex;align-items:center;gap:9px;min-height:44px;font-size:13.5px;color:var(--mut);cursor:pointer}
+.check input{width:18px;height:18px;accent-color:var(--buy)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.jsub{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:11.5px;
+  color:var(--mut);padding:2px 0 4px;border-bottom:1px solid var(--line);margin-bottom:4px}
+.kv.nb{border-bottom:0;padding-bottom:2px;gap:12px}
+.kv.nb span:last-child{text-align:right}
+#jourCard .noteShown{margin:2px 0 6px}
+.why.gap{margin-top:10px}
+.bilanz .kv{gap:12px}
+.bilanz .kv span:last-child{text-align:right}
+.linkbtn{background:none;border:0;color:var(--mut);font-size:11.5px;text-decoration:underline;
+  cursor:pointer;padding:8px 4px;font-family:inherit}
+.linkbtn.sure{color:var(--sell)}
+.bilanz{margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid var(--line)}
 
 /* ---------- Verlauf ---------- */
 .chartBox{position:relative}
@@ -369,6 +395,23 @@ const store = {
 let POS = store.get("position",{btc:null,cash:null,currency:"USD",core_pct:40,split_buy:[34,33,33],split_sell:[34,33,33]});
 let DONE = store.get("tranches",{});
 let JOURNAL = store.get("journal",[]);
+
+// Drei Journal-Arten, also drei Wege, die Ampel zu nutzen. Die Wahl liegt nur in diesem Browser.
+//   tranchen  den Signalen folgen: drei Käufe, drei Verkäufe (SPEC 7.1 bis 7.3)
+//   sparplan  monatlich etwas zur Seite legen, die Phase gewichtet es (SPEC 7.4)
+//   frei      selbst entscheiden; das Journal hält den Stand der Ampel beim Kauf fest
+const MODES = {
+  tranchen:{ n:"Tranchen", t:"Du folgst den Signalen: drei Käufe nahe am Tief, drei Verkäufe nahe am Hoch." },
+  sparplan:{ n:"Sparplan", t:"Du legst monatlich etwas zur Seite, so viel wie gerade geht. Die Phase bestimmt, wie viel davon du investierst." },
+  frei:{ n:"Frei", t:"Du entscheidest selbst, wann und wie viel du kaufst. Das Journal hält fest, wie die Ampel in dem Moment stand." },
+};
+const CURS = ["CHF","USD","EUR"];
+const PLAN0 = {mode:"tranchen",cur:"CHF",weight:true,pot:0};
+let PLAN = Object.assign({}, PLAN0, store.get("plan",{}));
+if(!MODES[PLAN.mode]) PLAN.mode = "tranchen";
+if(!CURS.includes(PLAN.cur)) PLAN.cur = "CHF";
+const ENTRY = {};        // Eingaben, die noch nicht eingetragen sind
+let loeschFrage = null;  // Journaleintrag, der gerade nach Bestätigung fragt
 
 // ============================================================ Laden
 const params = new URLSearchParams(location.search);
@@ -678,7 +721,29 @@ function clock(){
 
 // ---------------------------------------------------------- Position
 function position(){
-  const c = el("div","card"); c.appendChild(el("h2",null,"Deine Position · nur auf diesem Gerät"));
+  const c = el("div","card"); c.id = "posCard";
+  c.appendChild(el("h2",null,"Deine Position · nur auf diesem Gerät"));
+  const seg = el("div","seg"); seg.setAttribute("role","group"); seg.setAttribute("aria-label","Wie du die Ampel nutzt");
+  for(const [k,m] of Object.entries(MODES)){
+    const b = el("button",null,esc(m.n)); b.type = "button";
+    b.setAttribute("aria-pressed", String(PLAN.mode===k));
+    b.onclick = ()=>{ PLAN.mode = k; store.set("plan",PLAN); redrawOwn(); $("#posCard .seg button[aria-pressed=true]")?.focus(); };
+    seg.appendChild(b);
+  }
+  c.appendChild(seg);
+  c.appendChild(el("div","why modeText",esc(MODES[PLAN.mode].t)));
+  if(PLAN.mode==="sparplan") sparForm(c);
+  else if(PLAN.mode==="frei") freiForm(c);
+  else trancheForm(c);
+  return c;
+}
+// Nur die eigenen Karten neu zeichnen. Ein volles render() würde beim Tippen den Fokus nehmen.
+function redrawOwn(){
+  $("#posCard")?.replaceWith(position());
+  $("#jourCard")?.replaceWith(journalCard());
+}
+
+function trancheForm(c){
   const mk=(label,k,ph)=>{
     const f=el("div","field",`<label for="f_${k}">${esc(label)}</label>`);
     const i=el("input"); i.id="f_"+k; i.type="number"; i.step="any"; i.placeholder=ph;
@@ -709,7 +774,129 @@ function position(){
   c.appendChild(row);
   if(POS.btc==null && POS.cash==null)
     c.appendChild(el("div","why","Trag deinen Bestand ein, dann rechnet die Seite die Tranchen in BTC und USD aus. Die Angaben verlassen dieses Gerät nicht."));
-  return c;
+}
+
+// ---- Gemeinsame Helfer für Sparplan und freie Käufe
+const zahl = (v)=>{ const x = parseFloat(String(v ?? "").replace(",",".")); return isFinite(x) ? x : null; };
+const geld = (v,cur)=>`${nf(v, Number.isInteger(v) ? 0 : 2)} ${cur}`;
+const mal = (f)=>`${nf(f, f%1 ? 1 : 0)}×`;
+const btcF = (v)=>new Intl.NumberFormat("de-CH",{maximumFractionDigits:6}).format(v);
+const ampelJetzt = ()=>`Phase ${D.phase.id} ${D.phase.name} · Kauf-Motor ${D.engines?.buy?.score ?? "–"} · ${usd(D.price?.close)} USD`;
+function feld(label, id, k, ph, onIn, text=false){
+  const f = el("div","field"+(text?" txt":""),`<label for="${id}">${esc(label)}</label>`);
+  const i = el("input"); i.id = id;
+  if(text){ i.type="text"; i.maxLength=300; } else { i.type="number"; i.step="any"; i.min="0"; i.inputMode="decimal"; }
+  i.placeholder = ph; i.value = ENTRY[k] ?? "";
+  i.oninput = ()=>{ ENTRY[k] = i.value; onIn?.(); };
+  f.appendChild(i); return f;
+}
+function curSelect(){
+  const sel = el("select"); sel.setAttribute("aria-label","Währung");
+  for(const c of CURS){ const o = el("option",null,c); o.value = c; if(c===PLAN.cur) o.selected = true; sel.appendChild(o); }
+  sel.onchange = ()=>{ PLAN.cur = sel.value; store.set("plan",PLAN); redrawOwn(); };
+  return sel;
+}
+// Jeder eigene Eintrag bekommt den Stand der Ampel im Moment des Eintragens mit.
+function addEntry(e){
+  JOURNAL.unshift({ id: Date.now().toString(36)+Math.random().toString(36).slice(2,6),
+    date: new Date().toISOString().slice(0,10), week: D.week_id,
+    phase: D.phase.id, buy: D.engines?.buy?.score ?? null, price: D.price?.close ?? null, ...e });
+  store.set("journal",JOURNAL);
+  for(const k of Object.keys(ENTRY)) delete ENTRY[k];
+}
+function removeEntry(id){
+  const i = JOURNAL.findIndex(j=>j.id===id); if(i<0) return;
+  const j = JOURNAL[i];
+  if(j.kind==="spar" && j.pot_delta){
+    PLAN.pot = Math.max(0, Math.round(((PLAN.pot||0) - j.pot_delta)*100)/100); store.set("plan",PLAN);
+  }
+  JOURNAL.splice(i,1); store.set("journal",JOURNAL);
+}
+
+// ---- Sparplan (SPEC 7.4). In ③ wird nichts investiert, in ④ die Hälfte. Was liegen
+// bleibt, sammelt sich im Topf und bezahlt die Mehrbeträge in ①. Der Monatsbetrag ist
+// frei: eingetragen wird, was in diesem Monat tatsächlich zur Seite ging.
+function sparFaktor(){
+  if(!PLAN.weight) return 1;
+  const p = D.phase?.id, sc = D.engines?.buy?.score;
+  return p===1 ? (sc!=null && sc>=80 ? 3 : 2) : p===2 ? 1 : p===3 ? 0 : 0.5;
+}
+function sparVorschlag(betrag){
+  if(betrag==null || betrag<0) return null;
+  const topf = PLAN.weight ? (PLAN.pot||0) : 0;
+  return Math.round(Math.max(0, Math.min(betrag*sparFaktor(), betrag+topf)));
+}
+function sparForm(c){
+  const f = sparFaktor();
+  let vSpan, invInput, btn;
+  const upd = ()=>{
+    const z = zahl(ENTRY.zur), v = sparVorschlag(z);
+    vSpan.textContent = v==null ? "–" : geld(v,PLAN.cur);
+    invInput.placeholder = v==null ? "wie Vorschlag" : String(v);
+    const inv = zahl(ENTRY.inv);
+    btn.disabled = !!fixture || z==null || z<0 || (inv!=null && inv<0) || ((inv ?? v ?? 0)===0 && z===0);
+  };
+  const zur = feld("Diesen Monat zur Seite gelegt","sp_zur","zur","z. B. 300",upd);
+  zur.appendChild(curSelect()); c.appendChild(zur);
+
+  const chk = el("label","check"); const cb = el("input"); cb.type = "checkbox"; cb.checked = !!PLAN.weight;
+  cb.onchange = ()=>{ PLAN.weight = cb.checked; store.set("plan",PLAN); redrawOwn(); };
+  chk.append(cb, document.createTextNode("Nach Phase gewichten")); c.appendChild(chk);
+
+  c.appendChild(el("div","kv",`<span>Phase und Faktor</span><span>${PLAN.weight ? `Phase ${D.phase.id} ${esc(D.phase.name)} · ${mal(f)}` : "gleichmässig · 1×"}</span>`));
+  const kvV = el("div","kv",`<span>Vorschlag für diesen Monat</span><span>–</span>`); vSpan = kvV.lastChild; c.appendChild(kvV);
+  if(PLAN.weight || (PLAN.pot||0)>0)
+    c.appendChild(el("div","kv",`<span>Im Topf</span><span>${esc(geld(PLAN.pot||0,PLAN.cur))}</span>`));
+
+  const inv = feld("Davon investiert","sp_inv","inv","wie Vorschlag",upd); invInput = inv.lastChild; c.appendChild(inv);
+  c.appendChild(feld("BTC erhalten (optional)","sp_btc","btc","z. B. 0.0041"));
+
+  const row = el("div","btnrow");
+  btn = el("button","btn","Eintragen"); btn.type = "button";
+  btn.onclick = ()=>{
+    const z = zahl(ENTRY.zur); if(z==null || z<0) return;
+    const inv = zahl(ENTRY.inv) ?? sparVorschlag(z); if(inv==null || inv<0) return;
+    const btc = zahl(ENTRY.btc), vor = PLAN.pot||0;
+    const nach = Math.max(0, Math.round((vor + z - inv)*100)/100);
+    addEntry({ kind:"spar", amount:inv, cur:PLAN.cur, set_aside:z, faktor:f, pot_delta:Math.round((nach-vor)*100)/100,
+      ...(btc>0 ? {btc} : {}),
+      text:`Sparplan: ${geld(inv,PLAN.cur)} investiert, ${geld(z,PLAN.cur)} zur Seite gelegt (${mal(f)})` });
+    PLAN.pot = nach; store.set("plan",PLAN);
+    redrawOwn(); $("#sp_zur")?.focus();
+  };
+  row.appendChild(btn); c.appendChild(row);
+
+  const monat = new Date().toISOString().slice(0,7);
+  const schon = JOURNAL.filter(j=>j.kind==="spar" && j.date?.slice(0,7)===monat);
+  if(schon.length) c.appendChild(el("div","why gap",
+    `In diesem Monat schon eingetragen: ${esc(schon.map(j=>geld(j.amount,j.cur)).join(", "))}.`));
+  c.appendChild(el("div","why"+(schon.length ? "" : " gap"), fixture ? "Testansicht: Einträge sind hier abgeschaltet."
+    : PLAN.weight ? "Was du in den Phasen 3 und 4 nicht investierst, bleibt im Topf und bezahlt die Mehrbeträge in Phase 1. Du kannst vom Vorschlag abweichen, der Rest geht in den Topf."
+                  : "Ohne Gewichtung ist der Vorschlag der Betrag, den du zur Seite gelegt hast. Investierst du weniger, geht der Rest in den Topf."));
+  upd();
+}
+
+// ---- Freie Käufe: kein Vorschlag, nur ein ehrliches Protokoll mit dem Stand der Ampel.
+function freiForm(c){
+  let btn;
+  const upd = ()=>{ const a = zahl(ENTRY.amt); btn.disabled = !!fixture || !(a>0); };
+  c.appendChild(el("div","kv",`<span>Die Ampel jetzt</span><span>${esc(ampelJetzt())}</span>`));
+  const amt = feld("Betrag","fr_amt","amt","z. B. 200",upd); amt.appendChild(curSelect()); c.appendChild(amt);
+  c.appendChild(feld("BTC erhalten (optional)","fr_btc","btc","z. B. 0.0030"));
+  c.appendChild(feld("Warum jetzt? (optional)","fr_note","note","ein Satz genügt",null,true));
+  const row = el("div","btnrow");
+  btn = el("button","btn","Kauf eintragen"); btn.type = "button";
+  btn.onclick = ()=>{
+    const a = zahl(ENTRY.amt); if(!(a>0)) return;
+    const btc = zahl(ENTRY.btc), note = (ENTRY.note||"").trim();
+    addEntry({ kind:"frei", amount:a, cur:PLAN.cur, ...(btc>0 ? {btc} : {}), ...(note ? {note} : {}),
+      text:`Kauf: ${geld(a,PLAN.cur)}` });
+    redrawOwn(); $("#fr_amt")?.focus();
+  };
+  row.appendChild(btn); c.appendChild(row);
+  c.appendChild(el("div","why gap", fixture ? "Testansicht: Einträge sind hier abgeschaltet."
+    : "Jeder Eintrag hält fest, wie die Ampel in dem Moment stand. So siehst du später, ob deine Käufe eher in günstigen oder in teuren Phasen lagen."));
+  upd();
 }
 function trancheAmount(t){
   if(!t) return null;
@@ -1058,13 +1245,50 @@ function drawChart(){
 }
 
 // ---------------------------------------------------------- Journal
+// Bilanz der eigenen Käufe (Sparplan und frei). Der Schnitt des Kauf-Motors ist der Spiegel:
+// Er zeigt, ob das eigene Geld eher in günstigen oder in teuren Phasen investiert wurde.
+function bilanz(){
+  const own = JOURNAL.filter(j=>(j.kind==="frei"||j.kind==="spar") && j.amount>0);
+  if(!own.length) return null;
+  const byCur = {}; let btc = 0;
+  for(const j of own){ byCur[j.cur] = (byCur[j.cur]||0) + j.amount; if(j.btc>0) btc += j.btc; }
+  const eineW = Object.keys(byCur).length===1;
+  const w = (j)=> eineW ? j.amount : 1;   // nach Betrag gewichtet, solange es eine Währung ist
+  const mit = own.filter(j=>j.buy!=null);
+  const avg = mit.length ? mit.reduce((a,j)=>a+j.buy*w(j),0) / mit.reduce((a,j)=>a+w(j),0) : null;
+  return { n:own.length, byCur, btc, avg, eineW, ph:[1,2,3,4].map(p=>own.filter(j=>j.phase===p).length) };
+}
 function journalCard(){
-  const c = el("div","card"); c.appendChild(el("h2",null,"Journal"));
-  if(!JOURNAL.length) c.appendChild(el("div","why","Noch keine Einträge. Sobald du eine Tranche als erledigt markierst, erscheint sie hier."));
-  for(const j of JOURNAL.slice(0,12)){
-    c.appendChild(el("div","kv",`<span>${esc(dateDE(j.date))}</span><span>${esc(j.text)}</span>`));
-    if(j.note) c.appendChild(el("div","noteShown",esc(j.note)));
+  const c = el("div","card"); c.id = "jourCard"; c.appendChild(el("h2",null,"Journal"));
+  const b = bilanz();
+  if(b){
+    const box = el("div","bilanz");
+    box.appendChild(el("div","kv",`<span>Eigene Käufe</span><span>${b.n} · ${esc(Object.entries(b.byCur).map(([cur,v])=>geld(Math.round(v*100)/100,cur)).join(" + "))}${b.btc>0 ? ` · ${btcF(b.btc)} BTC` : ""}</span>`));
+    if(b.avg!=null) box.appendChild(el("div","kv",`<span>Kauf-Motor bei deinen Käufen</span><span>im Schnitt ${nf(b.avg,0)}${b.eineW ? ", nach Betrag gewichtet" : ""}</span>`));
+    box.appendChild(el("div","kv",`<span>Nach Phase</span><span>${b.ph.map((n,i)=>`${PHASES[i+1].n} ${n}`).join(" · ")}</span>`));
+    box.appendChild(el("div","why","Der Kauf-Motor misst, wie günstig Bitcoin bewertet ist: ab 60 Kaufzone, unter 40 ruhig. Ein hoher Schnitt heisst, du hast eher in günstigen Phasen gekauft."));
+    c.appendChild(box);
   }
+  if(!JOURNAL.length) c.appendChild(el("div","why",
+    PLAN.mode==="sparplan" ? "Noch keine Einträge. Trag oben ein, was du diesen Monat zur Seite gelegt hast."
+    : PLAN.mode==="frei" ? "Noch keine Einträge. Trag oben einen Kauf ein, die Ampel merkt sich ihren Stand dazu."
+    : "Noch keine Einträge. Sobald du eine Tranche als erledigt markierst, erscheint sie hier."));
+  for(const j of JOURNAL.slice(0,12)){
+    c.appendChild(el("div","kv"+(j.kind ? " nb" : ""),`<span>${esc(dateDE(j.date))}</span><span>${esc(j.text)}</span>`));
+    if(j.note) c.appendChild(el("div","noteShown",esc(j.note)));
+    if(j.kind){
+      const sub = el("div","jsub",`<span>Ampel beim Eintrag: Phase ${esc(j.phase)} · Kauf-Motor ${esc(j.buy ?? "–")} · ${usd(j.price)} USD${j.btc>0 ? ` · ${btcF(j.btc)} BTC erhalten` : ""}</span>`);
+      const rm = el("button","linkbtn"+(loeschFrage===j.id ? " sure" : ""), loeschFrage===j.id ? "wirklich entfernen?" : "entfernen");
+      rm.type = "button";
+      rm.onclick = ()=>{
+        if(loeschFrage===j.id){ loeschFrage = null; removeEntry(j.id); redrawOwn(); }
+        else { loeschFrage = j.id; redrawOwn();
+          setTimeout(()=>{ if(loeschFrage===j.id){ loeschFrage = null; redrawOwn(); } }, 4000); }
+      };
+      sub.appendChild(rm); c.appendChild(sub);
+    }
+  }
+  if(JOURNAL.length>12) c.appendChild(el("div","why",`Gezeigt werden die letzten 12 von ${JOURNAL.length} Einträgen. Alle stehen im Backup.`));
   const row = el("div","btnrow");
   const ex = el("button","btn ghost","Backup exportieren"); ex.onclick=exportBackup;
   const im = el("button","btn ghost","Backup importieren"); im.onclick=importBackup;
@@ -1072,7 +1296,7 @@ function journalCard(){
   return c;
 }
 function exportBackup(){
-  const data={_app:"panta-rey-ampel",_v:1,position:POS,tranches:DONE,journal:JOURNAL};
+  const data={_app:"panta-rey-ampel",_v:1,position:POS,tranches:DONE,journal:JOURNAL,plan:PLAN};
   const a=el("a"); a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:"application/json"}));
   a.download=`ampel-backup-${new Date().toISOString().slice(0,10)}.json`; a.click();
   setTimeout(()=>URL.revokeObjectURL(a.href),2000);
@@ -1083,7 +1307,8 @@ function importBackup(){
     const j=JSON.parse(await i.files[0].text());
     if(j._app!=="panta-rey-ampel") throw new Error("Falsches Format");
     POS=j.position||POS; DONE=j.tranches||DONE; JOURNAL=j.journal||JOURNAL;
-    store.set("position",POS); store.set("tranches",DONE); store.set("journal",JOURNAL);
+    if(j.plan){ PLAN=Object.assign({},PLAN0,j.plan); if(!MODES[PLAN.mode]) PLAN.mode="tranchen"; if(!CURS.includes(PLAN.cur)) PLAN.cur="CHF"; }
+    store.set("position",POS); store.set("tranches",DONE); store.set("journal",JOURNAL); store.set("plan",PLAN);
     render();
   }catch(e){ alert("Backup konnte nicht gelesen werden: "+e.message); } };
   i.click();
@@ -1256,15 +1481,15 @@ $("#btnSettings").onclick=()=>{
     <div class="sub">Konfiguration ${esc(D.config_version||D.stage||"")} · Daten ${esc(D.week_id)}</div>`;
   const mv=el("section"); mv.appendChild(el("h4",null,"Fehlende Kennzahlen von Hand nachtragen"));
   mv.appendChild(manualPanel()); inner.appendChild(mv);
-  const s=el("section",null,`<h4>Speicher</h4><p>Bestand, Tranchen und Journal liegen ausschliesslich in diesem Browser.
+  const s=el("section",null,`<h4>Speicher</h4><p>Bestand, Tranchen, Journal und Sparplan liegen ausschliesslich in diesem Browser.
     Safari auf iOS löscht den Speicher nach längerer Inaktivität, deshalb lohnt sich ein jährliches Backup.</p>`);
   inner.appendChild(s);
   const r=el("div","btnrow");
   const ex=el("button","btn ghost","Backup exportieren"); ex.onclick=exportBackup;
   const rs=el("button","btn ghost","Alles löschen");
-  rs.onclick=()=>{ if(confirm("Bestand, Tranchen und Journal auf diesem Gerät löschen?")){
-    ["position","tranches","journal"].forEach(k=>localStorage.removeItem("zy_"+k));
-    POS=store.get("position",{btc:null,cash:null,core_pct:40}); DONE={}; JOURNAL=[]; closeSheet(); render(); } };
+  rs.onclick=()=>{ if(confirm("Bestand, Tranchen, Journal und Sparplan auf diesem Gerät löschen?")){
+    ["position","tranches","journal","plan"].forEach(k=>localStorage.removeItem("zy_"+k));
+    POS=store.get("position",{btc:null,cash:null,core_pct:40}); DONE={}; JOURNAL=[]; PLAN=Object.assign({},PLAN0); closeSheet(); render(); } };
   r.append(ex,rs); inner.appendChild(r);
   const cl=el("button","btn ghost","Schliessen"); cl.onclick=closeSheet; inner.appendChild(cl);
   $("#sheet").classList.add("open"); cl.focus();

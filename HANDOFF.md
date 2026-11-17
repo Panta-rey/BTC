@@ -506,9 +506,9 @@ Beide lokalen Scripts laufen nie im Runner. Rohdaten bleiben in `data/private/`.
 
 ## 12. Nächste Schritte
 
-Das System ist betriebsbereit. Dringend ist nur der erste Punkt, alles andere hat Zeit.
+Das System ist betriebsbereit. Nichts davon ist dringend.
 
-1. **Regel für die verpassten Tranchen festlegen und hier eintragen.** Die Ampel zeigt drei Kauftranchen in der Vergangenheit, real wurde nicht gekauft. Das System hat dafür keine Regel, der Entscheid liegt beim Eigentümer (Abschnitt 13).
+1. **Entschieden am 17.11.2026: Die verpassten Tranchen werden nicht auf einen Schlag nachgeholt.** Dafür war kein Budget vorgesehen. Gekauft wird aus dem Monatseinkommen, in wechselnden Beträgen und nach eigenem Ermessen; die Ampel ist Entscheidungshilfe, nicht Auftraggeberin. Die Seite hat dafür drei Journal-Arten bekommen (Abschnitt 13). Ändert sich diese Haltung, hier nachführen.
 2. **Monatlich zwei Zahlen eintragen.** Angebot im Gewinn und STH-Realized-Price. Die Erinnerung kommt am Monatsanfang von selbst als Issue. Die anderen drei Felder sind gesperrt.
 3. **Erste Indikator-Prüfung ansehen**, am 2. Januar 2027. Sie läuft von selbst und sieht jetzt dieselben Handwerte wie die Seite.
 4. **Neubewertung frühestens ab dem Jahres-Review im Januar 2027.** Nach der Zählung der Maschine hat am 12.07.2026 ein neuer Zyklus begonnen, SPEC 10.5 erlaubt die Neubewertung also formal. Vorher die Prüfvorschriften aufschreiben. Zu bewerten sind: die Kopplung `score_min × Abdeckung` von Weg E2, die Frage, ob der Verkaufs-Motor noch auslösen kann (Abschnitt 5), die Einstimmigkeit der Kaufseite bei 80 % Abdeckung und der zeitlich scharfgestellte Trendbruch (beide Abschnitt 13). Erst dann entscheidet sich, ob RHODL und LTH-Positionsänderung dazukommen.
@@ -581,7 +581,7 @@ Im Backtest stehen damit 18 statt 15 Transaktionen, 4,3560 BTC ohne Cash statt 1
 
 ### Was damit nicht gelöst ist
 
-- **Die drei Kauftranchen liegen in der Vergangenheit, und real wurde nicht gekauft**, weil die Ampel es im Sommer nicht sagte. Für verpasste Tranchen hat das System keine Regel. Ob und wie nachgeholt wird, ist ein Entscheid des Eigentümers und gehört hier eingetragen, sobald er gefallen ist.
+- **Die drei Kauftranchen liegen in der Vergangenheit, und real wurde nicht gekauft**, weil die Ampel es im Sommer nicht sagte. Für verpasste Tranchen hat das System keine Regel. Der Entscheid des Eigentümers steht in Abschnitt 12, Punkt 1: kein Nachholen auf einen Schlag, Käufe aus dem Monatseinkommen nach eigenem Ermessen.
 - **Phase ② kennt keinen Rückweg.** Fällt der Kurs unter das Juni-Tief, zeigt die Seite weiter „Aufwärtstrend", bis das Top-Fenster nach dem Halving 2028 erreicht ist. Das gilt in jeder Variante. Nach dem eigenen Kriterium (Durchschnitt höchstens 1,6-mal das Tief) blieben die Käufe im Ziel, solange das Tief über rund 43'000 USD liegt. Ob der Juni 2026 das Tief war, weiss niemand.
 - **Formal ist der Zyklus damit zu Ende**, und SPEC 10.5 erlaubt die Neubewertung. Sie sollte trotzdem nicht vor dem Jahres-Review im Januar 2027 beginnen: Der Zustand ist erst am 17.11. rückwirkend entstanden, und die Prüfvorschriften für 2.0 gehören vorab aufgeschrieben (Abschnitt 5a zeigt die Form).
 
@@ -611,6 +611,22 @@ Schritt 7 der alten Liste (zweiter Abzug um den 10.10.2026) wurde verpasst, der 
 2. **Die Verkaufstranchen kommen nicht mehr aus dem Score.** 2021 und 2025 wurden alle drei Tranchen vom Trendbruch ausgelöst, keine von den Schwellen 70, 80 und 90; der Verkaufs-Motor erreichte seit 2018 höchstens 59 und 37. Er ist faktisch nur noch der Schalter, der den Trendbruch scharf stellt. Kandidat: ein rein zeitlich scharfgestellter Trendbruch (Zyklus-Uhr im Fenster, ohne Score). Dazu gehört eine Regel für den Fall, dass Phase ③ nie erreicht wird; heute gibt es dafür nur das Flag `cycle_anomaly`.
 3. **Regel für neue Handwerte:** Wer eine Kennzahl neu aufnimmt, trägt mindestens die laufende Phase nach oder lässt sie erst ab dem nächsten Phasenwechsel wirken. Sonst entsteht wieder ein Mischzustand.
 4. **Das Formular schickt die ganze Reihe im Issue-Link mit.** Bei zwei Lesungen im Monat wird die Adresse in einigen Jahren zu lang. `mergeReadings()` führt ohnehin zusammen, es genügte, nur die neuen Lesungen zu schicken.
+
+### Drei Journal-Arten
+
+Aus dem Entscheid oben folgt, dass die Seite nicht mehr nur den Fall „den Signalen folgen" abbilden darf. In der Positionskarte lässt sich seit dem 17.11.2026 wählen, wie die Ampel genutzt wird. Die Wahl, die Eingaben und alle Einträge liegen wie bisher nur im Browser (`localStorage`, neu der Schlüssel `zy_plan`) und sind im Backup enthalten. An Engine, Pipeline und Konfiguration ändert das nichts.
+
+| Art | Für wen | Was die Seite tut |
+|---|---|---|
+| **Tranchen** | wer den Signalen folgt | wie bisher: Bestand, Cash, Kernposition, sechs Tranchen |
+| **Sparplan** | wer monatlich etwas zur Seite legt | Eingabe „diesen Monat zur Seite gelegt", frei wählbar und jeden Monat anders. Mit „nach Phase gewichten" gilt SPEC 7.4: Phase ① doppelt (dreifach ab Kauf-Score 80), ② einfach, ③ nichts, ④ die Hälfte. Was liegen bleibt, geht in den Topf und bezahlt die Mehrbeträge in ①; der Vorschlag ist auf Betrag plus Topf gedeckelt. Vom Vorschlag darf abgewichen werden, der Rest geht in den Topf. |
+| **Frei** | wer selbst entscheidet, wann er kauft | kein Vorschlag. Betrag, optional erhaltene BTC und ein Satz „warum jetzt". |
+
+Jeder Eintrag der Arten Sparplan und Frei speichert den Stand der Ampel im Moment des Eintragens: Phase, Kauf-Motor, Wochenschluss. Das Journal zeigt daraus eine kleine Bilanz, und ihr wichtigster Wert ist der **durchschnittliche Kauf-Motor bei den eigenen Käufen**, nach Betrag gewichtet. Das ist der eigentliche Zweck der Art „Frei": Sie schreibt nichts vor, hält aber fest, ob das eigene Gefühl eher in günstigen oder in teuren Phasen zum Kauf geführt hat. Wer nach einem Jahr einen Schnitt von 35 sieht, weiss etwas über sich, das ihm keine Regel sagen kann.
+
+Die Faktoren des Sparplans sind bewusst nicht einstellbar. Sie sind der Teil, der bindet; wer sie verschieben kann, tut es im schlechtesten Moment. Abschalten lässt sich die Gewichtung als Ganzes.
+
+Geprüft in einem echten Browser (Desktop und 390 px) und mit 33 Einzelprüfungen der Rechenlogik: Faktoren, Topf, Deckelung, Abweichung, Entfernen eines Eintrags samt Rückbuchung des Topfs, Bilanz. Diese Prüfungen liegen nicht im Repo, weil die Seite ohne Abhängigkeiten auskommt und die Tests dort keinen Browser haben. In der Testansicht (`?fixture=`) sind die Einträge abgeschaltet.
 
 ### Das Repo heisst jetzt `BTC`
 

@@ -567,6 +567,12 @@ Wer monatlich frisches Geld investiert, kann es nach Phase gewichten. Was in ③
 | ③ | 0× |
 | ④ | 0,5× |
 
+**Umsetzung auf der Seite (seit 17.11.2026).** Der Monatsbetrag ist nicht fest: Eingetragen wird, was in diesem Monat tatsächlich zur Seite ging. Der Vorschlag ist dieser Betrag mal Faktor, gedeckelt auf Betrag plus Topf. Der Topf ist die Summe dessen, was zur Seite gelegt, aber nicht investiert wurde. Die Gewichtung lässt sich als Ganzes abschalten, die Faktoren selbst nicht. Der Backtest rechnet weiterhin mit festen 500 USD im Monat und ohne den dreifachen Betrag.
+
+### 7.5 Journal-Arten
+
+Die Positionskarte bietet drei Arten, die Ampel zu nutzen: **Tranchen** (7.1 bis 7.3), **Sparplan** (7.4) und **Frei**. „Frei" macht keinen Vorschlag und protokolliert Käufe, die nach eigenem Ermessen erfolgen. Einträge der Arten Sparplan und Frei speichern Phase, Kauf-Motor und Wochenschluss zum Zeitpunkt des Eintrags; das Journal zeigt daraus Summe, Verteilung nach Phase und den nach Betrag gewichteten Schnitt des Kauf-Motors. Alles liegt nur im Browser (`zy_plan`, `zy_journal`) und ist im Backup enthalten.
+
 ---
 
 ## 8. Oberfläche
