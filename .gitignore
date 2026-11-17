@@ -5,3 +5,9 @@ node_modules/
 # Lokal bezogene Rohdaten aus einem zeitlich begrenzten Zugang.
 # Gehören nie ins öffentliche Repo. Veröffentlicht wird nur der Bericht.
 data/private/
+
+# Installer und Archive gehören nicht ins Repo. Das schützt auch davor, dass ein
+# Paket oder ein gepacktes data/private/ über "git add -A" versehentlich öffentlich wird.
+*.msi
+*.zip
+*.7z

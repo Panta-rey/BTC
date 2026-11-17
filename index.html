@@ -1105,7 +1105,7 @@ const MANUAL = [
   { k:"sth_realized_price", n:"STH-Realized-Price", u:"USD", sofort:true, rang:"monatlich", motor:"Trendfilter",
     chart:"Key Cost Basis Models",
     url:"https://charts.checkonchain.com/btconchain/pricing/pricing_costbasisoriginals/pricing_costbasisoriginals_light.html",
-    read:"Auf der Startseite unter Pricing Models als „Key Cost Basis!\" verlinkt. Im Chart die Linie Short-Term Holder Realised Price ablesen, aktuellster Punkt rechts. Verschiebt laut Nachlauf keine Phasenwechsel, schaltet aber die Nachkauf-Chance in Phase ② frei." },
+    read:"Auf der Startseite unter Pricing Models als „Key Cost Basis!\" verlinkt. Im Chart die Linie „STH Cost Basis“ ablesen (das ist der Short-Term Holder Realised Price), aktuellster Punkt rechts. Nicht die Linie „Realised Price“: Die liegt deutlich tiefer und ist der Einstand aller Coins. Verschiebt laut Nachlauf keine Phasenwechsel, schaltet aber die Nachkauf-Chance in Phase ② frei." },
   { k:"reserve_risk", n:"Reserve Risk", u:"", sofort:true, rang:"zurückgestellt", motor:"Kauf",
     chart:"Bitcoin Reserve Risk (BGeometrics)",
     url:"https://charts.bgeometrics.com/reserve_risk.html",
@@ -1129,10 +1129,17 @@ function manualPanel(){
     `Fünf Kennzahlen gibt es nur bei BGeometrics. Die ersten zwei trägst du monatlich nach:
      Das Angebot im Gewinn allein hebt die Abdeckung des Kauf-Motors von 80 auf 100 Prozent,
      der STH-Einstand schaltet die Nachkauf-Chance frei. Die übrigen drei sind bewusst
-     zurückgestellt, die Begründung steht jeweils an der Kachel. Eine Erinnerung kommt
-     jeden Monatsanfang als GitHub-Issue.`));
+     zurückgestellt und ihre Felder gesperrt, die Begründung steht jeweils dabei.
+     Eine Erinnerung kommt jeden Monatsanfang als GitHub-Issue.`));
   const draft = store.get("manual_draft",{});
+  // Zurückgestellte Kennzahlen nimmt die Pipeline nicht an (scripts/lib/manual.mjs).
+  // Alte Entwürfe dazu werden verworfen, sonst gingen sie bei jedem Speichern wieder mit.
+  const later = (m) => m.rang === "zurückgestellt";
+  let purged = false;
+  for(const m of MANUAL) if(later(m) && draft[m.k] != null){ delete draft[m.k]; purged = true; }
+  if(purged) store.set("manual_draft",draft);
   const series = D.manual?.series || {};
+  const errs = {};
   const rows = el("div");
   for(const m of MANUAL){
     const r = el("div","mrow" + (m.rang==="zurückgestellt" ? " later" : ""));
@@ -1149,11 +1156,14 @@ function manualPanel(){
     r.appendChild(top);
 
     const i = el("input"); i.id="m_"+m.k; i.type="number"; i.step="any"; i.inputMode="decimal";
-    i.placeholder = m.rang==="monatlich" ? "Wert eintragen" : "nur eintragen, wenn bewusst gewollt";
-    i.value = draft[m.k] ?? "";
+    i.placeholder = later(m) ? "gesperrt, bis die Kennzahl neu bewertet ist" : "Wert eintragen";
+    i.value = later(m) ? "" : (draft[m.k] ?? "");
+    if(later(m)){ i.disabled = true; i.style.opacity = ".55"; i.style.cursor = "not-allowed"; }
     i.setAttribute("aria-label", m.n + (m.u ? " in " + m.u : ""));
     i.oninput = ()=>{ draft[m.k] = i.value; store.set("manual_draft",draft); snippet(); };
     r.appendChild(i);
+    const err = el("div","warn"); err.style.color = "var(--sell)"; err.style.display = "none";
+    err.setAttribute("role","alert"); errs[m.k] = err; r.appendChild(err);
     if(m.warn) r.appendChild(el("div","warn",esc(m.warn)));
     r.appendChild(el("div","read",esc(m.read)));
     const have = series[m.k] || [];
@@ -1177,6 +1187,14 @@ function manualPanel(){
   const ed = el("a","btn ghost","Datei von Hand bearbeiten");
   ed.href="https://github.com/Panta-rey/Panta-Rey-BTC-Ampel/edit/main/data/manual.json";
   ed.target="_blank"; ed.rel="noopener"; ed.style.textDecoration="none";
+  // Nach dem Speichern den Entwurf leeren. Sonst bleibt die Zahl im Feld stehen und wird
+  // im nächsten Monat unbemerkt mit neuem Datum wieder eingereicht.
+  save.addEventListener("click", ()=> setTimeout(()=>{
+    for(const k of Object.keys(draft)) delete draft[k];
+    store.set("manual_draft",{});
+    rows.querySelectorAll("input").forEach(i => { i.value = ""; });
+    snippet();
+  }, 800));
   row.append(save,cp,ed); box.appendChild(row);
   box.appendChild(el("div","why",
     `Speichern öffnet GitHub mit einem fertig ausgefüllten Eintrag. Dort nur noch auf
@@ -1184,24 +1202,40 @@ function manualPanel(){
      <code>data/manual.json</code> ein und meldet sich zurück. Die Seite kann die Datei
      nicht selbst ändern: Sie ist statisch, die Auswertung läuft in der Pipeline.`));
 
+  function lineOf(k, list){
+    return `  "${k}": [${list.length ? "\n" + list.map(r=>`    { "d": "${r.d}", "v": ${r.v} }`).join(",\n") + "\n  " : ""}]`;
+  }
   function snippet(){
     const week = D.week_id;
-    // Immer alle fünf Reihen ausgeben, auch die leeren. Sonst würden beim Einfügen
-    // die bestehenden Lesungen der anderen Kennzahlen verloren gehen.
+    // Die beiden aktiven Reihen immer vollständig ausgeben, mit allen bisherigen Lesungen.
+    // Zurückgestellte Kennzahlen gehen nicht mit, eine fehlerhafte Eingabe ebenfalls nicht.
     const lines = [];
-    let neu = 0;
+    let neu = 0, bad = 0;
     for(const m of MANUAL){
+      if(later(m)) continue;
       const have = (series[m.k] || []).filter(r => r.d !== week);
       const v = parseFloat(draft[m.k]);
+      // Dieselben Grenzen wie in scripts/lib/manual.mjs, damit ein Tippfehler schon hier auffällt.
+      let msg = "";
+      if(isFinite(v)){
+        const px = D.price?.close;
+        if(m.k==="sth_realized_price" && px > 0 && (v/px < 0.3 || v/px > 3))
+          msg = `Passt nicht zum Kurs von rund ${nf(px,0)} USD. Tippfehler oder falsche Linie? Abzulesen ist „STH Cost Basis“.`;
+        if(m.k==="supply_in_profit" && (v < 5 || v > 100))
+          msg = "Erwartet wird ein Prozentwert zwischen 5 und 100, zum Beispiel 62.2.";
+      }
+      if(errs[m.k]){ errs[m.k].textContent = msg; errs[m.k].style.display = msg ? "block" : "none"; }
+      if(msg){ bad++; lines.push(lineOf(m.k, have)); continue; }
       const list = isFinite(v) ? [...have, { d: week, v }] : have;
       if(isFinite(v)) neu++;
-      lines.push(`  "${m.k}": [${list.length ? "\n" + list.map(r=>`    { "d": "${r.d}", "v": ${r.v} }`).join(",\n") + "\n  " : ""}]`);
+      lines.push(lineOf(m.k, list));
     }
     out.textContent = `{\n  "_hinweis": "Werte aus charts.checkonchain.com. Eine Lesung gilt 30 Tage. Siehe SPEC.md 3.5.",\n${lines.join(",\n")}\n}`;
     cp.textContent = neu ? `Block kopieren (${neu} neu)` : "Block kopieren";
     save.textContent = neu ? `✓ Speichern (${neu})` : "✓ Speichern";
-    save.style.opacity = neu ? "1" : ".45";
-    save.style.pointerEvents = neu ? "auto" : "none";
+    const go = neu && !bad;
+    save.style.opacity = go ? "1" : ".45";
+    save.style.pointerEvents = go ? "auto" : "none";
     const issueBody = `Manuelle Kennzahlen, abgelesen bei Checkonchain.\n\n\`\`\`json\n${out.textContent}\n\`\`\`\n`;
     save.href = "https://github.com/Panta-rey/Panta-Rey-BTC-Ampel/issues/new?"
       + new URLSearchParams({ title: `manual: ${week}`, body: issueBody, labels: "manual" }).toString();

@@ -1,10 +1,6 @@
 # Indikator-Prüfung
 
-<<<<<<< HEAD
-Erstellt 2026-09-17 23:37 UTC · Konfiguration `1.0` · 844 Wochen bis 2026-09-13
-=======
-Erstellt 2026-09-17 23:45 UTC · Konfiguration `1.0` · 844 Wochen bis 2026-09-13
->>>>>>> 59cb0b3 (Indikator-Pruefung: E2-Vergleich statt falscher Monotonie, Befund im Handoff)
+Erstellt 2026-11-17 20:32 UTC · Konfiguration `1.0` · 853 Wochen bis 2026-11-15
 
 Diese Prüfung ändert nichts. Sie misst, ob die Indikatoren noch unterscheiden, was sie unterscheiden sollen. Ein Befund ist ein Eintrag für die Neubewertung nach dem Zyklusende, keine Änderung an der laufenden Konfiguration (SPEC 10.5).
 
@@ -12,12 +8,7 @@ Diese Prüfung ändert nichts. Sie misst, ob die Indikatoren noch unterscheiden,
 
 5 von 16 Indikatorrollen sind auffällig: 0 rufen dauernd, 5 sind verstummt, 0 driften stark.
 
-<<<<<<< HEAD
-Letztes Kauf- oder Verkaufssignal vor 844 Wochen. Gleichlauf: 1 Indikatoren driften nach oben, 5 nach unten.
-
-## A. Einzelne Indikatoren
-=======
-Letztes Kauf- oder Verkaufssignal vor 190 Wochen. Gleichlauf: 1 Indikatoren driften nach oben, 5 nach unten.
+Letztes Kauf- oder Verkaufssignal vor 11 Wochen. Gleichlauf: 1 Indikatoren driften nach oben, 5 nach unten.
 
 ## A. Überblick: erreichen die Motoren ihre Zone noch?
 
@@ -26,53 +17,49 @@ Bevor es um einzelne Indikatoren geht, die Gesamtsicht. Gezeigt wird je Zyklus d
 | Motor | Wert | bis 2015 | bis 2018 | bis 2022 | seit 2022 |
 |---|---|---|---|---|---|
 | Kauf | höchster Wert | 79 | 94 | 96 | 92 |
-| Kauf | Wochen in Zone (ab 60) | 25.9 % | 18.1 % | 20.9 % | 16.1 % |
+| Kauf | Wochen in Zone (ab 60) | 25.9 % | 18.1 % | 20.9 % | 17.3 % |
 | Verkauf | höchster Wert | 58 | 100 | 59 | 37 |
 | Verkauf | Wochen in Zone (ab 60) | 0.0 % | 9.8 % | 0.0 % | 0.0 % |
 
-**Der Verkaufs-Motor erreicht immer tiefere Höchstwerte:** 58 → 100 → 59 → 37. Das ist kein Zufall einzelner Indikatoren, sondern ein Muster über die ganze Seite. Es erklärt, warum das Signal von 2025 so knapp ausfiel, und es ist der wichtigste Hinweis auf flacher werdende Zyklen.
+Höchstwerte des Verkaufs-Motors über die Zyklen: 58 → 100 → 59 → 37. Der laufende Zyklus bleibt deutlich unter dem besten früheren Wert (100).
+
+| Weg E2 verlangt | Schwelle | höchster Wert im laufenden Zyklus | reicht? |
+|---|---|---|---|
+| bei voller Datenlage | 40 | 37 | **✗** |
+| bei heutiger Abdeckung (80 %) | 32 | 37 | ✓ |
+
+**Das ist der wichtigste Befund dieser Prüfung.** Mit vollständigen Daten hätte der Verkaufs-Motor im gesamten laufenden Zyklus an keiner einzigen Woche ausgelöst: Sein Höchstwert von 37 lag nie über der Schwelle von 40. Es fehlten also nicht ein paar Punkte in einer Woche, sondern im ganzen Zyklus. Bei der heutigen Abdeckung liegt die Schwelle bei 32, es hat also ausgelöst. Der Puffer beträgt aber nur 5 Punkte: Fällt das nächste Hoch noch etwas flacher aus, meldet die Verkaufsseite nichts mehr.
 
 ## B. Einzelne Indikatoren
->>>>>>> 59cb0b3 (Indikator-Pruefung: E2-Vergleich statt falscher Monotonie, Befund im Handoff)
 
 Anteil der Wochen, in denen ein Indikator mindestens Score 70 erreicht, also „in Zone" steht. **Ruft dauernd** heisst 60 % oder mehr im laufenden Zyklus: Der Indikator hebt den Motor konstant an, ohne noch zu unterscheiden. **Verstummt** heisst 1 % oder weniger. **Driftet stark** heisst über 40 Prozentpunkte Unterschied zwischen den Zyklen.
 
 | Indikator | Rolle | Familie | gesamt | bis 2015 | bis 2018 | bis 2022 | seit 2022 | Urteil |
 |---|---|---|---|---|---|---|---|---|
-| retail_attention | Verkauf | Euphorie | 9.3 % | – | 34.2 % | 0.0 % | 0.0 % | **verstummt** |
-| pi_cycle | Verkauf | Relative Bewertung | 10.6 % | 28.6 % | 8.3 % | 6.8 % | 0.0 % | **verstummt** |
-| bmsb_ext | Verkauf | Zeit & Trend | 12.6 % | 27.9 % | 11.8 % | 9.2 % | 0.5 % | **verstummt** |
-| mvrv_z | Verkauf | Relative Bewertung | 11.7 % | 27.2 % | 15.7 % | 6.8 % | 0.5 % | **verstummt** |
-| funding_30d | Verkauf | Euphorie | 5.0 % | – | – | 10.3 % | 0.0 % | **verstummt** |
-| drawdown | Kauf | Zeit | 36.3 % | 43.8 % | 50.0 % | 31.1 % | 18.6 % | unauffällig |
-| p_200w | Kauf | Bewertung | 16.7 % | 0.0 % | 9.8 % | 16.5 % | 27.1 % | unauffällig |
-| mayer | Verkauf | Relative Bewertung | 10.7 % | 21.8 % | 12.3 % | 6.8 % | 1.5 % | unauffällig |
-| mayer | Kauf | Bewertung | 19.4 % | 19.4 % | 14.7 % | 31.1 % | 12.1 % | unauffällig |
-| p_rp | Kauf | Bewertung | 18.5 % | 22.6 % | 23.0 % | 20.9 % | 6.5 % | unauffällig |
-| puell | Kauf | Miner | 10.9 % | 12.6 % | 9.8 % | 18.0 % | 3.0 % | unauffällig |
-| mvrv_z | Kauf | Bewertung | 25.0 % | 31.7 % | 26.5 % | 25.2 % | 17.1 % | unauffällig |
-| fng_fear_weeks | Kauf | Halter & Stimmung | 21.6 % | – | 28.2 % | 25.2 % | 16.6 % | unauffällig |
-| cycle_clock | Verkauf | Zeit & Trend | 7.1 % | 0.0 % | 9.8 % | 9.7 % | 10.1 % | unauffällig |
-| fng_4w | Verkauf | Euphorie | 7.4 % | – | 0.0 % | 9.7 % | 6.5 % | unauffällig |
-| months_since_ath | Kauf | Zeit | 18.4 % | 23.4 % | 14.7 % | 18.9 % | 15.6 % | unauffällig |
+| retail_attention | Verkauf | Euphorie | 9.2 % | – | 34.2 % | 0.0 % | 0.0 % | **verstummt** |
+| pi_cycle | Verkauf | Relative Bewertung | 10.5 % | 28.6 % | 8.3 % | 6.8 % | 0.0 % | **verstummt** |
+| bmsb_ext | Verkauf | Zeit & Trend | 12.5 % | 27.9 % | 11.8 % | 9.2 % | 0.5 % | **verstummt** |
+| mvrv_z | Verkauf | Relative Bewertung | 11.6 % | 27.2 % | 15.7 % | 6.8 % | 0.5 % | **verstummt** |
+| funding_30d | Verkauf | Euphorie | 4.8 % | – | – | 10.3 % | 0.0 % | **verstummt** |
+| drawdown | Kauf | Zeit | 35.9 % | 43.8 % | 50.0 % | 31.1 % | 17.8 % | unauffällig |
+| p_200w | Kauf | Bewertung | 16.8 % | 0.0 % | 9.8 % | 16.5 % | 26.9 % | unauffällig |
+| mayer | Verkauf | Relative Bewertung | 10.6 % | 21.8 % | 12.3 % | 6.8 % | 1.4 % | unauffällig |
+| mayer | Kauf | Bewertung | 19.2 % | 19.4 % | 14.7 % | 31.1 % | 11.5 % | unauffällig |
+| p_rp | Kauf | Bewertung | 18.3 % | 22.6 % | 23.0 % | 20.9 % | 6.3 % | unauffällig |
+| puell | Kauf | Miner | 10.7 % | 12.6 % | 9.8 % | 18.0 % | 2.9 % | unauffällig |
+| mvrv_z | Kauf | Bewertung | 24.8 % | 31.7 % | 26.5 % | 25.2 % | 16.8 % | unauffällig |
+| fng_fear_weeks | Kauf | Halter & Stimmung | 21.2 % | – | 28.2 % | 25.2 % | 15.9 % | unauffällig |
+| cycle_clock | Verkauf | Zeit & Trend | 7.0 % | 0.0 % | 9.8 % | 9.7 % | 9.6 % | unauffällig |
+| fng_4w | Verkauf | Euphorie | 7.2 % | – | 0.0 % | 9.7 % | 6.3 % | unauffällig |
+| months_since_ath | Kauf | Zeit | 19.2 % | 23.4 % | 14.7 % | 18.9 % | 19.2 % | unauffällig |
 
-<<<<<<< HEAD
-## B. Trägt das Grundmodell noch?
-
-Diese Prüfungen sind schwächer als Teil A, weil die Zyklusgrenzen selbst aus dem Modell stammen. Sie messen aber Grössen, die auch dann noch aussagen, wenn der Zyklus nicht mehr greift.
-
-**1. Schweigen.**
-
-Seit 844 Wochen kein Kauf- oder Verkaufssignal, also über einen vollen Zyklus hinweg. **Das ist für sich schon eine Aussage.**
-=======
 ## C. Trägt das Grundmodell noch?
 
 Diese Prüfungen sind schwächer als die Teile A und B, weil die Zyklusgrenzen selbst aus dem Modell stammen. Sie messen aber Grössen, die auch dann noch aussagen, wenn der Zyklus nicht mehr greift.
 
 **1. Schweigen.**
 
-Letztes Signal vor 190 Wochen (2023-01-22). Unauffällig, ein voller Zyklus wären 208.
->>>>>>> 59cb0b3 (Indikator-Pruefung: E2-Vergleich statt falscher Monotonie, Befund im Handoff)
+Letztes Signal vor 11 Wochen (2026-08-30). Unauffällig, ein voller Zyklus wären 208.
 
 **2. Wird der Rückgang zu flach?** Tor B verlangt mindestens -40 % unter dem Hoch. Bleibt ein Bärenmarkt darüber, öffnet kein Tor, egal wie gut die Indikatoren sind.
 

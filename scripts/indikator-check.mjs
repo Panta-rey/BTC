@@ -23,6 +23,7 @@
 
 import { readJSON, writeJSON } from "./lib/store.mjs";
 import { toRows } from "../engine/rows.mjs";
+import { manualByWeek } from "./lib/manual.mjs";
 import { scoreIndicators } from "../engine/engines.mjs";
 import { replay } from "../engine/phases.mjs";
 import { daysBetween } from "../engine/dates.mjs";
@@ -34,7 +35,9 @@ const manual = await readJSON("data/manual.json", null);
 if (!weekly || !cfg) { console.error("data/weekly.json oder config/engine.json fehlt."); process.exit(1); }
 
 const IN_ZONE = cfg.in_zone_score ?? 70;
-const rows = toRows(weekly, { manual: manual ?? undefined });
+// Dieselben Handwerte wie im Live-Lauf (vorher wurde die Rohdatei durchgereicht, die
+// toRows nicht lesen kann; die Prüfung lief dadurch stillschweigend ohne Handwerte).
+const rows = toRows(weekly, { manual: manualByWeek(manual ?? {}, weekly.rows.map((r) => r[weekly.columns.indexOf("w")])) });
 const run = replay(rows, cfg);
 
 // Zyklen von Tief zu Tief (SPEC Anhang A). Der laufende endet offen.

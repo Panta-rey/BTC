@@ -181,11 +181,17 @@ Jede Signalbedingung wird ausschliesslich auf Wochenschlüssen geprüft. **Jeder
 
 ### 3.5 Manuelle Werte aus Checkonchain
 
+> **Stand 17.11.2026.** Angenommen und ausgewertet werden nur **Angebot im Gewinn** und **STH-Realized-Price**. Reserve Risk, RHODL-Ratio und LTH-Positionsänderung sind zurückgestellt und im Code gesperrt (`DEFERRED` in `scripts/lib/manual.mjs`): Das Formular nimmt sie nicht an, die Pipeline verwirft sie, die Auswertung sieht sie nicht. Die Tabelle unten beschreibt, wo sie abzulesen wären, sobald sie nach einer Neubewertung zurückkommen. Begründung in HANDOFF 4a und 13.
+>
+> **Handwerte haben eine Vergangenheit.** Die Wiedergabe spielt die ganze Historie ab. Eine Kennzahl, die erst ab einem Stichtag eingetragen wird, fehlt für alle Wochen davor, und weil Phasen nur vorwärts laufen, kann der Zustand daran hängen. Wer eine Kennzahl neu aufnimmt, trägt deshalb mindestens die laufende Phase nach. Für die beiden aktiven Kennzahlen ist das am 17.11.2026 für Dezember 2025 bis September 2026 geschehen.
+>
+> **Prüfungen.** Der STH-Realized-Price muss zwischen dem 0,3- und dem 3-Fachen des Wochenschlusses seines Datums liegen, das Angebot im Gewinn zwischen 5 und 100 %. `data/manual.json` wird streng gelesen: Eine beschädigte Datei bricht den Lauf ab.
+
 Alle fünf fehlenden Kennzahlen sind auf `charts.checkonchain.com` ablesbar. Sie lassen sich in `data/manual.json` nachtragen, entweder als einzelner Wert oder als Reihe, die über Monate Historie aufbaut. Eine Lesung gilt 30 Tage, danach wird sie als „alt" gekennzeichnet und zählt nicht mehr.
 
 | Kennzahl | Chart (Adresse geprüft am 12.09.2026) | Was ablesen | Wirkung |
 |---|---|---|---|
-| STH-Realized-Price | `btconchain/pricing/pricing_costbasisoriginals/` — „Key Cost Basis Models" | Linie „Short-Term Holder Realised Price" | **sofort**: Trendfilter und Nachkauf-Chance |
+| STH-Realized-Price | `btconchain/pricing/pricing_costbasisoriginals/` — „Key Cost Basis Models" | Linie „STH Cost Basis" (der Short-Term Holder Realised Price), nicht „Realised Price" | **sofort**: Trendfilter und Nachkauf-Chance |
 | Angebot im Gewinn | `btconchain/unrealised/pctsupplyinprofit_all/` — „Percent Supply in Profit" | Prozentwert der Hauptlinie | **sofort**: Gate B und die Familie „Halter & Stimmung" |
 | Reserve Risk | **`charts.bgeometrics.com/reserve_risk.html`** (nicht Checkonchain) | Wert der Reserve-Risk-Linie | **sofort** |
 | RHODL-Ratio | `btconchain/supply/rhodl/` — „RHODL Ratio" | Wert der RHODL-Linie | erst mit Historie |
@@ -210,7 +216,7 @@ Format:
 }
 ```
 
-Der erzeugte Block enthält immer **alle fünf Reihen**, auch die leeren, und übernimmt die bisherigen Lesungen. Eine Lesung für dieselbe Woche wird ersetzt, nicht doppelt angelegt.
+Der erzeugte Block enthält immer **die beiden aktiven Reihen** vollständig und übernimmt die bisherigen Lesungen. Eine Lesung für dieselbe Woche wird ersetzt, nicht doppelt angelegt.
 
 ### Speichern über ein Issue
 

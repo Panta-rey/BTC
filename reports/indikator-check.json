@@ -1,12 +1,8 @@
 {
-<<<<<<< HEAD
-  "erstellt": "2026-09-17T23:37:03.821Z",
-=======
-  "erstellt": "2026-09-17T23:45:20.602Z",
->>>>>>> 59cb0b3 (Indikator-Pruefung: E2-Vergleich statt falscher Monotonie, Befund im Handoff)
+  "erstellt": "2026-11-17T20:32:38.185Z",
   "config_version": "1.0",
-  "wochen": 844,
-  "bis": "2026-09-13",
+  "wochen": 853,
+  "bis": "2026-11-15",
   "auffaellig": [
     {
       "id": "retail_attention",
@@ -26,15 +22,15 @@
       "id": "bmsb_ext",
       "seite": "sell",
       "urteil": "verstummt",
-      "jetzt": 0.5025125628140703,
-      "spanne": 27.404464181371978
+      "jetzt": 0.4807692307692308,
+      "spanne": 27.426207513416816
     },
     {
       "id": "mvrv_z",
       "seite": "sell",
       "urteil": "verstummt",
-      "jetzt": 0.5025125628140703,
-      "spanne": 26.712677310603652
+      "jetzt": 0.4807692307692308,
+      "spanne": 26.73442064264849
     },
     {
       "id": "funding_30d",
@@ -44,11 +40,7 @@
       "spanne": 10.326086956521738
     }
   ],
-<<<<<<< HEAD
-  "wochen_ohne_signal": 844,
-=======
-  "wochen_ohne_signal": 190,
->>>>>>> 59cb0b3 (Indikator-Pruefung: E2-Vergleich statt falscher Monotonie, Befund im Handoff)
+  "wochen_ohne_signal": 11,
   "rueckgang": [
     {
       "name": "bis 2015",

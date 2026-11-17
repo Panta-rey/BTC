@@ -7,7 +7,8 @@
 // Motoren, Phasen und Signale (M2) werden aus der vollen Historie neu abgespielt:
 // die Wiedergabe ist die Wahrheit, state.json und events.json sind Ausgaben.
 
-import { readJSON, writeJSON } from "./lib/store.mjs";
+import { readJSON, readJSONStrict, writeJSON } from "./lib/store.mjs";
+import { readingsOf, manualByWeek as manualMaps, MANUAL_MAX_AGE as MANUAL_AGE } from "./lib/manual.mjs";
 import { toRows } from "../engine/rows.mjs";
 import { replay, PHASE_NAMES } from "../engine/phases.mjs";
 import { zoneName, confluenceOk } from "../engine/engines.mjs";
@@ -31,6 +32,13 @@ const PENDING = {
   rhodl: "RHODL-Ratio",
   lth_dist: "Abgabe der Langzeithalter",
 };
+// Zurückgestellt (HANDOFF §4a): Diese drei erreichen die Auswertung nicht, siehe
+// DEFERRED in scripts/lib/manual.mjs. Hier stehen ihre Namen in der Wochenzeile.
+const DEFERRED_NOTE = {
+  reserve_risk: "Zurückgestellt: Die Ankerpunkte sind veraltet. Wird bis zur Neubewertung nicht ausgewertet.",
+  rhodl: "Zurückgestellt: Wird bis zur Neubewertung der Verkaufsseite nicht ausgewertet.",
+  lth_dist: "Zurückgestellt: Wird bis zur Neubewertung der Verkaufsseite nicht ausgewertet.",
+};
 
 const toMap = (raw) => new Map(raw?.values || []);
 
@@ -40,19 +48,13 @@ async function main() {
     readJSON(`${RAW}/coinmetrics.json`), readJSON(`${RAW}/fng.json`),
     readJSON(`${RAW}/wiki_en.json`), readJSON(`${RAW}/wiki_de.json`),
     readJSON(`${RAW}/funding_deribit.json`), readJSON(`${RAW}/network.json`),
-    readJSON("data/manual.json", {}), readJSON(`${RAW}/_status.json`, {}),
+    readJSONStrict("data/manual.json", {}), readJSON(`${RAW}/_status.json`, {}),
   ]);
   // Manuelle Kennzahlen. Zwei Formen erlaubt:
   //   "schluessel": { "value": 80100, "as_of": "2026-09-06", "note": "" }   einzelner Wert
   //   "schluessel": [ { "d": "2026-09-06", "v": 80100 }, ... ]              Reihe, baut Historie auf
-  const readings = (key) => {
-    const raw = manual?.[key];
-    if (!raw) return [];
-    const list = Array.isArray(raw)
-      ? raw.map((r) => [r?.d, +r?.v])
-      : [[raw.as_of, +raw.value]];
-    return list.filter(([d, v]) => d && Number.isFinite(v)).sort((a, b) => (a[0] < b[0] ? -1 : 1));
-  };
+  // Zurückgestellte Kennzahlen liefern hier immer eine leere Liste (scripts/lib/manual.mjs).
+  const readings = (key) => readingsOf(manual, key);
   const sthManual = Array.isArray(manual?.sth_realized_price)
     ? { as_of: readings("sth_realized_price").at(-1)?.[0], value: readings("sth_realized_price").at(-1)?.[1], note: "Reihe" }
     : (manual?.sth_realized_price ?? {});
@@ -120,26 +122,9 @@ async function main() {
   // ---------------------------------------------------------- Motoren und Phasen (M2)
   const cfg = await readJSON("config/engine.json");
 
-  // Eine Lesung gilt für die Woche, in die sie fällt, und bis zu 30 Tage danach.
-  // So wirkt ein monatlich eingetragener Wert, ohne dass er ewig weiterläuft.
-  const MANUAL_MAX_AGE = 30;
-  const byWeekFrom = (list, transform = (v) => v) => {
-    const out = {};
-    if (!list.length) return out;
-    for (const r of rows) {
-      let best = null;
-      for (const [d, v] of list) if (d <= r.w && daysBetween(d, r.w) <= MANUAL_MAX_AGE) best = v;
-      if (best != null) out[r.w] = transform(best);
-    }
-    return out;
-  };
-  const manualByWeek = {
-    sth_rp:       byWeekFrom(readings("sth_realized_price")),
-    supply_loss:  byWeekFrom(readings("supply_in_profit"), (v) => 100 - v),
-    reserve_risk: byWeekFrom(readings("reserve_risk")),
-    rhodl:        byWeekFrom(readings("rhodl")),
-    lth_dist:     byWeekFrom(readings("lth_net_position_change"), (v) => -v),
-  };
+  // Handwerte je Woche. Eine Lesung gilt 30 Tage (scripts/lib/manual.mjs).
+  const MANUAL_MAX_AGE = MANUAL_AGE;
+  const manualByWeek = manualMaps(manual, rows.map((r) => r.w));
   const manualCount = Object.fromEntries(Object.entries(manualByWeek).map(([k, v]) => [k, Object.keys(v).length]));
 
   const engineRows = toRows({ columns: COLS.map(([k]) => k), rows: rows.map((r) => COLS.map((c) => cell(r, c))) }, { manual: manualByWeek });
@@ -259,7 +244,7 @@ async function main() {
       const v = cur.scores?.[k]?.value ?? null;
       const asOf = v != null ? weekId : null;
       return [k, ind(v == null ? null : round(v, 4), PENDING_UNIT[k], asOf, v == null ? "BGeometrics" : "manuell", "manual",
-        v == null ? `${name}: Quelle ausstehend. Wert aus charts.checkonchain.com in data/manual.json eintragen.`
+        v == null ? (DEFERRED_NOTE[k] ?? `${name}: Quelle ausstehend. Wert aus charts.checkonchain.com in data/manual.json eintragen.`)
                   : `Manuell eingetragen. ${cur.scores[k].pct_basis === "zu_kurz" ? "Für den Score fehlt noch Historie (mindestens 26 Wochen)." : ""}`.trim())];
     })),
   };

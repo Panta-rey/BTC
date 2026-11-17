@@ -7,6 +7,18 @@ export async function readJSON(path, fallback = null) {
   try { return JSON.parse(await readFile(path, "utf8")); } catch { return fallback; }
 }
 
+// Wie readJSON, aber eine vorhandene und unlesbare Datei ist ein Fehler statt ein stiller
+// Rückfall. Nötig für data/manual.json: Die Handwerte bestimmen den Phasenverlauf mit.
+// Würde eine beschädigte Datei als "leer" gelesen, spränge die Wiedergabe stillschweigend
+// in einen anderen Zustand und löste womöglich Signale aus.
+export async function readJSONStrict(path, fallbackIfMissing = null) {
+  let text;
+  try { text = await readFile(path, "utf8"); }
+  catch (e) { if (e.code === "ENOENT") return fallbackIfMissing; throw e; }
+  try { return JSON.parse(text); }
+  catch (e) { throw new Error(`${path} ist kein gültiges JSON (${e.message}). Datei reparieren, vorher läuft nichts.`); }
+}
+
 // pretty = true für kleine, von Menschen gelesene Dateien; grosse Reihen kompakt.
 export async function writeJSON(path, data, { pretty = false } = {}) {
   await mkdir(dirname(path), { recursive: true });

@@ -367,10 +367,10 @@ test("Der Issue-Block wird gelesen, geprüft und zusammengeführt", async () => 
 
 test("Dieselbe Woche wird ersetzt statt verdoppelt", async () => {
   const { mergeReadings } = await import("../scripts/lib/manual.mjs");
-  const cur = { rhodl: [{ d: "2026-09-06", v: 2000 }] };
-  const m = mergeReadings(cur, { rhodl: [{ d: "2026-09-06", v: 2100 }] });
-  assert.equal(m.next.rhodl.length, 1);
-  assert.equal(m.next.rhodl[0].v, 2100);
+  const cur = { supply_in_profit: [{ d: "2026-09-06", v: 60 }] };
+  const m = mergeReadings(cur, { supply_in_profit: [{ d: "2026-09-06", v: 61 }] });
+  assert.equal(m.next.supply_in_profit.length, 1);
+  assert.equal(m.next.supply_in_profit[0].v, 61);
   assert.equal(m.replaced, 1);
   assert.equal(m.added, 0);
 });
@@ -381,8 +381,8 @@ test("Unplausible Einreichungen werden abgewiesen", async () => {
   const bad = [
     [j({ supply_in_profit: [{ d: "2026-09-06", v: 152 }] }), "ausserhalb"],
     [j({ unbekannt: [{ d: "2026-09-06", v: 1 }] }), "Unbekannter Schlüssel"],
-    [j({ rhodl: [{ d: "2099-01-01", v: 1 }] }), "Zukunft"],
-    [j({ rhodl: [{ d: "06.09.2026", v: 1 }] }), "ungültiges Datum"],
+    [j({ supply_in_profit: [{ d: "2099-01-01", v: 50 }] }), "Zukunft"],
+    [j({ supply_in_profit: [{ d: "06.09.2026", v: 50 }] }), "ungültiges Datum"],
     [j({ rhodl: "keine Liste" }), "erwartet wird eine Liste"],
     ["kein json", "nicht lesbar"],
   ];
@@ -413,13 +413,18 @@ test("Reserve Risk allein macht die Familie Halter und Stimmung verfügbar", () 
   assert.equal(Math.round(mit.coverage * 100), 100);
 });
 
-test("Reserve Risk mit falscher Skala wird abgewiesen", async () => {
-  const { parseSubmission } = await import("../scripts/lib/manual.mjs");
+// Seit dem 17.11.2026 ist Reserve Risk zurückgestellt und wird gar nicht mehr angenommen
+// (HANDOFF §4a, DEFERRED in scripts/lib/manual.mjs). Die Skalenprüfung bleibt in KEYS
+// stehen und greift wieder, sobald die Kennzahl mit neuen Ankern zurückkommt.
+test("Reserve Risk wird nicht angenommen, solange es zurückgestellt ist", async () => {
+  const { parseSubmission, KEYS } = await import("../scripts/lib/manual.mjs");
   const j = (v) => "```json\n" + JSON.stringify({ reserve_risk: [{ d: "2026-09-06", v }] }) + "\n```";
-  const falsch = parseSubmission(j(0.00000349), { today: "2026-09-12" });
-  assert.equal(falsch.ok, false);
-  assert.ok(falsch.error.includes("Normierung"), `Hinweis fehlt: ${falsch.error}`);
-  assert.equal(parseSubmission(j(0.0018), { today: "2026-09-12" }).ok, true);
+  for (const v of [0.00000349, 0.0018]) {
+    const r = parseSubmission(j(v), { today: "2026-09-12" });
+    assert.equal(r.ok, false);
+    assert.ok(r.error.includes("zurückgestellt"), `Hinweis fehlt: ${r.error}`);
+  }
+  assert.ok(KEYS.reserve_risk.hint.includes("Normierung"), "Skalenhinweis bleibt für später erhalten");
 });
 
 test("Monatliche Erinnerung kommt am Monatsanfang und nur einmal", async () => {

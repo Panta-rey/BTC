@@ -1,76 +1,44 @@
 {
-  "_hinweis": "Manuelle Werte aus charts.checkonchain.com. Zwei Formen erlaubt: ein einzelner Wert { \"value\": 80100, \"as_of\": \"2026-09-06\" } oder eine Reihe [ { \"d\": \"2026-09-06\", \"v\": 80100 } ]. Die Reihe baut über Monate Historie auf, die für perzentilbasierte Kennzahlen nötig ist. Eine Lesung gilt 30 Tage.",
+  "_hinweis": "Manuelle Werte aus charts.checkonchain.com, als Reihe [ { \"d\": \"2026-09-06\", \"v\": 80100 } ]. Eine Lesung gilt 30 Tage.",
+  "_nachtrag": "Am 17.11.2026 wurden die Monatsersten der laufenden Phase 4 (Dezember 2025 bis September 2026) von Hand nachgetragen, damit die Wiedergabe die Kennzahl über die ganze Phase sieht. Begründung im HANDOFF.",
+  "_zurueckgestellt": "reserve_risk, rhodl und lth_net_position_change bleiben leer (HANDOFF 4a).",
   "_quellen": {
-    "sth_realized_price": "https://charts.checkonchain.com/btconchain/pricing/pricing_costbasisoriginals/pricing_costbasisoriginals_light.html  (Linie: Short-Term Holder Realised Price)",
-    "supply_in_profit": "https://charts.checkonchain.com/btconchain/unrealised/pctsupplyinprofit_all/pctsupplyinprofit_all_light.html  (Prozentwert der Hauptlinie)",
-    "reserve_risk": "https://charts.checkonchain.com/btconchain/lifespan/reserverisk/reserverisk_light.html",
-    "rhodl": "https://charts.checkonchain.com/btconchain/supply/rhodl/rhodl_light.html",
-    "lth_net_position_change": "https://charts.checkonchain.com/btconchain/supply/lthnetposchange_0/lthnetposchange_0_light.html  (Wert mit Vorzeichen, Einheit konsistent halten)"
+      "sth_realized_price": "https://charts.checkonchain.com/btconchain/pricing/pricing_costbasisoriginals/pricing_costbasisoriginals_light.html  (Linie: Short-Term Holder Realised Price)",
+      "supply_in_profit": "https://charts.checkonchain.com/btconchain/unrealised/pctsupplyinprofit_all/pctsupplyinprofit_all_light.html  (Prozentwert der Hauptlinie)"
   },
   "sth_realized_price": [
-    {
-      "d": "2026-09-13",
-      "v": 71304
-    },
-    {
-      "d": "2026-10-04",
-      "v": 74154
-    },
-    {
-      "d": "2026-11-01",
-      "v": 758549
-    }
+    { "d": "2025-12-01", "v": 103679 },
+    { "d": "2026-01-01", "v": 98939 },
+    { "d": "2026-02-01", "v": 94885 },
+    { "d": "2026-03-01", "v": 87246 },
+    { "d": "2026-04-01", "v": 81834 },
+    { "d": "2026-05-01", "v": 78714 },
+    { "d": "2026-06-01", "v": 76427 },
+    { "d": "2026-07-01", "v": 69021 },
+    { "d": "2026-08-01", "v": 67612 },
+    { "d": "2026-09-01", "v": 70276 },
+    { "d": "2026-09-13", "v": 71304 },
+    { "d": "2026-10-04", "v": 74154 },
+    { "d": "2026-11-01", "v": 75817 },
+    { "d": "2026-11-15", "v": 74711 }
   ],
   "supply_in_profit": [
-    {
-      "d": "2026-09-13",
-      "v": 65.32
-    },
-    {
-      "d": "2026-10-04",
-      "v": 69.74
-    },
-    {
-      "d": "2026-11-01",
-      "v": 62.17
-    }
+    { "d": "2025-12-01", "v": 64.82 },
+    { "d": "2026-01-01", "v": 68.76 },
+    { "d": "2026-02-01", "v": 55.39 },
+    { "d": "2026-03-01", "v": 53.16 },
+    { "d": "2026-04-01", "v": 56.31 },
+    { "d": "2026-05-01", "v": 64.30 },
+    { "d": "2026-06-01", "v": 57.57 },
+    { "d": "2026-07-01", "v": 48.45 },
+    { "d": "2026-08-01", "v": 50.01 },
+    { "d": "2026-09-01", "v": 66.20 },
+    { "d": "2026-09-13", "v": 65.32 },
+    { "d": "2026-10-04", "v": 69.74 },
+    { "d": "2026-11-01", "v": 62.17 },
+    { "d": "2026-11-15", "v": 51.41 }
   ],
-  "rhodl": [
-    {
-      "d": "2026-09-13",
-      "v": 0.0768
-    },
-    {
-      "d": "2026-10-04",
-      "v": 0.11749
-    },
-    {
-      "d": "2026-11-01",
-      "v": 0.1169
-    }
-  ],
-  "lth_net_position_change": [
-    {
-      "d": "2026-09-13",
-      "v": -89.504
-    },
-    {
-      "d": "2026-10-04",
-      "v": -23442
-    },
-    {
-      "d": "2026-11-01",
-      "v": -262832
-    }
-  ],
-  "reserve_risk": [
-    {
-      "d": "2026-10-04",
-      "v": 0.00175
-    },
-    {
-      "d": "2026-11-01",
-      "v": 0.00175
-    }
-  ]
+  "rhodl": [],
+  "lth_net_position_change": [],
+  "reserve_risk": []
 }

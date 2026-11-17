@@ -9,8 +9,9 @@
 //   node scripts/backtest.mjs                 normaler Lauf
 //   node scripts/backtest.mjs --sensitivity   zusätzlich Schwellen um ±15 % verschieben
 
-import { readJSON, writeJSON } from "./lib/store.mjs";
+import { readJSON, readJSONStrict, writeJSON } from "./lib/store.mjs";
 import { toRows } from "../engine/rows.mjs";
+import { manualByWeek } from "./lib/manual.mjs";
 import { replay, PHASE_NAMES } from "../engine/phases.mjs";
 import { FEE, CORE, SPLIT, MONTHLY, LOWS, HIGHS, simulate, dca, maxDrawdown, assess, tranchesByWeek,
          fmtUSD, fmtBTC, pct } from "./lib/sim.mjs";
@@ -94,7 +95,7 @@ function report(run, sim, trades, dcaPlain, dcaFactor, checks, sens, rows, cfg) 
   L.push("# Backtest", "");
   L.push(`Konfiguration \`${cfg.version}\` · ${run.weeks.length} Wochen ab ${run.weeks[0].w} bis ${last.w} · Gebühr ${(FEE * 100).toFixed(1)} % pro Transaktion · Kernposition ${Math.round(CORE * 100)} %`, "");
   L.push("> Startkapital: 1 BTC, kein Cash. Kauftranchen vor dem ersten Verkauf sind deshalb nicht finanzierbar – das betrifft das Tief 2015. Für Tiefs zählt daher vor allem der Zeitpunkt des Phaseneintritts.", "");
-  L.push("> Ohne Steuern. Ausführung zum Wochenschluss der Signalwoche. Die BGeometrics-Kennzahlen fehlen (SPEC 3.4), der STH-Realized-Price war historisch nicht verfügbar, deshalb arbeitet der Trendfilter nur mit dem Bull Market Support Band.", "");
+  L.push("> Ohne Steuern. Ausführung zum Wochenschluss der Signalwoche. Die BGeometrics-Kennzahlen fehlen (SPEC 3.4). Angebot im Gewinn und STH-Realized-Price stehen nur als Handeingabe ab Dezember 2025 zur Verfügung (HANDOFF §13). Davor arbeitet der Trendfilter nur mit dem Bull Market Support Band, und der Kauf-Motor läuft mit 80 % Abdeckung.", "");
 
   L.push("## Ergebnis", "");
   L.push("| Strategie | BTC am Ende | Cash | Wert | Grösster Rückgang | Transaktionen |", "|---|---|---|---|---|---|");
@@ -199,7 +200,10 @@ function report(run, sim, trades, dcaPlain, dcaFactor, checks, sens, rows, cfg) 
 const weekly = await readJSON("data/weekly.json");
 if (!weekly) { console.error("data/weekly.json fehlt. Zuerst scripts/fetch.mjs und scripts/build.mjs ausführen."); process.exit(1); }
 const cfg = await readJSON("config/engine.json");
-const rows = toRows(weekly);
+// Dieselben Handwerte wie im Live-Lauf, damit Bericht und Seite denselben Verlauf zeigen.
+// Zurückgestellte Kennzahlen kommen hier nicht an (DEFERRED in scripts/lib/manual.mjs).
+const manual = manualByWeek(await readJSONStrict("data/manual.json", {}), weekly.rows.map((r) => r[weekly.columns.indexOf("w")]));
+const rows = toRows(weekly, { manual });
 
 const run = replay(rows, cfg);
 const byWeek = tranchesByWeek(run.events);
@@ -215,7 +219,7 @@ if (process.argv.includes("--sensitivity")) {
   for (const path of SENSITIVE) {
     for (const factor of [0.85, 1.15]) {
       const c = shift(cfg, path, factor);
-      const r = replay(toRows(weekly), c);
+      const r = replay(toRows(weekly, { manual }), c);
       const s2 = simulate(r.weeks, tranchesByWeek(r.events));
       const ch = assess(r, s2.trades);
       sens.push({ path, factor, btc: s2.btc, cash: s2.cash, trades: s2.trades.length,

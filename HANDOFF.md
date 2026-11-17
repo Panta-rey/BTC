@@ -2,9 +2,11 @@
 
 Zustandsbericht des Projekts. Wer hier einsteigt, liest zuerst dieses Dokument, dann `SPEC.md`.
 
-**Stand:** 13. September 2026 · Konfiguration `1.0` (eingefroren) · Node 22, keine Abhängigkeiten · 53 Tests grün
+**Stand:** 17. November 2026 · Konfiguration `1.0` (eingefroren) · Node 22, keine Abhängigkeiten · 68 Tests grün
 **Status:** betriebsbereit. M0 bis M6 abgeschlossen, nur M7 (Härtung) offen.
 **Seite:** https://panta-rey.github.io/Panta-Rey-BTC-Ampel/ · **Repo:** https://github.com/Panta-rey/Panta-Rey-BTC-Ampel
+
+**Neu am 17.11.2026, zuerst lesen: Abschnitt 13.** Die Ampel steht seit dem Nachtrag der Handwerte in Phase ② statt ④. Die Abschnitte 4 und 4a beschreiben den Weg dorthin und sind an den markierten Stellen überholt.
 
 ---
 
@@ -36,9 +38,7 @@ Keine Anlageberatung. Das Modell beruht auf vier Zyklen und kann falsch liegen.
 | M6 | Verlauf und Zyklus-Uhr als Grafik | ✅ eigenes SVG, ohne Bibliothek |
 | M7 | Härtung, Barrierefreiheit, Grenzfälle | 🔶 Prüfliste 8.5 abgearbeitet, Rest offen |
 
-**Aktueller Marktstand laut Ampel (Wochenschluss 13.09.2026, 76'809 USD):** Phase 4 Abwärtstrend seit 9. November 2025, also 44 Wochen. Kauf-Motor 41 von 60, Verkaufs-Motor 2, **Abdeckung 100 %**, Ampel gelb, „Bereit machen. Die Kaufzone rückt näher, noch nicht kaufen." Kein Tor ist offen, 2 von 4 Indikatoren in Zone aus 2 von 3 Familien. Es fehlen also drei Bedingungen gleichzeitig, nicht nur Punkte.
-
-Familienstand: Bewertung 41, Halter & Stimmung 20, Miner 51, Zeit 61. Zeitlich passt es langsam, preislich noch nicht: 11,2 Monate seit dem Hoch bei einem historischen Tief-Fenster von 9 bis 16 Monaten, aber 38,4 % unter dem Hoch bei einer Torschwelle von 40 %, und MVRV-Z bei 0,77 statt unter null.
+**Marktstand laut Ampel (Wochenschluss 15.11.2026, 65'312 USD):** Phase 2 Aufwärtstrend seit 30. August 2026, Ampel aus, „Halten. Optional: Nachkauf mit der Reserve." Kauf-Motor 58, Verkaufs-Motor 0, Abdeckung des Kauf-Motors 100 %. Die drei Kauftranchen des neuen Zyklus liegen in der Vergangenheit (12.07., 09.08. und 30.08.2026). Dieser Stand ist am 17.11.2026 durch den Nachtrag der Handwerte rückwirkend entstanden, Einzelheiten in Abschnitt 13. Der Absatz ist eine Momentaufnahme; massgeblich ist immer `data/latest.json`.
 
 **Die BGeometrics-Frage ist am 13. September 2026 abschliessend beantwortet.** Ein Monatsabo Advanced, ein vollständiger Datenabzug und ein Dreifach-Nachlauf haben ergeben: Ein dauerhaftes Abo verbessert das System nicht. Einzelheiten in Abschnitt 11, die Zahlen in `reports/bgeometrics-vergleich.md`. Daraus folgt die neue Regel für die Handeingabe in Abschnitt 4a.
 
@@ -54,6 +54,7 @@ scripts/build.mjs      data/raw → data/*.json        (Wochenauswertung + Wiede
 scripts/backtest.mjs   weekly   → reports/backtest.md
 scripts/notify.mjs     Benachrichtigungen (Issues, optional ntfy)
 scripts/lib/sim.mjs        Simulation und Bewertung, von Backtest und Vergleich genutzt
+scripts/lib/manual.mjs     Handwerte: Prüfung, Sperre der zurückgestellten, Weg in die Wiedergabe
 scripts/local/             läuft NUR lokal, nie im Runner
   fetch-bgeometrics.mjs  Datenabzug BGeometrics → data/private/ (gitignored)
   compare.mjs            Vergleich → reports/bgeometrics-vergleich.md
@@ -70,7 +71,7 @@ engine/                reine Logik, kein Netzwerk, deterministisch
   phases.mjs     Zustandsmaschine, Tranchen, Events
   rows.mjs       weekly.json → Objekte, abgeleitete Felder
 config/engine.json     alle Schwellen und Gewichte, versioniert
-test/                  node:test, 40 Tests
+test/                  node:test, 68 Tests
 ```
 
 ### Dateien in `data/`
@@ -79,7 +80,7 @@ test/                  node:test, 40 Tests
 |---|---|---|
 | `raw/*.json` | Rohdaten je Quelle, Tagesreihen | `fetch.mjs` |
 | `raw/_status.json` | Erfolg oder Fehler je Quelle | `fetch.mjs` |
-| `manual.json` | STH-Realized-Price von Hand | **du** |
+| `manual.json` | Angebot im Gewinn und STH-Realized-Price von Hand. **Bestimmt den Phasenverlauf mit** (Abschnitt 13) | **du** |
 | `weekly.json` | eine Zeile pro Sonntag seit 2010 | `build.mjs` |
 | `latest.json` | aktueller Wochenstand, alles was die Seite braucht | `build.mjs` |
 | `phases.json` | Phase und beide Scores je Woche (Verlauf) | `build.mjs` |
@@ -117,6 +118,8 @@ Die Marketing-Seite zum Zusatzmodul „Commercial Publishing" klingt milder und 
 **Tarifdaten, am 13.09.2026 geprüft:** Advanced kostet 18 Dollar im Monat oder 180 im Jahr, erlaubt 200 Abrufe pro Stunde und höchstens 3 verschiedene IPs am Tag, und **hebt die Vier-Jahres-Grenze der Gratis-Stufe auf**. Alle Endpunkte kennen `/last` für den letzten Wert, `/csv` für den Export und die Parameter `day`, `startday`, `endday`. Ein Abruf holt damit eine ganze Reihe. Abos verlängern sich automatisch, also direkt nach dem Kauf kündigen.
 
 ### Manuelle Werte als Zwischenlösung
+
+> **Stand 17.11.2026:** Angenommen und ausgewertet werden nur noch zwei der fünf Kennzahlen, Angebot im Gewinn und STH-Realized-Price. Die anderen drei sind im Code gesperrt. Die Aussagen weiter unten über „sofort wirkende" Kennzahlen und über Reserve Risk beschreiben den Stand vom 12.09.2026 und sind durch die Abschnitte 4a und 13 überholt.
 
 Alle fünf Kennzahlen sind auf `charts.checkonchain.com` ablesbar. In den Einstellungen der Seite gibt es je Kennzahl ein Eingabefeld, einen Knopf „↗ Chart öffnen" und den Hinweis, welche Linie abzulesen ist.
 
@@ -178,6 +181,8 @@ Die Pointe ist lehrreich: **Der falsche Wert hat das bekannte Problem zufällig 
 
 Der Eintrag wurde ersatzlos gelöscht. Abdeckung, Kauf-Score und Familienzahl blieben unverändert. **Lehre:** Wer eine von Hand eingetragene Kennzahl prüfen will, hält sie gegen `fetch-bgeometrics.mjs --check`, solange der Zugang läuft. Danach bleibt als Skalenprobe nur die Summenregel für das Angebot (Gewinn plus Verlust ergibt die Umlaufmenge) und der Vergleich des STH-Einstands mit dem Preis.
 
+**Nachtrag 17.11.2026:** Die Regel wurde im Oktober und November erneut gebrochen, diesmal unbemerkt, weil das Formular alte Entwürfe wieder mitschickte. Seither sind die drei Kennzahlen im Code gesperrt, und der Vergleich des STH-Einstands mit dem Preis ist eine feste Prüfung (Abschnitt 13).
+
 **Warum Reserve Risk zurückgestellt ist (Prüfung vom 13.09.2026, `reports/anker-check.md`).** Die absoluten Ankerpunkte stammen aus veröffentlichten Bändern und wurden nie gegen Daten gehalten. Gegen die volle Historie gemessen liegt der Anteil der Wochen „in Zone" bei 37,7 % bis zum Tief 2015, dann 75,5 %, dann 90,8 %, und **im laufenden Zyklus bei 100 % aller 198 Wochen**. Score am Median der Gesamthistorie: 91,8. Die Kennzahl bestätigt an den Extremen zwar zuverlässig (Score 100 an allen drei Tiefs), unterscheidet aber nichts mehr. Eingetragen würde sie den Kauf-Motor dauerhaft anheben und der Konvergenzbedingung permanent eine dritte Familie in Zone liefern.
 
 **Warum die Hybridregel das nicht abfängt.** Sie nimmt das Maximum aus absolutem Anker und Perzentil. Das hilft gegen einen zu *strengen* absoluten Anker, und dafür wurde sie gebaut (SPEC 4.2). Gegen einen zu *lockeren* ist sie wirkungslos, weil das Maximum den hohen Wert durchreicht. Der Schutz ist asymmetrisch, und der Fehler liegt hier auf der ungeschützten Seite. Dasselbe Risiko trägt jeder absolute Anker auf einer wandernden Kennzahl.
@@ -194,7 +199,7 @@ Dazu kommt ein zweiter, unabhängiger Befund aus der Ankerprüfung: **Beide Kenn
 
 **Erinnerung.** `monthlyManual()` in `scripts/lib/events.mjs` erzeugt in den ersten fünf Tagen jedes Monats ein Issue vom Typ `MONTHLY_MANUAL`, sofern für den laufenden Monat noch keine Lesung in `data/manual.json` steht. Es nennt nur die noch offenen der beiden empfohlenen Kennzahlen. Kein eigener Workflow, der Tageslauf ruft `notify.mjs` ohnehin auf.
 
-**Die Ablesung ist geprüft (13.09.2026).** `fetch-bgeometrics.mjs --check` zeigt die Werte der API, daneben wurde vom Chart abgelesen. Angebot im Gewinn: 66,07 % gegen 65,70 % abgelesen. STH-Einstand: 71'217 gegen 71'093, also 0,17 %. Das ist Ablesegenauigkeit, keine Skalenfrage, und damit ist der wahrscheinlichste Fehler ausgeschlossen: die Verwechslung zweier ähnlicher Linien im selben Diagramm. Zur Einordnung, wie genau es sein muss: Beim Angebot im Verlust bewegen sich drei Scorepunkte je Prozentpunkt, ein halbes Prozent Ableseungenauigkeit ist also ein Scorepunkt von hundert. Gegenprobe der Skala ohne Chart: Angebot im Gewinn plus Angebot im Verlust muss die Umlaufmenge ergeben, 13'268'598 + 6'814'734 = 20'083'332. Kein eigener Workflow nötig, der Tageslauf ruft `notify.mjs` ohnehin auf.
+**Die Ablesung ist geprüft (13.09.2026).** `fetch-bgeometrics.mjs --check` zeigt die Werte der API, daneben wurde vom Chart abgelesen. Angebot im Gewinn: 66,07 % gegen 65,70 % abgelesen. STH-Einstand: 71'217 gegen 71'093, also 0,17 %. Das ist Ablesegenauigkeit, keine Skalenfrage, und damit ist der wahrscheinlichste Fehler ausgeschlossen: die Verwechslung zweier ähnlicher Linien im selben Diagramm. Zur Einordnung, wie genau es sein muss: Beim Angebot im Verlust bewegen sich drei Scorepunkte je Prozentpunkt, ein halbes Prozent Ableseungenauigkeit ist also ein Scorepunkt von hundert. Gegenprobe der Skala ohne Chart: Angebot im Gewinn plus Angebot im Verlust muss die Umlaufmenge ergeben, 13'268'598 + 6'814'734 = 20'083'332.
 
 ---
 
@@ -363,7 +368,8 @@ Alle sind in `SPEC.md` eingearbeitet. Hier die Begründungen:
 | Anlass | Was zu tun ist |
 |---|---|
 | Signal-Issue kommt | Seite öffnen, Handlungssatz und Betrag lesen, Tranche ausführen, auf „Erledigt" tippen, Issue schliessen |
-| Monatsanfang, Issue kommt von selbst | Angebot im Gewinn und STH-Realized-Price ablesen, in den Einstellungen eintragen, speichern. Hebt die Abdeckung des Kauf-Motors von 80 auf 100 %. Reserve Risk, RHODL und LTH-Positionsänderung bewusst **nicht** eintragen (Abschnitt 4a) |
+| Monatsanfang, Issue kommt von selbst | Angebot im Gewinn und STH-Realized-Price ablesen, in den Einstellungen eintragen, speichern. Beim STH-Einstand die Linie „STH Cost Basis" nehmen, nicht „Realised Price". Die Felder für Reserve Risk, RHODL und LTH-Positionsänderung sind gesperrt (Abschnitte 4a und 13) |
+| in den Phasen ④ und ①, wenn der Kauf-Score über 50 liegt oder der Kurs sich seit der letzten Lesung um mehr als 10 % bewegt hat | beide Zahlen ausser der Reihe neu ablesen. Eine Monatslesung ist dann zu grob: Am 15.11.2026 stammte der Wert noch vom Kurs 78'000, der Kurs stand bei 65'000 |
 | Technik-Issue kommt | Actions-Tab prüfen, meist eine ausgefallene Quelle |
 | einmal im Jahr (1. Januar) | Review-Issue abarbeiten: Backup exportieren, Kernposition prüfen, Quellenstatus ansehen |
 | nach einem abgeschlossenen Zyklus | Backtest neu bewerten, Konfiguration gegebenenfalls auf 2.0 |
@@ -391,6 +397,10 @@ Alle sind in `SPEC.md` eingearbeitet. Hier die Begründungen:
 | Öffentliches Repo | Bestände, Kaufpreise und Beträge gehören nie ins Repo. |
 | GitHub-Inaktivität | Nach 60 Tagen ohne Aktivität deaktiviert GitHub geplante Workflows. Die wöchentlichen Commits sollten das verhindern. |
 | Überanpassung | Vier Zyklen sind wenig. Schwellen vorab festlegen, nicht nachträglich suchen. |
+| Handwerte haben eine Vergangenheit | Die Wiedergabe spielt die ganze Historie ab. Eine Kennzahl, die erst ab heute eingetragen wird, fehlt ihr für alle Wochen davor, und weil Phasen nur vorwärts laufen, kann der Zustand daran hängen. Genau das ist bis zum 17.11.2026 passiert (Abschnitt 13). Wer eine Kennzahl neu aufnimmt, trägt mindestens die laufende Phase nach. |
+| `data/manual.json` | Die Datei bestimmt den Phasenverlauf mit. Lesungen aus Juni bis September 2026 nie löschen oder ändern. Ein Test bricht den Wochenlauf ab, wenn die Phasenwechsel vom 12.07. und 30.08.2026 verschwinden; das ist Absicht. |
+| Wochenlauf bricht bei „Tests" ab | Die Meldung des fehlgeschlagenen Tests lesen, sie nennt die Ursache. Meist `data/manual.json`. Der Tageslauf läuft weiter, Signale kommen aber erst wieder, wenn der Wochenlauf durchläuft. |
+| Archive im Projektordner | `*.zip`, `*.7z` und `*.msi` sind von Git ausgeschlossen. Ein gepacktes `data/private/` gehört trotzdem nicht in den Ordner. |
 
 ---
 
@@ -496,14 +506,112 @@ Beide lokalen Scripts laufen nie im Runner. Rohdaten bleiben in `data/private/`.
 
 ## 12. Nächste Schritte
 
-Das System ist betriebsbereit. Nichts davon ist dringend.
+Das System ist betriebsbereit. Dringend ist nur der erste Punkt, alles andere hat Zeit.
 
-1. **Monatlich zwei Zahlen eintragen.** Angebot im Gewinn und STH-Realized-Price. Die Erinnerung kommt am Monatsanfang von selbst als Issue. Das Angebot im Gewinn allein hebt die Abdeckung des Kauf-Motors von 80 auf 100 %. Reserve Risk, RHODL und LTH-Positionsänderung bleiben leer, Begründung in Abschnitt 4a.
-2. **Nach dem Zyklusende: Ankerpunkte von Reserve Risk neu schneiden.** Die vorhandene Historie liegt in `data/private/` und genügt dafür, ein zweites Abo ist nicht nötig. Ziel ist ein Anteil „in Zone" im einstelligen bis niedrigen zweistelligen Prozentbereich, wie ihn das Angebot im Gewinn mit 8,6 % im laufenden Zyklus erreicht.
-3. **Bitcoin-Dominanz beschaffen und einmal messen.** Gratis und rückwirkend erhältlich, die Prüfvorschrift steht in Abschnitt 5a. Nur messen, nicht einbauen: Die Konfiguration bleibt eingefroren.
-4. **Erste Indikator-Prüfung ansehen**, spätestens im Januar. Sie läuft von selbst; interessant ist, ob ausser Reserve Risk noch etwas driftet.
-5. **M7, Härtung.** Barrierefreiheit, Grenzfälle der Oberfläche, Ladezeit. Der Grund für die Zurückstellung ist entfallen: Die Datenlage ist geklärt, die Abdeckung ändert sich nicht mehr überraschend. M7 ist damit der einzige noch offene Meilenstein und kann beginnen.
-6. **Nach dem Zyklusende: Weg E2 und die Verkaufsseite neu denken.** Vier unabhängige Prüfungen zeigen auf dieselbe Stelle (Abschnitt 5). Die Kopplung `score_min × Abdeckung` ist entweder zu grob oder die Schwelle von 40 zu hoch. Erst dann entscheidet sich auch, ob RHODL und LTH-Positionsänderung dazukommen.
-7. **Zweiter Abzug vor Ablauf des Zugangs**, etwa am 10. Oktober 2026: `node scripts/local/fetch-bgeometrics.mjs --probe --out=data/private-2` und danach derselbe Aufruf ohne `--probe`. Sichert die Reihen bis zum letzten Tag. Danach läuft der Zugang aus und wird nicht erneuert.
+1. **Regel für die verpassten Tranchen festlegen und hier eintragen.** Die Ampel zeigt drei Kauftranchen in der Vergangenheit, real wurde nicht gekauft. Das System hat dafür keine Regel, der Entscheid liegt beim Eigentümer (Abschnitt 13).
+2. **Monatlich zwei Zahlen eintragen.** Angebot im Gewinn und STH-Realized-Price. Die Erinnerung kommt am Monatsanfang von selbst als Issue. Die anderen drei Felder sind gesperrt.
+3. **Erste Indikator-Prüfung ansehen**, am 2. Januar 2027. Sie läuft von selbst und sieht jetzt dieselben Handwerte wie die Seite.
+4. **Neubewertung frühestens ab dem Jahres-Review im Januar 2027.** Nach der Zählung der Maschine hat am 12.07.2026 ein neuer Zyklus begonnen, SPEC 10.5 erlaubt die Neubewertung also formal. Vorher die Prüfvorschriften aufschreiben. Zu bewerten sind: die Kopplung `score_min × Abdeckung` von Weg E2, die Frage, ob der Verkaufs-Motor noch auslösen kann (Abschnitt 5), die Einstimmigkeit der Kaufseite bei 80 % Abdeckung und der zeitlich scharfgestellte Trendbruch (beide Abschnitt 13). Erst dann entscheidet sich, ob RHODL und LTH-Positionsänderung dazukommen.
+5. **Zur Neubewertung ein Monatsabo BGeometrics lösen und einmal alles abziehen.** Das ersetzt den verpassten zweiten Abzug und liefert die Reihen bis über das Tief hinaus. Damit die Ankerpunkte von Reserve Risk neu schneiden; Ziel ist ein Anteil „in Zone" im einstelligen bis niedrigen zweistelligen Prozentbereich, wie ihn das Angebot im Gewinn mit 8,6 % im Zyklus 2022 bis 2026 erreicht.
+6. **Bitcoin-Dominanz beschaffen und einmal messen.** Gratis und rückwirkend erhältlich, die Prüfvorschrift steht in Abschnitt 5a. Nur messen, nicht einbauen.
+7. **M7, Härtung.** Antippen des Verlaufs, Systemsignale im Journal, Prüfung mit einem echten Screenreader, Ladezeit auf dem Handy. Dazu das Formular auf „nur neue Lesungen schicken" umstellen (Abschnitt 13).
 
-**Was ausdrücklich nicht getan werden sollte:** an `config/engine.json` drehen. Die Konfiguration `1.0` hat vier Backtest-Läufe, die Empfindlichkeitsprüfung und jetzt zusätzlich den BGeometrics-Nachlauf hinter sich. Sie bleibt bis zum Ende des laufenden Zyklus unverändert (SPEC 10.5). Das gilt ausdrücklich auch für die Versuchung, Weg E2 jetzt zu entkoppeln: Das Ergebnis von 2025 wäre damit auf genau einen Zyklus optimiert.
+**Was ausdrücklich nicht getan werden sollte:** an `config/engine.json` drehen. Die Konfiguration `1.0` hat vier Backtest-Läufe, die Empfindlichkeitsprüfung und jetzt zusätzlich den BGeometrics-Nachlauf hinter sich. Sie bleibt bis zum Ende des laufenden Zyklus unverändert (SPEC 10.5). Das gilt ausdrücklich auch für die Versuchung, Weg E2 jetzt zu entkoppeln: Das Ergebnis von 2025 wäre damit auf genau einen Zyklus optimiert. Der Nachtrag vom 17.11.2026 hat die Konfiguration nicht berührt; geändert haben sich Eingangsdaten und Prüfungen, nicht Schwellen oder Gewichte.
+
+---
+
+## 13. Nachtrag vom 17.11.2026: Handwerte haben eine Vergangenheit
+
+Dieser Abschnitt ist der jüngste und geht allem Älteren vor. Wo die Abschnitte 4 und 4a etwas anderes sagen, gilt, was hier steht.
+
+### Was die Durchsicht gefunden hat
+
+Der Live-Betrieb wich vom Handoff ab, und zwar an der Stelle, vor der Abschnitt 4a warnt.
+
+- **Reserve Risk zählte wieder mit.** In `data/manual.json` stand 0,00175 für den 04.10. und den 01.11.2026, bewertet mit Score 85. Nur dadurch galten beide Konvergenzbedingungen als erfüllt: mit dem Eintrag Kauf-Score 58, 4 von 4 Indikatoren und 3 von 3 Familien in Zone, ohne ihn 54, 3 von 4 und 2 von 3. Es fehlten also zwei Punkte bis zu einem Kaufsignal, das auf einer zurückgestellten Kennzahl gestanden hätte. Der Wert selbst kann nicht stimmen: Am Allzeithoch stand die Reihe bei BGeometrics bei 0,0012, im September bei 0,0006.
+- **STH-Realized-Price am 01.11.: 758'549** statt 75'817, ein Tippfehler um den Faktor zehn. Die Prüfung liess alles bis 10 Millionen durch.
+- **RHODL und LTH-Positionsänderung wurden ebenfalls eingetragen**, die LTH-Werte in drei verschiedenen Grössenordnungen (−89,504, −23'442, −262'832). Ab März 2027 hätten sie 26 Wochen erreicht, mitgezählt und die Schwelle von Weg E2 auf 40 gehoben. Checkonchain führt beide zudem auf einer anderen Skala als BGeometrics (RHODL 0,08 gegen 655), die Reihen wären nie mit dem Abzug vereinbar gewesen.
+- **Ursache:** Das Formular speicherte Entwürfe im Browser, leerte sie nach dem Speichern nicht und schickte sie jeden Monat mit neuem Datum wieder mit. Die Regel „nicht eintragen" stand nur im Text.
+
+### Der vierte Nachlauf
+
+Der Dreifach-Nachlauf vom 13.09. (Abschnitt 11) prüfte „ohne Zusatzdaten", „nur STH-Einstand" und „alle fünf". **Die Variante, die Abschnitt 4a empfiehlt, also Angebot im Gewinn plus STH-Einstand, wurde nie gerechnet.** Am 17.11. nachgeholt, mit dem Abzug vom 13.09.; die Läufe „ohne" und „alle fünf" treffen dabei die Zahlen aus Abschnitt 11 genau.
+
+| Variante | Phase ① | Phase ② | Stand 15.11.2026 |
+|---|---|---|---|
+| ohne Handwerte (bisheriger Backtest) | – | – | Phase ④ |
+| live bis 17.11., Handeingabe ab 13.09. | – | – | Phase ④, Kauf-Score 58 mit Reserve Risk, 54 ohne |
+| Angebot im Gewinn wöchentlich aus dem Abzug | 28.06.2026 | 30.08.2026 | Phase ② |
+| dasselbe, 3 Punkte tiefer angesetzt | 28.06.2026 | 30.08.2026 | Phase ② |
+| nur Monatslesungen am 1., ganze Historie | 12.07.2026 | 30.08.2026 | Phase ② |
+| nur vier Monatslesungen Juni bis September 2026 | 12.07.2026 | 30.08.2026 | Phase ② |
+
+Alle zwölf Phasenwechsel bis 2025 und alle sieben Abnahmekriterien bleiben in jeder Variante gleich. Der Unterschied liegt ausschliesslich im Jahr 2026.
+
+**Die Ampel stand also nur deshalb noch in Phase ④, weil die Handeingabe erst am 13.09.2026 begann.** Die Wiedergabe spielt die ganze Historie ab, sah an dieser Stelle aber bis September ein Loch. Das war ein Mischzustand, Historie ohne die Kennzahl und Gegenwart mit ihr, den kein Backtest deckte und der dem Grundsatz widersprach, dass die Wiedergabe die Wahrheit ist.
+
+### Warum der Sommer 2026 blockiert war
+
+Ohne Handwerte lag der Kauf-Score elf Wochen in Folge über 60 (07.06. bis 16.08.2026), in der Spitze bei 78 am bisher tiefsten Wochenschluss von 59'473. Zwei Bedingungen hielten die Maschine trotzdem in Phase ④:
+
+- **Tor B verfehlt um 0,9 Perzentilpunkte.** Das MVRV-Perzentil stand bei 15,9, verlangt sind höchstens 15. Die Alternative über das Angebot im Verlust (mindestens 45 %) fehlte, der Wert lag im Juli und August 2026 bei rund 50 %.
+- **Konvergenz verlangte Einstimmigkeit.** Bei 80 % Abdeckung ergibt `min(3, verfügbare Familien)` drei von drei. Bewertung und Miner standen im Juni in Zone, Bewertung und Zeit im Juli und August, nie alle drei zugleich.
+
+Fehlende Daten machen die Kaufseite damit **strenger**, nicht milder. Auf der Verkaufsseite ist es umgekehrt (Weg E2 sinkt mit der Abdeckung). Die Abweichung „Konvergenz" in Abschnitt 7 wollte genau das verhindern, erreicht es bei drei verfügbaren Familien aber nicht. Das ist ein Befund für 2.0, keine Änderung an 1.0.
+
+### Der Entscheid
+
+**Nachgetragen wurden die Monatsersten der ganzen Phase ④, von Dezember 2025 bis September 2026, für Angebot im Gewinn und STH-Einstand.** Abgelesen von Hand am Checkonchain-Chart, nicht aus dem Abzug übernommen (Abschnitt 11, Sauberkeit). Gegen den Abzug gehalten liegen alle zwanzig Werte innerhalb von 1 Prozentpunkt beziehungsweise 1 %. Dazu kamen die Korrektur vom 01.11. und eine aktuelle Lesung für den 15.11.; die drei zurückgestellten Reihen wurden geleert.
+
+Begründung: Die Regel „Angebot im Gewinn monatlich eintragen" stammt vom 13.09.2026 und ist älter als das Wissen um ihre rückwirkende Folge. Der Nachtrag wendet sie auf die ganze laufende Phase an statt ab einem zufälligen Datum. Die Grenze „ganze Phase ④" ist nicht nach Ergebnis gewählt. Der andere stimmige Weg wäre gewesen, ganz ohne Handwerte zu fahren; er hätte einen dokumentierten Entscheid zurückgenommen und die Einstimmigkeitsregel weiterlaufen lassen.
+
+**Vorbehalt, ehrlich benannt:** Das Ergebnis war bekannt, bevor entschieden wurde. Das ist Rückschau. Dagegen steht nur, dass es bei wöchentlichen Werten, bei Monatswerten und bei drei Punkten Abweichung dasselbe bleibt.
+
+### Das Ergebnis
+
+| | Woche | Wochenschluss |
+|---|---|---|
+| Phase ① Akkumulation, Tranche B1 | 12.07.2026 | 63'743 |
+| Tranche B2 | 09.08.2026 | 64'857 |
+| Phase ② Aufwärtstrend, Tranche B3 | 30.08.2026 | 77'702 |
+
+Gewichtet nach den Tranchenanteilen ergibt das rund 68'700 USD. Stand am 15.11.2026 (Wochenschluss 65'312): Phase ② seit elf Wochen, Ampel aus, „Halten. Optional: Nachkauf mit der Reserve." Kauf-Motor 58 bei 100 % Abdeckung, Tor B offen. Am 15.11. meldete die Maschine eine Nachkauf-Chance im Aufwärtstrend. Zyklus 4 hat nach ihrer Zählung am 12.07.2026 begonnen, das relevante Halving steht noch aus, die Zyklus-Uhr zeigt deshalb 0.
+
+Im Backtest stehen damit 18 statt 15 Transaktionen, 4,3560 BTC ohne Cash statt 1,3277 BTC plus 207'481 USD. Zum Kurs vom 15.11. sind das 284'502 gegen 294'196 USD, der nachgetragene Pfad liegt also rund 3 % zurück. Vier von sieben Kriterien, unverändert.
+
+### Was damit nicht gelöst ist
+
+- **Die drei Kauftranchen liegen in der Vergangenheit, und real wurde nicht gekauft**, weil die Ampel es im Sommer nicht sagte. Für verpasste Tranchen hat das System keine Regel. Ob und wie nachgeholt wird, ist ein Entscheid des Eigentümers und gehört hier eingetragen, sobald er gefallen ist.
+- **Phase ② kennt keinen Rückweg.** Fällt der Kurs unter das Juni-Tief, zeigt die Seite weiter „Aufwärtstrend", bis das Top-Fenster nach dem Halving 2028 erreicht ist. Das gilt in jeder Variante. Nach dem eigenen Kriterium (Durchschnitt höchstens 1,6-mal das Tief) blieben die Käufe im Ziel, solange das Tief über rund 43'000 USD liegt. Ob der Juni 2026 das Tief war, weiss niemand.
+- **Formal ist der Zyklus damit zu Ende**, und SPEC 10.5 erlaubt die Neubewertung. Sie sollte trotzdem nicht vor dem Jahres-Review im Januar 2027 beginnen: Der Zustand ist erst am 17.11. rückwirkend entstanden, und die Prüfvorschriften für 2.0 gehören vorab aufgeschrieben (Abschnitt 5a zeigt die Form).
+
+### Schutz, jetzt im Code statt im Text
+
+Die Konfiguration `1.0` ist unverändert, `config/engine.json` wurde nicht angefasst.
+
+| Wo | Was |
+|---|---|
+| `scripts/lib/manual.mjs` | `DEFERRED` nennt die drei zurückgestellten Kennzahlen. `readingsOf()` liefert für sie immer eine leere Liste, `parseSubmission()` verwirft sie mit Hinweis, `mergeReadings()` schreibt sie nicht. |
+| `scripts/lib/manual.mjs` | Der STH-Einstand muss zwischen dem 0,3- und dem 3-Fachen des Wochenschlusses seines Datums liegen (seit 2015 waren es 0,42 bis 1,94). Angebot im Gewinn unter 5 wird abgewiesen, das ist ein Anteil statt eines Prozentwerts. |
+| `scripts/lib/manual.mjs` | `manualByWeek()` ist der einzige Weg der Handwerte in die Wiedergabe. Wochenauswertung, Backtest und Indikator-Prüfung benutzen dieselbe Funktion. Vorher sah der Backtest keine Handwerte, und die Indikator-Prüfung reichte die Rohdatei durch, die `toRows()` nicht lesen kann. |
+| `scripts/lib/store.mjs` | `readJSONStrict()`: Eine beschädigte `data/manual.json` bricht den Lauf ab, statt als leer zu gelten. Sonst spränge die Wiedergabe still zurück in Phase ④. |
+| `index.html` | Die drei Felder sind gesperrt, alte Entwürfe dazu werden verworfen. Das Formular prüft dieselben Grenzen, blockiert das Speichern bei einem Fehler und leert sich nach dem Speichern. Der Ablesehinweis nennt die Linie beim Namen, den der Chart zeigt: „STH Cost Basis", nicht „Realised Price". |
+| `.github/workflows/manual-values.yml` | Der Rückmeldetext geht über die Umgebung an das Skript statt in den Skripttext. |
+| `test/manual.test.mjs` | 15 neue Tests, insgesamt 68. Zwei davon halten den Zustand fest: Die Wiedergabe ist mit und ohne zurückgestellte Einträge identisch, und die Phasenwechsel vom 12.07. und 30.08.2026 stehen. |
+
+**Der letzte Test bricht den Wochenlauf absichtlich ab**, wenn einer der beiden Phasenwechsel verschwindet. Das heisst dann: In `data/manual.json` ist eine Lesung aus Juni bis September 2026 verloren gegangen oder verändert worden. Lieber ein lauter Abbruch als ein stiller Sprung zurück in Phase ④ mit einem neuen Kaufsignal.
+
+### Der verpasste zweite Abzug
+
+Schritt 7 der alten Liste (zweiter Abzug um den 10.10.2026) wurde verpasst, der Zugang ist abgelaufen. Der Schaden ist klein: Die Reihen enden am 12.09.2026, und für neu geschnittene Reserve-Risk-Anker braucht es ohnehin die Daten bis zum bestätigten Zyklustief. Ein Monatsabo zum Zeitpunkt der Neubewertung holt die volle Historie samt Lücke. Verloren ist nur die Gegenprobe der Handwerte für Oktober.
+
+### Befunde für 2.0, vorab notiert
+
+1. **Konvergenz der Kaufseite bei 80 % Abdeckung** verlangt Einstimmigkeit (oben). Zu prüfen ist `min(3, verfügbare Familien − 1)` mit Untergrenze 2, gegen alle vier Zyklen.
+2. **Die Verkaufstranchen kommen nicht mehr aus dem Score.** 2021 und 2025 wurden alle drei Tranchen vom Trendbruch ausgelöst, keine von den Schwellen 70, 80 und 90; der Verkaufs-Motor erreichte seit 2018 höchstens 59 und 37. Er ist faktisch nur noch der Schalter, der den Trendbruch scharf stellt. Kandidat: ein rein zeitlich scharfgestellter Trendbruch (Zyklus-Uhr im Fenster, ohne Score). Dazu gehört eine Regel für den Fall, dass Phase ③ nie erreicht wird; heute gibt es dafür nur das Flag `cycle_anomaly`.
+3. **Regel für neue Handwerte:** Wer eine Kennzahl neu aufnimmt, trägt mindestens die laufende Phase nach oder lässt sie erst ab dem nächsten Phasenwechsel wirken. Sonst entsteht wieder ein Mischzustand.
+4. **Das Formular schickt die ganze Reihe im Issue-Link mit.** Bei zwei Lesungen im Monat wird die Adresse in einigen Jahren zu lang. `mergeReadings()` führt ohnehin zusammen, es genügte, nur die neuen Lesungen zu schicken.
+
+### Aufgeräumt
+
+`reports/indikator-check.md` und `.json` enthielten seit dem stehengebliebenen Rebase vom 18.09. Konfliktmarken, das JSON war ungültig; beide sind neu erzeugt. Aus `scripts/local/` ist ein versehentlich eingecheckter Node-Installer von 32 MB entfernt. `.gitignore` schliesst jetzt `*.msi`, `*.zip` und `*.7z` aus, damit weder ein Paket noch ein gepacktes `data/private/` über `git add -A` öffentlich wird.
