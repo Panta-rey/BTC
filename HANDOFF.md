@@ -628,6 +628,31 @@ Die Faktoren des Sparplans sind bewusst nicht einstellbar. Sie sind der Teil, de
 
 Geprüft in einem echten Browser (Desktop und 390 px) und mit 33 Einzelprüfungen der Rechenlogik: Faktoren, Topf, Deckelung, Abweichung, Entfernen eines Eintrags samt Rückbuchung des Topfs, Bilanz. Diese Prüfungen liegen nicht im Repo, weil die Seite ohne Abhängigkeiten auskommt und die Tests dort keinen Browser haben. In der Testansicht (`?fixture=`) sind die Einträge abgeschaltet.
 
+### Nachkauf-Hinweise in Phase ②
+
+Die Maschine kennt im Aufwärtstrend zwei Hinweise auf eine Kaufgelegenheit. Beide kommen als Issue „Reserve einsetzbar", und der Handlungssatz wechselt auf „Halten. Optional: Nachkauf mit der Reserve." Es sind Hinweise, keine fälligen Tranchen.
+
+| Hinweis | Bedingung | Häufigkeit |
+|---|---|---|
+| Nachkauf-Chance, halbe Reserve | Kurs mindestens 25 % unter dem 52-Wochen-Hoch, höchstens 2 % über dem STH-Einstand, Fear & Greed der Woche höchstens 25 | Sperrfrist 12 Wochen |
+| Ausserordentliche Kaufgelegenheit | Kauf-Motor im Aufwärtstrend bei 70 oder mehr | jede Woche, solange es gilt |
+
+Bisher fünf Fälle: drei im März 2020 (5'344 bis 5'871 USD, Kauf-Motor 76 bis 71), einer am 12.02.2023 (21'789 USD, Kauf-Motor 70), alle vier aus der Rückrechnung, und die Nachkauf-Chance vom 15.11.2026 (65'312 USD) als erster echt gemeldeter Fall. Das ist zu wenig für eine Trefferquote, und der Backtest führt diese Hinweise nicht aus. Die Sperrfrist der Nachkauf-Chance läuft bis 07.02.2027.
+
+**Die Nachkauf-Chance hängt am STH-Einstand.** Ist die Lesung älter als 30 Tage, kann sie nicht auslösen. Geprüft wird nur am Wochenschluss; ein Einbruch unter der Woche, der sich bis Sonntag erholt, löst nichts aus.
+
+### Besprochen und bewusst nicht gebaut
+
+- **Einstellungen unter einem Wort speichern und wieder abrufen.** Verworfen am 17.11.2026. Die Seite hat keinen eigenen Server; die Daten müssten öffentlich erreichbar liegen, offen oder mit dem Wort verschlüsselt. Ein einzelnes Wort lässt sich gegen eine öffentlich liegende Datei beliebig oft durchprobieren. Es bleibt bei der Regel: Bestände und Beträge verlassen das Gerät nur als Backup-Datei auf einem eigenen Weg.
+- **Einstellbare Faktoren im Sparplan.** Nicht gebaut, Begründung oben unter „Drei Journal-Arten".
+
+### Angeboten, noch nicht entschieden
+
+- **Backup-Datei mit Passwort verschlüsseln**, damit sie gefahrloser in einer eigenen Cloud liegen kann. Ginge ganz im Browser, ohne Server.
+- **Eigene Käufe als Punkte im Verlauf**, um sie neben den Signalen der Ampel zu sehen. Der Verlauf zeigt heute ausschliesslich die Signale der Maschine aus `data/phases.json` und `data/events.json`; das Journal fliesst nicht ein.
+
+**Zur Lesart des Verlaufs:** Die Dreiecke bis 2025 sind Rückschau auf Zyklen, an denen die Ampel eingestellt wurde. Die drei Kauf-Dreiecke von 2026 sind am 17.11.2026 rückwirkend durch den Nachtrag entstanden. Als Gradmesser taugt die Grafik erst für Signale, die ab jetzt im laufenden Betrieb kommen.
+
 ### Das Repo heisst jetzt `BTC`
 
 Beim Hochladen am 17.11.2026 meldete GitHub, dass das Repo von `Panta-Rey-BTC-Ampel` zu `BTC` umbenannt ist. Die Seite liegt damit unter https://panta-rey.github.io/BTC/, die alte Adresse funktioniert nicht mehr. GitHub leitet Zugriffe auf das alte Repo um, verlassen sollte man sich darauf nicht: Die Links in `index.html` (Speichern-Knopf, Datei bearbeiten, Quellcode), der Rückfallwert in `notify.mjs` und die Kennung der Abrufe sind umgestellt, der lokale Ordner zeigt über `git remote set-url` auf den neuen Namen. Die Meldungen der Pipeline nennen die richtige Adresse von selbst, weil sie den Repo-Namen vom Runner bekommen. `Ampel Unterhalt.pdf` nennt keine Adresse und ist nicht betroffen.
