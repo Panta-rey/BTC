@@ -1,6 +1,6 @@
 # Backtest
 
-Konfiguration `1.0` · 672 Wochen ab 2014-01-05 bis 2026-11-15 · Gebühr 0.5 % pro Transaktion · Kernposition 40 %
+Konfiguration `1.0` · 673 Wochen ab 2014-01-05 bis 2026-11-22 · Gebühr 0.5 % pro Transaktion · Kernposition 40 %
 
 > Startkapital: 1 BTC, kein Cash. Kauftranchen vor dem ersten Verkauf sind deshalb nicht finanzierbar – das betrifft das Tief 2015. Für Tiefs zählt daher vor allem der Zeitpunkt des Phaseneintritts.
 
@@ -10,10 +10,10 @@ Konfiguration `1.0` · 672 Wochen ab 2014-01-05 bis 2026-11-15 · Gebühr 0.5 % 
 
 | Strategie | BTC am Ende | Cash | Wert | Grösster Rückgang | Transaktionen |
 |---|---|---|---|---|---|
-| Halten | 1.0000 | – | 65'312 | – | 0 |
-| Ampel | 4.3560 | 0 | 284'502 | -76.6 % | 18 |
-| Sparplan | 52.6184 | 0 | 3'436'640 | – | 155 |
-| Sparplan mit Faktor | 57.7821 | 4'000 | 3'777'894 | – | 155 |
+| Halten | 1.0000 | – | 61'170 | – | 0 |
+| Ampel | 4.3560 | 0 | 266'455 | -76.6 % | 18 |
+| Sparplan | 52.6184 | 0 | 3'218'645 | – | 155 |
+| Sparplan mit Faktor | 57.7821 | 4'000 | 3'538'506 | – | 155 |
 
 Ampel gegen Halten: ✓ 4.3560 BTC statt 1,0000 BTC (plus 0 Cash).
 
@@ -124,7 +124,7 @@ Konvergenz in der nächstgelegenen Woche: 1 Indikatoren in Zone aus 1 Familien (
 | 2025-10-12 | 2025-11-02 | 3 Verteilung | 4 | 115'090 | 110'530 |
 | 2025-11-09 | 2026-07-05 | 4 Abwärtstrend | 35 | 104'705 | 63'587 |
 | 2026-07-12 | 2026-08-23 | 1 Akkumulation | 7 | 63'743 | 77'716 |
-| 2026-08-30 | 2026-11-15 | 2 Aufwärtstrend | 12 | 77'702 | 65'312 |
+| 2026-08-30 | 2026-11-22 | 2 Aufwärtstrend | 13 | 77'702 | 61'170 |
 
 ## Transaktionen
 
@@ -179,12 +179,12 @@ Konvergenz in der nächstgelegenen Woche: 1 Indikatoren in Zone aus 1 Familien (
 
 ## Laufender Abschnitt
 
-Phase 2 Aufwärtstrend seit 2026-08-30 (12 Wochen). Aktiver Motor: Verkauf.
+Phase 2 Aufwärtstrend seit 2026-08-30 (13 Wochen). Aktiver Motor: Verkauf.
 
 | | Woche | Kurs | Score | Gates | Familien |
 |---|---|---|---|---|---|
 | stärkste Woche | 2026-10-04 | 86'510 | 5 | E1=✗ E2=✗ | {"zeit_trend":4,"rel_bewertung":1,"halter":null,"euphorie":14} |
-| jetzt | 2026-11-15 | 65'312 | 0 | E1=✗ E2=✗ | {"zeit_trend":0,"rel_bewertung":0,"halter":null,"euphorie":0} |
+| jetzt | 2026-11-22 | 61'170 | 0 | E1=✗ E2=✗ | {"zeit_trend":0,"rel_bewertung":0,"halter":null,"euphorie":0} |
 
 Bedingungen für den nächsten Schritt:
 
@@ -196,4 +196,4 @@ Bedingungen für den nächsten Schritt:
 
 ## Aktueller Stand
 
-Phase 2 Aufwärtstrend seit 2026-08-30 · Kauf-Motor 58 · Verkauf-Motor 0 · Zähler 0 von 2
+Phase 2 Aufwärtstrend seit 2026-08-30 · Kauf-Motor 66 · Verkauf-Motor 0 · Zähler 0 von 2
