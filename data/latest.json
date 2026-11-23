@@ -2,8 +2,8 @@
   "schema": 1,
   "stage": "M2",
   "config_version": "1.0",
-  "mode": "weekly",
-  "generated_at": "2026-11-23T12:20:46.309Z",
+  "mode": "daily",
+  "generated_at": "2026-11-23T17:57:56.642Z",
   "week_id": "2026-11-22",
   "price": {
     "close": 61169.55,
@@ -37,9 +37,9 @@
     "days_since_last_halving": 946,
     "next_halving": {
       "height": 1050000,
-      "blocks_left": 72800,
-      "estimate": "2028-03-02",
-      "tip_height": 977200,
+      "blocks_left": 72755,
+      "estimate": "2028-02-29",
+      "tip_height": 977245,
       "as_of": "2026-11-23"
     }
   },
@@ -1015,49 +1015,49 @@
       "ok": true,
       "last": "2026-11-22",
       "error": null,
-      "at": "2026-11-23T12:20:44.262Z"
+      "at": "2026-11-23T17:57:53.349Z"
     },
     "price_coinbase": {
       "ok": true,
       "last": "2026-11-22",
       "error": null,
-      "at": "2026-11-23T12:20:44.323Z"
+      "at": "2026-11-23T17:57:53.435Z"
     },
     "coinmetrics": {
       "ok": true,
       "last": "2026-11-22",
       "error": null,
-      "at": "2026-11-23T12:20:44.500Z"
+      "at": "2026-11-23T17:57:53.897Z"
     },
     "fng": {
       "ok": true,
       "last": "2026-11-22",
       "error": null,
-      "at": "2026-11-23T12:20:44.637Z"
+      "at": "2026-11-23T17:57:54.248Z"
     },
     "wiki_en": {
       "ok": true,
       "last": "2026-11-22",
       "error": null,
-      "at": "2026-11-23T12:20:44.846Z"
+      "at": "2026-11-23T17:57:54.783Z"
     },
     "wiki_de": {
       "ok": true,
       "last": "2026-11-22",
       "error": null,
-      "at": "2026-11-23T12:20:45.010Z"
+      "at": "2026-11-23T17:57:55.227Z"
     },
     "funding_deribit": {
       "ok": true,
       "last": "2026-11-22",
       "error": null,
-      "at": "2026-11-23T12:20:45.518Z"
+      "at": "2026-11-23T17:57:55.772Z"
     },
     "network": {
       "ok": true,
       "last": "2026-11-23",
       "error": null,
-      "at": "2026-11-23T12:20:46.252Z"
+      "at": "2026-11-23T17:57:56.592Z"
     }
   },
   "attribution": [
